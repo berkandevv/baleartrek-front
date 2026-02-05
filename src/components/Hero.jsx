@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import fondo from "../img/fondo.png"
 
 export default function Hero() {
@@ -24,9 +25,12 @@ export default function Hero() {
           Explora nuestro Top 5 de excursiones seleccionadas por puntuación media de la comunidad
         </p>
         <div className="mt-4">
-          <a className="inline-flex items-center justify-center h-12 px-8 rounded-lg bg-primary text-text-main font-bold text-base hover:bg-primary/90 transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5" href="#">
+          <Link
+            className="inline-flex items-center justify-center h-12 px-8 rounded-lg bg-primary text-text-main font-bold text-base hover:bg-primary/90 transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5"
+            to="/catalogo"
+          >
             Ver Todas las Excursiones
-          </a>
+          </Link>
         </div>
       </div>
     </section>
