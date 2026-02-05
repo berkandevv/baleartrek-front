@@ -51,12 +51,12 @@ export default function Header() {
               <Link className={`text-sm ${pathname === '/catalogo' ? 'font-semibold text-primary' : 'font-medium text-text-main/80 dark:text-white/80 hover:text-primary dark:hover:text-primary transition-colors'}`} to="/catalogo">
                 Excursiones
               </Link>
-              <a className="text-sm font-medium text-text-main/80 dark:text-white/80 hover:text-primary dark:hover:text-primary transition-colors" href="#">
+              <Link className={`text-sm ${pathname === '/contacto' ? 'font-semibold text-primary' : 'font-medium text-text-main/80 dark:text-white/80 hover:text-primary dark:hover:text-primary transition-colors'}`} to="/contacto">
                 Contacto
-              </a>
-              <a className="text-sm font-medium text-text-main/80 dark:text-white/80 hover:text-primary dark:hover:text-primary transition-colors" href="#">
+              </Link>
+              <Link className={`text-sm ${pathname === '/faq' ? 'font-semibold text-primary' : 'font-medium text-text-main/80 dark:text-white/80 hover:text-primary dark:hover:text-primary transition-colors'}`} to="/faq">
                 FAQ
-              </a>
+              </Link>
             </nav>
             <button
               className="flex items-center justify-center rounded-lg h-10 px-4 bg-primary text-[#111718] text-sm font-bold hover:bg-cyan-400 transition-colors"
