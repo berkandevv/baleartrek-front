@@ -56,7 +56,7 @@ export default function TrekCard({ trek }) {
             {trek.description}
           </p>
           {municipality ? (
-            <p className="text-[11px] text-text-muted dark:text-gray-400 mt-2">
+            <p className="text-xs md:text-sm text-text-muted dark:text-gray-400 mt-2">
               Municipio: <span className="font-semibold text-text-main dark:text-white">{municipality}</span>
             </p>
           ) : null}
@@ -66,7 +66,7 @@ export default function TrekCard({ trek }) {
             {meetingLabel ? (
               <span className="block text-[10px] uppercase font-bold text-text-muted tracking-wider">Próxima salida</span>
             ) : null}
-            <span className="text-[11px] text-text-muted dark:text-gray-400">
+            <span className="text-xs md:text-sm text-text-muted dark:text-gray-400">
               {meetingLabel || 'Fechas por confirmar'}
             </span>
           </div>

@@ -1,11 +1,37 @@
+const CONTACT_EMAIL = import.meta.env.VITE_CONTACT_EMAIL || 'berkanraimov@gmail.com'
+
 export default function ContactPage() {
+  const handleSubmit = (event) => {
+    event.preventDefault()
+
+    const formData = new FormData(event.currentTarget)
+    const name = String(formData.get('name') || '').trim()
+    const email = String(formData.get('email') || '').trim()
+    const message = String(formData.get('message') || '').trim()
+
+    const subject = `Consulta web - ${name || 'Sin nombre'}`
+    const body = [
+      'Hola BalearTrek,',
+      '',
+      'Te contacto desde el formulario web con los siguientes datos:',
+      `Nombre: ${name}`,
+      `Email: ${email}`,
+      '',
+      'Mensaje:',
+      message,
+    ].join('\n')
+
+    const mailtoUrl = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
+    window.location.href = mailtoUrl
+  }
+
   return (
     <main className="flex-1 w-full max-w-[1440px] mx-auto px-4 md:px-10 lg:px-40 py-16 flex flex-col items-center">
       <div className="w-full max-w-2xl">
         <div className="mb-10 text-center">
           <h2 className="text-3xl md:text-4xl font-black text-[#101f22] dark:text-white mb-3">Contacto</h2>
           <p className="text-[#618389] dark:text-gray-400">
-            ¿Tienes alguna pregunta? Estamos encantados de ayudarte con tus rutas y excursiones por Baleares.
+            ¿Tienes alguna pregunta? Estamos encantados de ayudarte con tus excursiones por Baleares.
           </p>
         </div>
 
@@ -15,7 +41,7 @@ export default function ContactPage() {
             <h3 className="text-xl font-bold dark:text-white">Envíanos un mensaje</h3>
           </div>
 
-          <form className="space-y-6">
+          <form className="space-y-6" onSubmit={handleSubmit}>
             <div className="space-y-1.5">
               <label className="text-sm font-semibold text-[#101f22] dark:text-white" htmlFor="name">
                 Nombre Completo
@@ -23,6 +49,7 @@ export default function ContactPage() {
               <input
                 className="w-full bg-[#f6f8f8] dark:bg-[#203438] border-[#e2e8f0] dark:border-[#2a3c40] rounded-lg px-4 py-3 text-sm focus:ring-primary focus:border-primary placeholder:text-gray-400 dark:text-white transition-all"
                 id="name"
+                name="name"
                 placeholder="Ej. Juan Pérez"
                 required
                 type="text"
@@ -36,6 +63,7 @@ export default function ContactPage() {
               <input
                 className="w-full bg-[#f6f8f8] dark:bg-[#203438] border-[#e2e8f0] dark:border-[#2a3c40] rounded-lg px-4 py-3 text-sm focus:ring-primary focus:border-primary placeholder:text-gray-400 dark:text-white transition-all"
                 id="email"
+                name="email"
                 placeholder="juan@ejemplo.com"
                 required
                 type="email"
@@ -49,6 +77,7 @@ export default function ContactPage() {
               <textarea
                 className="w-full bg-[#f6f8f8] dark:bg-[#203438] border-[#e2e8f0] dark:border-[#2a3c40] rounded-lg px-4 py-3 text-sm focus:ring-primary focus:border-primary placeholder:text-gray-400 dark:text-white transition-all resize-none"
                 id="message"
+                name="message"
                 placeholder="Cuéntanos cómo podemos ayudarte..."
                 required
                 rows="5"

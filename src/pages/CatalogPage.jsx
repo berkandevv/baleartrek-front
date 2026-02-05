@@ -5,7 +5,7 @@ import CatalogToolbar from '../components/catalog/CatalogToolbar'
 import CatalogGrid from '../components/catalog/CatalogGrid'
 import { buildApiUrl } from '../utils/urls'
 
-// Endpoint del backend para recuperar el catálogo completo de rutas
+// Endpoint del backend para recuperar el catálogo completo de excursiones
 const TREKS_ENDPOINT = buildApiUrl('/api/treks')
 // Valor centinela para representar "sin filtro de municipio"
 const ALL_MUNICIPALITIES = 'all'
@@ -133,7 +133,7 @@ export default function CatalogPage() {
           Encuentra tu próxima aventura en Baleares
         </h1>
         <p className="text-text-sub text-base max-w-2xl">
-          Filtra por isla y municipio y descubre las rutas mejor valoradas
+          Filtra por isla y municipio y descubre las excursiones mejor valoradas
         </p>
       </div>
 

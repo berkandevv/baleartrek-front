@@ -36,7 +36,7 @@ export default function Header() {
                     value={query}
                     onChange={handleSearchChange}
                     className="flex w-full min-w-0 flex-1 resize-none bg-[#f0f4f4] dark:bg-gray-800 text-text-main dark:text-white focus:outline-0 border-none h-full placeholder:text-text-sub px-2 text-sm"
-                    placeholder="Buscar rutas..."
+                    placeholder="Buscar excursiones..."
                   />
                 </div>
               </label>

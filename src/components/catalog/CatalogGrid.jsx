@@ -20,7 +20,7 @@ export default function CatalogGrid({ treks, isLoading, error }) {
   if (treks.length === 0) {
     return (
       <div className="rounded-xl border border-dashed border-gray-300 dark:border-gray-700 p-10 text-center text-text-sub">
-        No hay rutas para esos filtros.
+        No hay excursiones para esos filtros.
       </div>
     )
   }

@@ -8,9 +8,11 @@ export default function TopTreks({ treks, isLoading, error }) {
           <div>
             <h2 className="text-2xl md:text-3xl font-bold text-text-main dark:text-white tracking-tight flex items-center gap-3">
               <span className="material-symbols-outlined text-yellow-500 fill-current text-3xl">hotel_class</span>
-              Las 5 Mejores Excursiones Destacadas
+              Las 5 Excursiones más Destacadas
             </h2>
-            <p className="text-text-muted dark:text-gray-400 mt-2">Las excursiones mejor valoradas por la comunidad.</p>
+            <p className="text-base md:text-lg leading-relaxed text-text-muted dark:text-gray-400 mt-2">
+              Las excursiones mejor valoradas por la comunidad
+            </p>
           </div>
         </div>
 

@@ -1,5 +1,5 @@
 export default function CatalogToolbar({ total, sortBy, onSortChange }) {
-  const routeLabel = total === 1 ? 'ruta' : 'rutas'
+  const routeLabel = total === 1 ? 'excursión' : 'excursiones'
   const availableLabel = total === 1 ? 'disponible' : 'disponibles'
   const hasNoResults = total === 0
 

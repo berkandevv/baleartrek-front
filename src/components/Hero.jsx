@@ -16,7 +16,7 @@ export default function Hero() {
       <div className="relative z-20 w-full max-w-7xl mx-auto px-4 flex flex-col items-center text-center gap-6 py-20">
         <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/20 backdrop-blur-sm border border-white/30 text-white text-xs font-semibold tracking-wider uppercase">
           <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-          Rutas mejor valoradas
+          Excursiones mejor valoradas
         </span>
         <h1 className="text-4xl md:text-6xl font-black text-white leading-tight tracking-tight drop-shadow-md max-w-4xl">
           Descubre las Mejores Experiencias de Senderismo

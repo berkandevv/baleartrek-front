@@ -13,14 +13,14 @@ export default function FAQPage() {
       </div>
 
       <div className="max-w-4xl mx-auto">
-        <div className="bg-white dark:bg-[#1a2c30] p-8 md:p-12 rounded-3xl shadow-sm border border-[#f0f4f4] dark:border-[#2a3c40]">
-          <div className="flex items-center gap-3 mb-10 pb-6 border-b border-gray-100 dark:border-[#2a3c40]">
+        <div className="bg-gradient-to-br from-white via-[#f7fcfd] to-[#eef8fb] dark:bg-[#1a2c30] p-8 md:p-12 rounded-3xl shadow-sm border border-[#e3f3f6] dark:border-[#2a3c40]">
+          <div className="flex items-center gap-3 mb-10 pb-6 border-b border-[#d9edf2] dark:border-[#2a3c40]">
             <span className="material-symbols-outlined text-primary text-3xl">quiz</span>
             <h3 className="text-2xl font-bold dark:text-white">Información General</h3>
           </div>
 
           <div className="space-y-6">
-            <details className="group border-b border-gray-100 dark:border-[#2a3c40] pb-6" open>
+            <details className="group border border-[#d8edf2] bg-white/80 dark:bg-[#1f3337] dark:border-[#2a3c40] rounded-2xl px-5 md:px-6 py-4 transition-all duration-300 hover:border-primary/40 hover:shadow-[0_12px_28px_-20px_rgba(34,193,231,0.9)]" open>
               <summary className="flex items-center justify-between cursor-pointer py-2 list-none">
                 <span className="text-xl font-bold text-[#101f22] dark:text-white flex items-center gap-2 pr-4">
                   <span className="material-symbols-outlined text-primary">app_registration</span>
@@ -57,7 +57,7 @@ export default function FAQPage() {
               </div>
             </details>
 
-            <details className="group border-b border-gray-100 dark:border-[#2a3c40] pb-6">
+            <details className="group border border-[#d8edf2] bg-white/80 dark:bg-[#1f3337] dark:border-[#2a3c40] rounded-2xl px-5 md:px-6 py-4 transition-all duration-300 hover:border-primary/40 hover:shadow-[0_12px_28px_-20px_rgba(34,193,231,0.9)]">
               <summary className="flex items-center justify-between cursor-pointer py-2 list-none">
                 <span className="text-xl font-bold text-[#101f22] dark:text-white flex items-center gap-2 pr-4">
                   <span className="material-symbols-outlined text-primary">health_and_safety</span>
@@ -67,7 +67,7 @@ export default function FAQPage() {
                   expand_more
                 </span>
               </summary>
-              <div className="mt-4 bg-gray-50 dark:bg-[#203438] p-6 rounded-2xl border border-gray-100 dark:border-white/5">
+              <div className="mt-4 bg-[#f6fbfd] dark:bg-[#203438] p-6 rounded-2xl border border-[#dbeef3] dark:border-white/5">
                 <p className="text-base text-[#618389] dark:text-gray-400 leading-relaxed">
                   BalearTrek no cobra cuotas de inscripción, por lo que{' '}
                   <span className="font-semibold text-[#101f22] dark:text-white">no se incluye ningún seguro de accidentes en el precio</span>. Recomendamos participar con licencia federativa en vigor o con un seguro personal que cubra asistencia sanitaria y rescate en montaña.
@@ -75,7 +75,7 @@ export default function FAQPage() {
               </div>
             </details>
 
-            <details className="group border-b border-gray-100 dark:border-[#2a3c40] pb-6">
+            <details className="group border border-[#d8edf2] bg-white/80 dark:bg-[#1f3337] dark:border-[#2a3c40] rounded-2xl px-5 md:px-6 py-4 transition-all duration-300 hover:border-primary/40 hover:shadow-[0_12px_28px_-20px_rgba(34,193,231,0.9)]">
               <summary className="flex items-center justify-between cursor-pointer py-2 list-none">
                 <span className="text-xl font-bold text-[#101f22] dark:text-white flex items-center gap-2 pr-4">
                   <span className="material-symbols-outlined text-primary">cancel</span>
@@ -85,9 +85,9 @@ export default function FAQPage() {
                   expand_more
                 </span>
               </summary>
-              <div className="mt-4 bg-gray-50 dark:bg-[#203438] p-6 rounded-2xl border border-gray-100 dark:border-white/5">
+              <div className="mt-4 bg-[#f6fbfd] dark:bg-[#203438] p-6 rounded-2xl border border-[#dbeef3] dark:border-white/5">
                 <p className="text-base text-[#618389] dark:text-gray-400 leading-relaxed">
-                  Entendemos que los planes pueden cambiar. Puedes cancelar tu plaza en cualquier momento, ya que nuestras rutas son{' '}
+                  Entendemos que los planes pueden cambiar. Puedes cancelar tu plaza en cualquier momento, ya que nuestras excursiones son{' '}
                   <span className="font-semibold text-[#101f22] dark:text-white">gratuitas</span> y no se realiza ningún cobro.
                 </p>
                 <p className="text-base text-[#618389] dark:text-gray-400 mt-4 leading-relaxed">
@@ -96,7 +96,7 @@ export default function FAQPage() {
               </div>
             </details>
 
-            <details className="group border-b border-gray-100 dark:border-[#2a3c40] pb-6">
+            <details className="group border border-[#d8edf2] bg-white/80 dark:bg-[#1f3337] dark:border-[#2a3c40] rounded-2xl px-5 md:px-6 py-4 transition-all duration-300 hover:border-primary/40 hover:shadow-[0_12px_28px_-20px_rgba(34,193,231,0.9)]">
               <summary className="flex items-center justify-between cursor-pointer py-2 list-none">
                 <span className="text-xl font-bold text-[#101f22] dark:text-white flex items-center gap-2 pr-4">
                   <span className="material-symbols-outlined text-primary">fitness_center</span>
@@ -106,9 +106,9 @@ export default function FAQPage() {
                   expand_more
                 </span>
               </summary>
-              <div className="mt-4 bg-gray-50 dark:bg-[#203438] p-6 rounded-2xl border border-gray-100 dark:border-white/5">
+              <div className="mt-4 bg-[#f6fbfd] dark:bg-[#203438] p-6 rounded-2xl border border-[#dbeef3] dark:border-white/5">
                 <p className="text-base text-[#618389] dark:text-gray-400 leading-relaxed mb-4">
-                  Nuestras rutas transcurren por terrenos naturales que requieren una condición física adecuada. Recomendamos a los participantes:
+                  Nuestras excursiones transcurren por terrenos naturales que requieren una condición física adecuada. Recomendamos a los participantes:
                 </p>
                 <ul className="space-y-3 text-sm text-[#618389] dark:text-gray-400">
                   <li className="flex items-center gap-3">
@@ -139,7 +139,7 @@ export default function FAQPage() {
             <div>
               <p className="text-lg font-bold text-[#101f22] dark:text-white uppercase tracking-wider mb-1">¿Aún tienes dudas?</p>
               <p className="text-base text-[#618389] dark:text-gray-300">
-                Si necesitas información adicional sobre un evento específico, nuestro equipo está listo para ayudarte.
+                Si necesitas información adicional, nuestro equipo está listo para ayudarte.
               </p>
             </div>
             <Link className="mx-auto px-8 py-4 bg-primary text-[#101f22] font-bold rounded-2xl hover:bg-primary/90 transition-all text-base shadow-lg shadow-primary/10" to="/contacto">
