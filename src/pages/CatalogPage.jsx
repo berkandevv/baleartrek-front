@@ -115,10 +115,10 @@ export default function CatalogPage() {
     <div className="flex-1 w-full max-w-[1440px] mx-auto px-4 md:px-10 py-8">
       <div className="mb-8">
         <h1 className="text-3xl md:text-4xl font-black tracking-[-0.033em] text-text-main dark:text-white mb-2">
-          Explora Rutas Baleares
+          Encuentra tu próxima aventura en Baleares
         </h1>
         <p className="text-text-sub text-base max-w-2xl">
-          Encuentra tu próxima aventura en el archipiélago balear. Filtra por isla y municipio.
+          Filtra por isla y municipio y descubre las rutas mejor valoradas
         </p>
       </div>
 

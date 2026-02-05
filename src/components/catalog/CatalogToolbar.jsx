@@ -13,7 +13,7 @@ export default function CatalogToolbar({ total, sortBy, onSortChange }) {
             className="appearance-none bg-[#f0f4f4] dark:bg-gray-800 border-none rounded-lg text-sm font-medium py-2 pl-3 pr-8 text-text-main dark:text-white focus:ring-1 focus:ring-primary cursor-pointer"
           >
             <option value="name-asc">Nombre (A-Z)</option>
-            <option value="score-desc">Puntuación</option>
+            <option value="score-desc">Mejor valoradas</option>
           </select>
           <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-text-main dark:text-white">
             <span className="material-symbols-outlined text-[18px]">expand_more</span>
