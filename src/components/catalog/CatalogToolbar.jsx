@@ -1,8 +1,18 @@
 export default function CatalogToolbar({ total, sortBy, onSortChange }) {
+  const routeLabel = total === 1 ? 'ruta' : 'rutas'
+  const availableLabel = total === 1 ? 'disponible' : 'disponibles'
+  const hasNoResults = total === 0
+
   return (
     <div className="flex flex-wrap items-center justify-between gap-4 p-4 bg-white dark:bg-card-dark rounded-xl border border-[#dbe4e6] dark:border-gray-800 shadow-sm">
       <p className="text-text-main dark:text-white font-medium">
-        Mostrando <span className="font-bold">{total}</span> resultados
+        {hasNoResults ? (
+          'No hay ninguna ruta con los filtros aplicados'
+        ) : (
+          <>
+            ¡Hay <span className="font-bold">{total}</span> {routeLabel} {availableLabel}!
+          </>
+        )}
       </p>
       <div className="flex items-center gap-3">
         <span className="text-sm text-text-sub hidden sm:inline-block">Ordenar por:</span>

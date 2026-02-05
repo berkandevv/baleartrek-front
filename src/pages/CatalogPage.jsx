@@ -9,6 +9,7 @@ import { buildApiUrl } from '../utils/urls'
 const TREKS_ENDPOINT = buildApiUrl('/api/treks')
 // Valor centinela para representar "sin filtro de municipio"
 const ALL_MUNICIPALITIES = 'all'
+const PAGE_SIZE = 6
 
 // Leer propiedades anidadas de forma segura
 const getIslandName = (trek) => trek?.municipality?.island?.name ?? ''
@@ -27,6 +28,7 @@ export default function CatalogPage() {
   const [selectedMunicipality, setSelectedMunicipality] = useState(ALL_MUNICIPALITIES)
   // Criterio de orden actual
   const [sortBy, setSortBy] = useState('name-asc')
+  const [currentPage, setCurrentPage] = useState(1)
   const [searchParams] = useSearchParams()
   // Búsqueda compartida por query param `?q=...` desde la URL
   const search = (searchParams.get('q') ?? '').trim().toLowerCase()
@@ -101,6 +103,19 @@ export default function CatalogPage() {
     sortedTreks.sort((a, b) => getTrekName(a).localeCompare(getTrekName(b), 'es'))
   }
 
+  const totalPages = Math.max(1, Math.ceil(sortedTreks.length / PAGE_SIZE))
+  const pageStart = (currentPage - 1) * PAGE_SIZE
+  const paginatedTreks = sortedTreks.slice(pageStart, pageStart + PAGE_SIZE)
+  const pageNumbers = Array.from({ length: totalPages }, (_, index) => index + 1)
+
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [selectedIslands, selectedMunicipality, search, sortBy])
+
+  useEffect(() => {
+    setCurrentPage((prevPage) => Math.min(prevPage, totalPages))
+  }, [totalPages])
+
   const handleToggleIsland = (island) => {
     // Al cambiar islas, se reinicia municipio para evitar filtros incompatibles
     setSelectedMunicipality(ALL_MUNICIPALITIES)
@@ -136,7 +151,53 @@ export default function CatalogPage() {
         {/* Zona de resultados: barra de orden + grid de tarjetas */}
         <main className="flex-1 flex flex-col gap-6">
           <CatalogToolbar total={sortedTreks.length} sortBy={sortBy} onSortChange={setSortBy} />
-          <CatalogGrid treks={sortedTreks} isLoading={isLoading} error={error} />
+          <CatalogGrid treks={paginatedTreks} isLoading={isLoading} error={error} />
+          {!isLoading && !error && sortedTreks.length > 0 && totalPages > 1 ? (
+            <div className="flex justify-center mt-2">
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setCurrentPage((prevPage) => Math.max(prevPage - 1, 1))}
+                  disabled={currentPage === 1}
+                  aria-label="Página anterior"
+                  className={`flex items-center justify-center size-10 rounded-lg border border-[#dbe4e6] dark:border-gray-700 bg-white dark:bg-card-dark text-text-main dark:text-white hover:bg-[#f0f4f4] dark:hover:bg-gray-800 ${
+                    currentPage === 1 ? 'opacity-50 pointer-events-none' : ''
+                  }`}
+                >
+                  <span className="material-symbols-outlined">chevron_left</span>
+                </button>
+
+                {pageNumbers.map((pageNumber) => (
+                  <button
+                    key={pageNumber}
+                    type="button"
+                    onClick={() => setCurrentPage(pageNumber)}
+                    aria-label={`Ir a la página ${pageNumber}`}
+                    aria-current={currentPage === pageNumber ? 'page' : undefined}
+                    className={`flex items-center justify-center size-10 rounded-lg ${
+                      currentPage === pageNumber
+                        ? 'bg-primary text-white font-bold'
+                        : 'border border-[#dbe4e6] dark:border-gray-700 bg-white dark:bg-card-dark text-text-main dark:text-white hover:bg-[#f0f4f4] dark:hover:bg-gray-800'
+                    }`}
+                  >
+                    {pageNumber}
+                  </button>
+                ))}
+
+                <button
+                  type="button"
+                  onClick={() => setCurrentPage((prevPage) => Math.min(prevPage + 1, totalPages))}
+                  disabled={currentPage === totalPages}
+                  aria-label="Página siguiente"
+                  className={`flex items-center justify-center size-10 rounded-lg border border-[#dbe4e6] dark:border-gray-700 bg-white dark:bg-card-dark text-text-main dark:text-white hover:bg-[#f0f4f4] dark:hover:bg-gray-800 ${
+                    currentPage === totalPages ? 'opacity-50 pointer-events-none' : ''
+                  }`}
+                >
+                  <span className="material-symbols-outlined">chevron_right</span>
+                </button>
+              </div>
+            </div>
+          ) : null}
         </main>
       </div>
     </div>
