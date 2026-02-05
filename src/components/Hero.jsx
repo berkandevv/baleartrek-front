@@ -1,3 +1,5 @@
+import fondo from "../img/fondo.png"
+
 export default function Hero() {
   return (
     <section className="relative min-h-[500px] flex items-center justify-center overflow-hidden">
@@ -6,8 +8,7 @@ export default function Hero() {
         <div
           className="w-full h-full bg-cover bg-center"
           style={{
-            backgroundImage:
-              "url('https://lh3.googleusercontent.com/aida-public/AB6AXuC6wPiUpQEQeOsoXdia1-ij1nlokXfbVTpSdbFlenICbAVanTokP5WqUbm6be-QTMwEw9i68N4_uCSlljwG6fbBFlcCEXx6sJYPy8sFElvVShZ9bi_7woXgwM8lnBzL2CrJtZhGYNxyTvqIDWWroCuujpAOMOzoph6V_Kj8tdEvb0p_3Uopi1pKOGafc6SdQ0zc8E3emhfENsUde4SGRDZ1S6S3-KZr7yCmNyqaAN4bHKwuDMCRrdcZGtxzCVfRkNLBFyNcIC9O_9Y')",
+            backgroundImage: `url(${fondo})`,
           }}
         />
       </div>
