@@ -34,7 +34,7 @@ export default function CatalogPage() {
   const search = (searchParams.get('q') ?? '').trim().toLowerCase()
 
   useEffect(() => {
-    // Carga inicial del catálogo al montar la página
+    // Carga inicial de excursiones al montar la página
     const fetchTreks = async () => {
       try {
         const response = await fetch(TREKS_ENDPOINT)
@@ -51,7 +51,7 @@ export default function CatalogPage() {
         setSelectedIslands(apiIslands)
       } catch {
         // Mensaje genérico de error para no exponer detalles internos
-        setError('No se pudo cargar el catálogo. Intenta de nuevo en unos minutos.')
+        setError('No se pudieron cargar las excursiones. Intenta de nuevo en unos minutos.')
       } finally {
         // Finaliza el estado de carga tanto si fue bien como si falló
         setIsLoading(false)
@@ -74,7 +74,7 @@ export default function CatalogPage() {
       .map(getMunicipalityName),
   )
 
-  // Catálogo final tras aplicar filtros de isla, municipio y búsqueda
+  // Catálogo de escursiones final tras aplicar filtros de isla, municipio y búsqueda
   const filteredTreks = treks.filter((trek) => {
     const island = getIslandName(trek)
     const municipality = getMunicipalityName(trek)
@@ -87,7 +87,7 @@ export default function CatalogPage() {
     // 3) Si no hay texto, pasa directamente
     if (!search) return true
 
-    // 4) Búsqueda por nombre de ruta o nombre de municipio
+    // 4) Búsqueda por nombre de excursión o nombre de municipio
     const byName = name.toLowerCase().includes(search)
     const byMunicipality = municipality.toLowerCase().includes(search)
     return byName || byMunicipality
@@ -103,10 +103,16 @@ export default function CatalogPage() {
     sortedTreks.sort((a, b) => getTrekName(a).localeCompare(getTrekName(b), 'es'))
   }
 
-  const totalPages = Math.max(1, Math.ceil(sortedTreks.length / PAGE_SIZE))
+  const fullPages = Math.floor(sortedTreks.length / PAGE_SIZE)
+  const hasRemainder = sortedTreks.length % PAGE_SIZE !== 0
+  const calculatedPages = hasRemainder ? fullPages + 1 : fullPages
+  const totalPages = calculatedPages > 0 ? calculatedPages : 1
   const pageStart = (currentPage - 1) * PAGE_SIZE
   const paginatedTreks = sortedTreks.slice(pageStart, pageStart + PAGE_SIZE)
-  const pageNumbers = Array.from({ length: totalPages }, (_, index) => index + 1)
+  const pageNumbers = []
+  for (let page = 1; page <= totalPages; page += 1) {
+    pageNumbers.push(page)
+  }
 
   useEffect(() => {
     setCurrentPage(1)

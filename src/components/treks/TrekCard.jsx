@@ -1,4 +1,4 @@
-import { resolveImageUrl } from '../utils/urls'
+import { resolveImageUrl } from '../../utils/urls'
 
 function getNextMeetingLabel(meetings) {
   const now = new Date()

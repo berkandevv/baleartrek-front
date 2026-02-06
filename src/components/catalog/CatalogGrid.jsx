@@ -4,7 +4,7 @@ export default function CatalogGrid({ treks, isLoading, error }) {
   if (isLoading) {
     return (
       <div className="rounded-xl border border-dashed border-gray-300 dark:border-gray-700 p-10 text-center text-text-sub">
-        Cargando catálogo...
+        Cargando excursiones...
       </div>
     )
   }

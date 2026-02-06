@@ -58,12 +58,12 @@ export default function Header() {
                 FAQ
               </Link>
             </nav>
-            <button
+            <Link
               className="flex items-center justify-center rounded-lg h-10 px-4 bg-primary text-[#111718] text-sm font-bold hover:bg-cyan-400 transition-colors"
-              type="button"
+              to="/login"
             >
               Iniciar Sesión / Registro
-            </button>
+            </Link>
           </div>
 
           <button className="md:hidden p-2 text-text-main dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg" type="button">

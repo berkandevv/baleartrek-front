@@ -7,7 +7,7 @@ export default function CatalogToolbar({ total, sortBy, onSortChange }) {
     <div className="flex flex-wrap items-center justify-between gap-4 p-4 bg-white dark:bg-card-dark rounded-xl border border-[#dbe4e6] dark:border-gray-800 shadow-sm">
       <p className="text-text-main dark:text-white font-medium">
         {hasNoResults ? (
-          'No hay ninguna ruta con los filtros aplicados'
+          'No hay ninguna excursión con los filtros aplicados'
         ) : (
           <>
             ¡Hay <span className="font-bold">{total}</span> {routeLabel} {availableLabel}!

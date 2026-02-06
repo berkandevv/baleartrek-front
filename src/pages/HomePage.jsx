@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import Hero from '../components/Hero'
-import TopTreks from '../components/TopTreks'
+import TopTreks from '../components/treks/TopTreks'
 import { buildApiUrl } from '../utils/urls'
 
 const TREKS_ENDPOINT = buildApiUrl('/api/treks')

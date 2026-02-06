@@ -12,7 +12,7 @@ export default function CatalogCard({ trek }) {
           <img
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
             src={imageSrc}
-            alt={trek?.name || 'Ruta'}
+            alt={trek?.name}
           />
         ) : null}
         <div className="absolute top-3 left-3 flex flex-col gap-2 items-start">

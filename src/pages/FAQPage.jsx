@@ -125,7 +125,7 @@ export default function FAQPage() {
                   </li>
                   <li className="flex items-center gap-3">
                     <span className="material-symbols-outlined text-primary text-lg">check_circle</span>
-                    Consultar siempre la descripción técnica de cada ruta antes de inscribirse.
+                    Consultar siempre la descripción técnica de cada excursión antes de inscribirse.
                   </li>
                 </ul>
               </div>
