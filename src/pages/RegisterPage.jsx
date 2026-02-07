@@ -1,8 +1,59 @@
-import { Link } from 'react-router-dom'
+import { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { useAuth } from '../auth/AuthContext'
 
 export default function RegisterPage() {
-  const handleSubmit = (event) => {
+  const navigate = useNavigate()
+  const { register, isLoading } = useAuth()
+  const [name, setName] = useState('')
+  const [lastName, setLastName] = useState('')
+  const [email, setEmail] = useState('')
+  const [dni, setDni] = useState('')
+  const [phone, setPhone] = useState('')
+  const [password, setPassword] = useState('')
+  const [passwordConfirmation, setPasswordConfirmation] = useState('')
+  const [error, setError] = useState('')
+  const [fieldErrors, setFieldErrors] = useState({ email: '', dni: '' })
+
+  const handleSubmit = async (event) => {
     event.preventDefault()
+    setError('')
+    setFieldErrors({ email: '', dni: '' })
+    const trimmedEmail = email.trim()
+    const trimmedDni = dni.trim().toUpperCase()
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    const dniNieRegex = /^(\d{8}[A-Z]|[XYZ]\d{7}[A-Z])$/
+
+    const nextFieldErrors = { email: '', dni: '' }
+    if (!emailRegex.test(trimmedEmail)) {
+      nextFieldErrors.email = 'Introduce un correo electrónico válido'
+    }
+
+    if (!dniNieRegex.test(trimmedDni)) {
+      nextFieldErrors.dni = 'Introduce un DNI o NIE válido'
+    }
+
+    if (nextFieldErrors.email || nextFieldErrors.dni) {
+      setFieldErrors(nextFieldErrors)
+      return
+    }
+
+    try {
+      await register({
+        name,
+        lastName,
+        email: trimmedEmail,
+        password,
+        passwordConfirmation,
+        dni: trimmedDni,
+        phone,
+      })
+      navigate('/login', {
+        state: { successMessage: 'Registro completado. Ahora inicia sesión para entrar.' },
+      })
+    } catch (err) {
+      setError(err?.message || 'No se pudo completar el registro.')
+    }
   }
 
   return (
@@ -38,6 +89,9 @@ export default function RegisterPage() {
                     className="w-full rounded-lg border-[#dbe4e6] dark:border-[#2a3c40] dark:bg-[#101f22] focus:border-primary focus:ring-primary text-sm"
                     placeholder="Ej. Joan"
                     type="text"
+                    value={name}
+                    onChange={(event) => setName(event.target.value)}
+                    required
                   />
                 </div>
                 <div className="flex flex-col gap-1.5">
@@ -46,6 +100,8 @@ export default function RegisterPage() {
                     className="w-full rounded-lg border-[#dbe4e6] dark:border-[#2a3c40] dark:bg-[#101f22] focus:border-primary focus:ring-primary text-sm"
                     placeholder="Ej. Rosselló"
                     type="text"
+                    value={lastName}
+                    onChange={(event) => setLastName(event.target.value)}
                   />
                 </div>
               </div>
@@ -55,6 +111,37 @@ export default function RegisterPage() {
                   className="w-full rounded-lg border-[#dbe4e6] dark:border-[#2a3c40] dark:bg-[#101f22] focus:border-primary focus:ring-primary text-sm"
                   placeholder="nombre@ejemplo.com"
                   type="email"
+                  value={email}
+                  onChange={(event) => setEmail(event.target.value)}
+                  required
+                />
+                {fieldErrors.email ? (
+                  <span className="text-xs text-rose-600 dark:text-rose-300">{fieldErrors.email}</span>
+                ) : null}
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <label className="text-sm font-bold text-text-main dark:text-white">DNI/NIE</label>
+                <input
+                  className="w-full rounded-lg border-[#dbe4e6] dark:border-[#2a3c40] dark:bg-[#101f22] focus:border-primary focus:ring-primary text-sm"
+                  placeholder="12345678X"
+                  type="text"
+                  value={dni}
+                  onChange={(event) => setDni(event.target.value)}
+                  required
+                />
+                {fieldErrors.dni ? (
+                  <span className="text-xs text-rose-600 dark:text-rose-300">{fieldErrors.dni}</span>
+                ) : null}
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <label className="text-sm font-bold text-text-main dark:text-white">Teléfono</label>
+                <input
+                  className="w-full rounded-lg border-[#dbe4e6] dark:border-[#2a3c40] dark:bg-[#101f22] focus:border-primary focus:ring-primary text-sm"
+                  placeholder="+34 600 000 000"
+                  type="tel"
+                  value={phone}
+                  onChange={(event) => setPhone(event.target.value)}
+                  required
                 />
               </div>
               <div className="flex flex-col gap-1.5">
@@ -63,8 +150,27 @@ export default function RegisterPage() {
                   className="w-full rounded-lg border-[#dbe4e6] dark:border-[#2a3c40] dark:bg-[#101f22] focus:border-primary focus:ring-primary text-sm"
                   placeholder="••••••••"
                   type="password"
+                  value={password}
+                  onChange={(event) => setPassword(event.target.value)}
+                  required
                 />
               </div>
+              <div className="flex flex-col gap-1.5">
+                <label className="text-sm font-bold text-text-main dark:text-white">Confirmar contraseña</label>
+                <input
+                  className="w-full rounded-lg border-[#dbe4e6] dark:border-[#2a3c40] dark:bg-[#101f22] focus:border-primary focus:ring-primary text-sm"
+                  placeholder="••••••••"
+                  type="password"
+                  value={passwordConfirmation}
+                  onChange={(event) => setPasswordConfirmation(event.target.value)}
+                  required
+                />
+              </div>
+              {error ? (
+                <div className="rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700 dark:border-rose-900/40 dark:bg-rose-900/20 dark:text-rose-200">
+                  {error}
+                </div>
+              ) : null}
               <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-100 dark:border-blue-800/30 flex gap-3">
                 <span className="material-symbols-outlined text-blue-500 text-xl">info</span>
                 <div className="space-y-1">
@@ -78,10 +184,11 @@ export default function RegisterPage() {
                 </div>
               </div>
               <button
-                className="w-full flex items-center justify-center rounded-lg h-12 bg-primary text-[#111718] hover:bg-[#11b5d6] transition-all transform hover:scale-[1.01] shadow-lg shadow-primary/20 text-base font-bold tracking-[0.015em] mt-2"
+                className="w-full flex items-center justify-center rounded-lg h-12 bg-primary text-[#111718] hover:bg-[#11b5d6] transition-all transform hover:scale-[1.01] shadow-lg shadow-primary/20 text-base font-bold tracking-[0.015em] mt-2 disabled:opacity-70 disabled:cursor-not-allowed"
                 type="submit"
+                disabled={isLoading}
               >
-                Registrarme ahora
+                {isLoading ? 'Registrando...' : 'Registrarme ahora'}
               </button>
             </form>
             <p className="text-center text-xs text-text-muted dark:text-gray-500 mt-6">

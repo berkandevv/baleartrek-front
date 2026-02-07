@@ -5,19 +5,27 @@ const clampRating = (score) => Math.max(0, Math.min(STAR_COUNT, Math.floor(Numbe
 const formatMeetingDate = (meetingDay) =>
   formatDate(new Date(meetingDay), { dateStyle: 'short' })
 
-const Stars = ({ rating, id }) => (
-  <div className="flex">
-    {Array.from({ length: STAR_COUNT }, (_, index) => (
+const Stars = ({ rating, id }) => {
+  const items = []
+  for (let index = 0; index < STAR_COUNT; index += 1) {
+    const isFilled = index < rating
+    items.push(
       <span
-        className={`material-symbols-outlined text-[18px] ${index < rating ? 'text-yellow-400' : 'text-yellow-300'}`}
+        className={`text-[16px] leading-none ${isFilled ? 'text-yellow-500' : 'text-gray-300 dark:text-gray-600'}`}
         key={`${id}-star-${index}`}
-        style={{ fontVariationSettings: `'FILL' ${index < rating ? 1 : 0}, 'wght' 400, 'GRAD' 0, 'opsz' 20` }}
+        aria-hidden="true"
       >
-        star
+        {isFilled ? '★' : '☆'}
       </span>
-    ))}
-  </div>
-)
+    )
+  }
+
+  return (
+    <div className="flex" aria-label={`Valoración ${rating} de ${STAR_COUNT}`}>
+      {items}
+    </div>
+  )
+}
 
 export default function TrekDetailsComments({ comments, sortKey, onSortChange }) {
   const sortedComments = sortComments(comments, sortKey)

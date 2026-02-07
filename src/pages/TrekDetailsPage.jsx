@@ -26,16 +26,19 @@ export default function TrekDetailsPage() {
   const [trek, setTrek] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
   const [sortKey, setSortKey] = useState('recent')
+  const [error, setError] = useState('')
 
   useEffect(() => {
     const fetchTrek = async () => {
       setIsLoading(true)
       try {
+        setError('')
         const response = await fetch(buildTrekEndpoint(regNumber))
         const payload = await response.json()
         setTrek(payload.data)
       } catch (error) {
         console.error('Error al cargar el trek:', error)
+        setError('No se pudo cargar este trek. Intenta de nuevo más tarde.')
       } finally {
         setIsLoading(false)
       }
@@ -49,6 +52,16 @@ export default function TrekDetailsPage() {
       <main className="flex-grow w-full max-w-[1280px] mx-auto px-4 sm:px-10 py-10">
         <div className="bg-white dark:bg-[#1a2c30] rounded-xl border border-[#dbe4e6] dark:border-[#2a3c40] p-8 text-center">
           <p className="text-sm text-text-muted">Cargando detalles del trek...</p>
+        </div>
+      </main>
+    )
+  }
+
+  if (error || !trek) {
+    return (
+      <main className="flex-grow w-full max-w-[1280px] mx-auto px-4 sm:px-10 py-10">
+        <div className="bg-rose-50 dark:bg-rose-900/20 rounded-xl border border-rose-200 dark:border-rose-900/40 p-8 text-center">
+          <p className="text-sm text-rose-700 dark:text-rose-200">{error || 'No se encontró el trek solicitado.'}</p>
         </div>
       </main>
     )

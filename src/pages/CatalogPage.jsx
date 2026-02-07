@@ -14,6 +14,7 @@ export default function CatalogPage() {
   // Datos base y estados de la UI
   const [treks, setTreks] = useState([])
   const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState('')
   // Filtros activos de isla y municipio
   const [selectedIslands, setSelectedIslands] = useState([])
   const [selectedMunicipality, setSelectedMunicipality] = useState(ALL_MUNICIPALITIES)
@@ -28,6 +29,7 @@ export default function CatalogPage() {
     // Carga inicial de excursiones al montar la página
     const fetchTreks = async () => {
       try {
+        setError('')
         const response = await fetch(TREKS_ENDPOINT)
         const payload = await response.json()
         const apiTreks = payload.data
@@ -37,6 +39,7 @@ export default function CatalogPage() {
         setSelectedIslands(apiIslands)
       } catch (error) {
         console.error('Error al cargar excursiones:', error)
+        setError('No se pudo cargar el catálogo. Revisa la conexión o intenta más tarde.')
       } finally {
         setIsLoading(false)
       }
@@ -143,7 +146,7 @@ export default function CatalogPage() {
         {/* Zona de resultados: barra de orden + grid de tarjetas */}
         <main className="flex-1 flex flex-col gap-6">
           <CatalogToolbar total={sortedTreks.length} sortBy={sortBy} onSortChange={setSortBy} />
-          <CatalogGrid treks={paginatedTreks} isLoading={isLoading} />
+          <CatalogGrid treks={paginatedTreks} isLoading={isLoading} error={error} />
           {!isLoading && sortedTreks.length > 0 && totalPages > 1 ? (
             <div className="flex justify-center mt-2">
               <div className="flex items-center gap-2">

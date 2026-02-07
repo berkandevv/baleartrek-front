@@ -9,6 +9,7 @@ import ContactPage from './pages/ContactPage'
 import LoadingPage from './pages/LoadingPage'
 import RegisterPage from './pages/RegisterPage'
 import TrekDetailsPage from './pages/TrekDetailsPage'
+import { AuthProvider } from './auth/AuthContext'
 
 function AppContent() {
   return (
@@ -32,8 +33,10 @@ function AppContent() {
 
 export default function App() {
   return (
-    <BrowserRouter>
-      <AppContent />
-    </BrowserRouter>
+    <AuthProvider>
+      <BrowserRouter>
+        <AppContent />
+      </BrowserRouter>
+    </AuthProvider>
   )
 }

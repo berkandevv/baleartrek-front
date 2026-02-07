@@ -1,8 +1,25 @@
-import { Link } from 'react-router-dom'
+import { useState } from 'react'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { useAuth } from '../auth/AuthContext'
 
 export default function LoadingPage() {
-  const handleSubmit = (event) => {
+  const navigate = useNavigate()
+  const location = useLocation()
+  const successMessage = location.state?.successMessage ?? ''
+  const { login, isLoading } = useAuth()
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState('')
+
+  const handleSubmit = async (event) => {
     event.preventDefault()
+    setError('')
+    try {
+      await login({ email, password })
+      navigate('/')
+    } catch (err) {
+      setError('Error de credenciales')
+    }
   }
 
   return (
@@ -37,6 +54,9 @@ export default function LoadingPage() {
                   className="w-full rounded-lg border-[#dbe4e6] dark:border-[#2a3c40] dark:bg-[#101f22] focus:border-primary focus:ring-primary text-sm"
                   placeholder="nombre@ejemplo.com"
                   type="email"
+                  value={email}
+                  onChange={(event) => setEmail(event.target.value)}
+                  required
                 />
               </div>
               <div className="flex flex-col gap-1.5">
@@ -45,20 +65,26 @@ export default function LoadingPage() {
                   className="w-full rounded-lg border-[#dbe4e6] dark:border-[#2a3c40] dark:bg-[#101f22] focus:border-primary focus:ring-primary text-sm"
                   placeholder="••••••••"
                   type="password"
+                  value={password}
+                  onChange={(event) => setPassword(event.target.value)}
+                  required
                 />
               </div>
-              <div className="flex items-center justify-between">
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    className="rounded border-[#dbe4e6] dark:border-[#2a3c40] dark:bg-[#101f22] text-primary focus:ring-primary h-4 w-4"
-                    type="checkbox"
-                  />
-                  <span className="text-sm text-text-muted dark:text-gray-400">Recordarme</span>
-                </label>
+              <div className="flex items-center justify-end">
                 <a className="text-sm font-medium text-primary hover:underline" href="#">
                   ¿Has olvidado tu contraseña?
                 </a>
               </div>
+              {successMessage ? (
+                <div className="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700 dark:border-emerald-900/40 dark:bg-emerald-900/20 dark:text-emerald-200">
+                  {successMessage}
+                </div>
+              ) : null}
+              {error ? (
+                <div className="rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700 dark:border-rose-900/40 dark:bg-rose-900/20 dark:text-rose-200">
+                  {error}
+                </div>
+              ) : null}
               <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-100 dark:border-blue-800/30 flex gap-3">
                 <span className="material-symbols-outlined text-blue-500 text-xl">info</span>
                 <div className="space-y-1">
@@ -72,10 +98,11 @@ export default function LoadingPage() {
                 </div>
               </div>
               <button
-                className="w-full flex items-center justify-center rounded-lg h-12 bg-primary text-[#111718] hover:bg-[#11b5d6] transition-all transform hover:scale-[1.01] shadow-lg shadow-primary/20 text-base font-bold tracking-[0.015em] mt-2"
+                className="w-full flex items-center justify-center rounded-lg h-12 bg-primary text-[#111718] hover:bg-[#11b5d6] transition-all transform hover:scale-[1.01] shadow-lg shadow-primary/20 text-base font-bold tracking-[0.015em] mt-2 disabled:opacity-70 disabled:cursor-not-allowed"
                 type="submit"
+                disabled={isLoading}
               >
-                Entrar
+                {isLoading ? 'Entrando...' : 'Entrar'}
               </button>
             </form>
           </div>

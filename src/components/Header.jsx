@@ -1,10 +1,12 @@
 import { Link, useLocation, useSearchParams } from 'react-router-dom'
+import { useAuth } from '../auth/AuthContext'
 
 export default function Header() {
   const { pathname } = useLocation()
   const isCatalogPage = pathname === '/catalogo'
   const [searchParams, setSearchParams] = useSearchParams()
   const query = searchParams.get('q') ?? ''
+  const { isAuthenticated, logout, isLoading } = useAuth()
 
   const handleSearchChange = (event) => {
     const value = event.target.value
@@ -58,12 +60,23 @@ export default function Header() {
                 FAQ
               </Link>
             </nav>
-            <Link
-              className="flex items-center justify-center rounded-lg h-10 px-4 bg-primary text-[#111718] text-sm font-bold hover:bg-cyan-400 transition-colors"
-              to="/login"
-            >
-              Iniciar Sesión / Registro
-            </Link>
+            {isAuthenticated ? (
+              <button
+                className="flex items-center justify-center rounded-lg h-10 px-4 bg-primary text-[#111718] text-sm font-bold hover:bg-cyan-400 transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
+                onClick={logout}
+                type="button"
+                disabled={isLoading}
+              >
+                {isLoading ? 'Cerrando...' : 'Cerrar sesión'}
+              </button>
+            ) : (
+              <Link
+                className="flex items-center justify-center rounded-lg h-10 px-4 bg-primary text-[#111718] text-sm font-bold hover:bg-cyan-400 transition-colors"
+                to="/login"
+              >
+                Iniciar Sesión / Registro
+              </Link>
+            )}
           </div>
 
           <button className="md:hidden p-2 text-text-main dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg" type="button">

@@ -8,10 +8,12 @@ export default function HomePage() {
   // Top de excursiones mostrado en la home
   const [treks, setTreks] = useState([])
   const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState('')
 
   useEffect(() => {
     const fetchTreks = async () => {
       try {
+        setError('')
         const response = await fetch(TREKS_ENDPOINT)
         const payload = await response.json()
         const sorted = [...payload.data]
@@ -21,6 +23,7 @@ export default function HomePage() {
         setTreks(sorted)
       } catch (error) {
         console.error('Error al cargar excursiones:', error)
+        setError('No se pudieron cargar las excursiones destacadas.')
       } finally {
         setIsLoading(false)
       }
@@ -32,7 +35,7 @@ export default function HomePage() {
   return (
     <>
       <Hero />
-      <TopTreks treks={treks} isLoading={isLoading} />
+      <TopTreks treks={treks} isLoading={isLoading} error={error} />
     </>
   )
 }
