@@ -8,6 +8,7 @@ import FAQPage from './pages/FAQPage'
 import ContactPage from './pages/ContactPage'
 import LoadingPage from './pages/LoadingPage'
 import RegisterPage from './pages/RegisterPage'
+import TrekDetailsPage from './pages/TrekDetailsPage'
 
 function AppContent() {
   return (
@@ -21,6 +22,7 @@ function AppContent() {
         <Route path="/faq" element={<FAQPage />} />
         <Route path="/login" element={<LoadingPage />} />
         <Route path="/registro" element={<RegisterPage />} />
+        <Route path="/treks/:regNumber" element={<TrekDetailsPage />} />
         <Route path="*" element={<Navigate replace to="/" />} />
       </Routes>
       <Footer />

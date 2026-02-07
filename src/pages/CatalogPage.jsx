@@ -3,26 +3,17 @@ import { useSearchParams } from 'react-router-dom'
 import CatalogFilters from '../components/catalog/CatalogFilters'
 import CatalogToolbar from '../components/catalog/CatalogToolbar'
 import CatalogGrid from '../components/catalog/CatalogGrid'
-import { buildApiUrl } from '../utils/urls'
 
 // Endpoint del backend para recuperar el catálogo completo de excursiones
-const TREKS_ENDPOINT = buildApiUrl('/api/treks')
+const TREKS_ENDPOINT = `${import.meta.env.VITE_API_BASE_URL}/api/treks`
 // Valor centinela para representar "sin filtro de municipio"
 const ALL_MUNICIPALITIES = 'all'
 const PAGE_SIZE = 6
-
-// Leer propiedades anidadas de forma segura
-const getIslandName = (trek) => trek?.municipality?.island?.name ?? ''
-const getMunicipalityName = (trek) => trek?.municipality?.name ?? ''
-const getTrekName = (trek) => trek?.name ?? ''
-// Elimina valores vacíos y duplicados
-const uniqueTruthy = (values) => [...new Set(values.filter(Boolean))]
 
 export default function CatalogPage() {
   // Datos base y estados de la UI
   const [treks, setTreks] = useState([])
   const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState(null)
   // Filtros activos de isla y municipio
   const [selectedIslands, setSelectedIslands] = useState([])
   const [selectedMunicipality, setSelectedMunicipality] = useState(ALL_MUNICIPALITIES)
@@ -38,22 +29,15 @@ export default function CatalogPage() {
     const fetchTreks = async () => {
       try {
         const response = await fetch(TREKS_ENDPOINT)
-        if (!response.ok) {
-          throw new Error(`Error al cargar excursiones (${response.status})`)
-        }
-
         const payload = await response.json()
-        const apiTreks = payload.data ?? []
-        // Por defecto quedan seleccionadas todas las islas disponibles
-        const apiIslands = uniqueTruthy(apiTreks.map(getIslandName))
+        const apiTreks = payload.data
+        const apiIslands = Array.from(new Set(apiTreks.map((trek) => trek.municipality.island.name)))
 
         setTreks(apiTreks)
         setSelectedIslands(apiIslands)
-      } catch {
-        // Mensaje genérico de error para no exponer detalles internos
-        setError('No se pudieron cargar las excursiones. Intenta de nuevo en unos minutos.')
+      } catch (error) {
+        console.error('Error al cargar excursiones:', error)
       } finally {
-        // Finaliza el estado de carga tanto si fue bien como si falló
         setIsLoading(false)
       }
     }
@@ -62,23 +46,25 @@ export default function CatalogPage() {
   }, [])
 
   // Lista total de islas disponibles
-  const islands = uniqueTruthy(treks.map(getIslandName))
+  const islands = Array.from(new Set(treks.map((trek) => trek.municipality.island.name)))
 
   // Set para validación rápida de islas activas
   const islandSet = new Set(selectedIslands)
 
   // Municipios disponibles según las islas activas (sin duplicados)
-  const municipalities = uniqueTruthy(
-    treks
-      .filter((trek) => islandSet.has(getIslandName(trek)))
-      .map(getMunicipalityName),
+  const municipalities = Array.from(
+    new Set(
+      treks
+        .filter((trek) => islandSet.has(trek.municipality.island.name))
+        .map((trek) => trek.municipality.name),
+    ),
   )
 
   // Catálogo de escursiones final tras aplicar filtros de isla, municipio y búsqueda
   const filteredTreks = treks.filter((trek) => {
-    const island = getIslandName(trek)
-    const municipality = getMunicipalityName(trek)
-    const name = getTrekName(trek)
+    const island = trek.municipality.island.name
+    const municipality = trek.municipality.name
+    const name = trek.name
 
     // 1) Filtro por isla
     if (!islandSet.has(island)) return false
@@ -98,9 +84,9 @@ export default function CatalogPage() {
 
   // Orden configurable: por puntuación o por nombre (locale ES)
   if (sortBy === 'score-desc') {
-    sortedTreks.sort((a, b) => (b?.score?.average ?? 0) - (a?.score?.average ?? 0))
+    sortedTreks.sort((a, b) => b.score.average - a.score.average)
   } else {
-    sortedTreks.sort((a, b) => getTrekName(a).localeCompare(getTrekName(b), 'es'))
+    sortedTreks.sort((a, b) => a.name.localeCompare(b.name, 'es'))
   }
 
   const fullPages = Math.floor(sortedTreks.length / PAGE_SIZE)
@@ -157,8 +143,8 @@ export default function CatalogPage() {
         {/* Zona de resultados: barra de orden + grid de tarjetas */}
         <main className="flex-1 flex flex-col gap-6">
           <CatalogToolbar total={sortedTreks.length} sortBy={sortBy} onSortChange={setSortBy} />
-          <CatalogGrid treks={paginatedTreks} isLoading={isLoading} error={error} />
-          {!isLoading && !error && sortedTreks.length > 0 && totalPages > 1 ? (
+          <CatalogGrid treks={paginatedTreks} isLoading={isLoading} />
+          {!isLoading && sortedTreks.length > 0 && totalPages > 1 ? (
             <div className="flex justify-center mt-2">
               <div className="flex items-center gap-2">
                 <button

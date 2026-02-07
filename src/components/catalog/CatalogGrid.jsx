@@ -1,26 +1,10 @@
 import CatalogCard from './CatalogCard'
 
-export default function CatalogGrid({ treks, isLoading, error }) {
+export default function CatalogGrid({ treks, isLoading }) {
   if (isLoading) {
     return (
       <div className="rounded-xl border border-dashed border-gray-300 dark:border-gray-700 p-10 text-center text-text-sub">
         Cargando excursiones...
-      </div>
-    )
-  }
-
-  if (error) {
-    return (
-      <div className="rounded-xl border border-red-200 bg-red-50 text-red-700 dark:border-red-900/50 dark:bg-red-950/60 dark:text-red-200 p-6">
-        {error}
-      </div>
-    )
-  }
-
-  if (treks.length === 0) {
-    return (
-      <div className="rounded-xl border border-dashed border-gray-300 dark:border-gray-700 p-10 text-center text-text-sub">
-        No hay excursiones para esos filtros.
       </div>
     )
   }
