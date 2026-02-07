@@ -1,16 +1,63 @@
-# React + Vite
+# BalearTrek Front
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Frontend de BalearTrek, una plataforma para descubrir rutas de senderismo en las Islas Baleares, consultar detalles de cada trek y gestionar el perfil del usuario.
 
-Currently, two official plugins are available:
+## Funcionalidades
+- Landing con rutas destacadas.
+- Catálogo con filtros por isla, municipio y búsqueda por nombre.
+- Ficha de trek con información detallada, puntos de interés y reuniones.
+- Secciones informativas: FAQ y Contacto.
+- Área de perfil con comentarios (rutas protegidas).
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Stack
+- React + Vite
+- React Router
+- Leaflet + React Leaflet
+- ESLint
 
-## React Compiler
+## Requisitos
+- Node.js (LTS recomendado)
+- npm
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Configuración
+El frontend consume una API externa. Define la base de la API con la variable de entorno:
 
-## Expanding the ESLint configuration
+- `VITE_API_BASE_URL` (ejemplo: `http://localhost:8000`)
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Puedes crear un archivo `.env` en la raíz del proyecto con:
+
+```env
+VITE_API_BASE_URL=http://localhost:8000
+```
+
+## Cómo ejecutar
+
+```bash
+npm install
+npm run dev
+```
+
+## Scripts útiles
+- `npm run dev`: entorno de desarrollo.
+- `npm run build`: build de producción.
+- `npm run preview`: previsualizar el build.
+- `npm run lint`: ejecutar ESLint.
+
+## Estructura principal
+- `src/pages`: páginas de la app (home, catálogo, perfil, etc.).
+- `src/components`: componentes reutilizables.
+- `src/utils`: helpers y utilidades.
+- `src/auth`: contexto de autenticación y rutas protegidas.
+
+## Rutas principales
+- `/`: inicio
+- `/catalogo`: catálogo de treks
+- `/treks/:regNumber`: detalle de trek
+- `/login`: login
+- `/registro`: registro
+- `/perfil`: perfil (protegida)
+- `/perfil/comentarios`: comentarios (protegida)
+
+## Notas
+- Las imágenes de los treks se resuelven contra `VITE_API_BASE_URL` cuando vienen con rutas relativas.
+- Si no hay API configurada, se mostrarán rutas relativas tal como llegan.
