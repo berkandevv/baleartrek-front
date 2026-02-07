@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from '../auth/AuthContext'
+import ProfileSidebar from '../components/ProfileSidebar'
+import { formatMemberSince, getFullName } from '../utils/profileUtils'
 
 const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/+$/, '')
 const buildUrl = (path) => (API_BASE_URL ? `${API_BASE_URL}${path}` : path)
@@ -11,15 +13,6 @@ const emptyForm = {
   dni: '',
   email: '',
   phone: '',
-}
-
-// Formatea el texto de "Miembro desde" con mes y año
-const formatMemberSince = (createdAt) => {
-  if (!createdAt) return null
-  const date = new Date(createdAt)
-  if (Number.isNaN(date.getTime())) return null
-  const formatted = date.toLocaleDateString('es-ES', { year: 'numeric', month: 'long' })
-  return formatted ? `${formatted.charAt(0).toUpperCase()}${formatted.slice(1)}` : formatted
 }
 
 export default function ProfilePage() {
@@ -35,7 +28,11 @@ export default function ProfilePage() {
   const [fieldErrors, setFieldErrors] = useState({ email: '', dni: '' })
 
   const memberSince = formatMemberSince(user?.created_at)
-  const fullName = user ? [user.name, user.lastname].filter(Boolean).join(' ') : ''
+  const fullName = getFullName(user)
+  const completedMeetingsCount = user?.meetings?.length ?? 0
+  const meetings = user?.meetings ?? []
+  const commentedMeetingsCount = meetings.filter((meeting) => (meeting?.comments ?? []).length > 0)
+    .length
 
   // Carga los datos del perfil al montar la pagina
   useEffect(() => {
@@ -165,36 +162,7 @@ export default function ProfilePage() {
   return (
     <div className="flex-1 w-full max-w-[1280px] mx-auto px-4 sm:px-10 py-8">
       <div className="flex flex-col lg:flex-row gap-8">
-        <aside className="hidden lg:flex flex-col w-64 shrink-0 gap-8">
-          <div className="flex flex-col gap-6 bg-white dark:bg-white/5 p-6 rounded-xl border border-[#f0f4f4] dark:border-white/10">
-            <div className="flex flex-col gap-3">
-              <div className="flex flex-col">
-                <h1 className="text-text-main dark:text-white text-lg font-bold leading-normal">
-                  {fullName || 'Perfil'}
-                </h1>
-                <p className="text-text-sub text-sm font-normal leading-normal">
-                  {memberSince ? `Miembro desde ${memberSince}` : 'Cuenta de BalearTrek'}
-                </p>
-              </div>
-            </div>
-            <nav className="flex flex-col gap-1">
-              <button
-                type="button"
-                className="flex items-center gap-3 px-3 py-2 rounded-lg bg-primary/10 text-primary border border-primary/20"
-              >
-                <span className="material-symbols-outlined">person</span>
-                <span className="text-sm font-semibold leading-normal">Mis Datos</span>
-              </button>
-              <button
-                type="button"
-                className="flex items-center gap-3 px-3 py-2 rounded-lg text-text-sub hover:bg-[#f0f4f4] dark:hover:bg-white/5 transition-colors"
-              >
-                <span className="material-symbols-outlined">explore</span>
-                <span className="text-sm font-medium leading-normal">Mis Encuentros</span>
-              </button>
-            </nav>
-          </div>
-        </aside>
+        <ProfileSidebar fullName={fullName} memberSince={memberSince} />
 
         <main className="flex-1 flex flex-col gap-8 max-w-4xl">
           <div className="flex flex-col gap-2">
@@ -337,18 +305,29 @@ export default function ProfilePage() {
             <h2 className="text-text-main dark:text-white text-[22px] font-bold leading-tight tracking-[-0.015em] px-1">
               Resumen de Actividad
             </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
               <div className="bg-white dark:bg-white/5 p-6 rounded-xl border border-[#f0f4f4] dark:border-white/10 flex items-center gap-4">
                 <div className="size-12 rounded-full bg-primary/20 flex items-center justify-center text-primary">
                   <span className="material-symbols-outlined">hiking</span>
                 </div>
                 <div className="flex flex-col">
-                  <p className="text-2xl font-black text-text-main dark:text-white">0</p>
+                  <p className="text-2xl font-black text-text-main dark:text-white">{completedMeetingsCount}</p>
                   <p className="text-sm text-text-sub font-medium">Rutas Completadas</p>
                 </div>
               </div>
               <div className="bg-white dark:bg-white/5 p-6 rounded-xl border border-[#f0f4f4] dark:border-white/10 flex items-center gap-4">
                 <div className="size-12 rounded-full bg-orange-100 dark:bg-orange-500/20 flex items-center justify-center text-orange-500">
+                  <span className="material-symbols-outlined">star</span>
+                </div>
+                <div className="flex flex-col">
+                  <p className="text-2xl font-black text-[#111718] dark:text-white">
+                    {commentedMeetingsCount}
+                  </p>
+                  <p className="text-sm text-[#618389] font-medium">Valoraciones</p>
+                </div>
+              </div>
+              <div className="bg-white dark:bg-white/5 p-6 rounded-xl border border-[#f0f4f4] dark:border-white/10 flex items-center gap-4">
+                <div className="size-12 rounded-full bg-emerald-100 dark:bg-emerald-500/20 flex items-center justify-center text-emerald-600 dark:text-emerald-300">
                   <span className="material-symbols-outlined">event_available</span>
                 </div>
                 <div className="flex flex-col">

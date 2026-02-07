@@ -1,31 +1,10 @@
+import Stars from '../Stars'
 import { formatDate, getFullName, sortComments } from '../../utils/trekDetailsUtils'
 
 const STAR_COUNT = 5
 const clampRating = (score) => Math.max(0, Math.min(STAR_COUNT, Math.floor(Number(score) || 0)))
 const formatMeetingDate = (meetingDay) =>
   formatDate(new Date(meetingDay), { dateStyle: 'short' })
-
-const Stars = ({ rating, id }) => {
-  const items = []
-  for (let index = 0; index < STAR_COUNT; index += 1) {
-    const isFilled = index < rating
-    items.push(
-      <span
-        className={`text-[16px] leading-none ${isFilled ? 'text-yellow-500' : 'text-gray-300 dark:text-gray-600'}`}
-        key={`${id}-star-${index}`}
-        aria-hidden="true"
-      >
-        {isFilled ? '★' : '☆'}
-      </span>
-    )
-  }
-
-  return (
-    <div className="flex" aria-label={`Valoración ${rating} de ${STAR_COUNT}`}>
-      {items}
-    </div>
-  )
-}
 
 export default function TrekDetailsComments({ comments, sortKey, onSortChange }) {
   const sortedComments = sortComments(comments, sortKey)
@@ -79,7 +58,7 @@ export default function TrekDetailsComments({ comments, sortKey, onSortChange })
                       <p className="text-xs text-[#618389]">Encuentro del {commentDate}</p>
                     </div>
                   </div>
-                  <Stars id={`comment-${comment.id}`} rating={rating} />
+                  <Stars id={`comment-${comment.id}`} rating={rating} max={STAR_COUNT} />
                 </div>
                 <p className="text-[#618389] dark:text-gray-300 text-sm leading-relaxed">{comment.comment}</p>
               </div>

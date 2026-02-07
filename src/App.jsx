@@ -10,6 +10,7 @@ import LoadingPage from './pages/LoadingPage'
 import RegisterPage from './pages/RegisterPage'
 import TrekDetailsPage from './pages/TrekDetailsPage'
 import ProfilePage from './pages/ProfilePage'
+import ProfileCommentsPage from './pages/ProfileCommentsPage'
 import { AuthProvider } from './auth/AuthContext'
 import ProtectedRoute from './auth/ProtectedRoute'
 
@@ -31,6 +32,14 @@ function AppContent() {
           element={
             <ProtectedRoute>
               <ProfilePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/perfil/comentarios"
+          element={
+            <ProtectedRoute>
+              <ProfileCommentsPage />
             </ProtectedRoute>
           }
         />
