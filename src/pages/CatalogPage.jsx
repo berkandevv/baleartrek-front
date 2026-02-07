@@ -10,6 +10,16 @@ const TREKS_ENDPOINT = `${import.meta.env.VITE_API_BASE_URL}/api/treks`
 const ALL_MUNICIPALITIES = 'all'
 const PAGE_SIZE = 6
 
+const uniqueStrings = (items) => {
+  const unique = []
+  for (const item of items) {
+    if (!unique.includes(item)) {
+      unique.push(item)
+    }
+  }
+  return unique
+}
+
 export default function CatalogPage() {
   // Datos base y estados de la UI
   const [treks, setTreks] = useState([])
@@ -33,7 +43,8 @@ export default function CatalogPage() {
         const response = await fetch(TREKS_ENDPOINT)
         const payload = await response.json()
         const apiTreks = payload.data
-        const apiIslands = Array.from(new Set(apiTreks.map((trek) => trek.municipality.island.name)))
+        const apiIslandNames = apiTreks.map((trek) => trek.municipality.island.name)
+        const apiIslands = uniqueStrings(apiIslandNames)
 
         setTreks(apiTreks)
         setSelectedIslands(apiIslands)
@@ -49,19 +60,17 @@ export default function CatalogPage() {
   }, [])
 
   // Lista total de islas disponibles
-  const islands = Array.from(new Set(treks.map((trek) => trek.municipality.island.name)))
+  const islandNames = treks.map((trek) => trek.municipality.island.name)
+  const islands = uniqueStrings(islandNames)
 
   // Set para validación rápida de islas activas
   const islandSet = new Set(selectedIslands)
 
   // Municipios disponibles según las islas activas (sin duplicados)
-  const municipalities = Array.from(
-    new Set(
-      treks
-        .filter((trek) => islandSet.has(trek.municipality.island.name))
-        .map((trek) => trek.municipality.name),
-    ),
-  )
+  const municipalityNames = treks
+    .filter((trek) => islandSet.has(trek.municipality.island.name))
+    .map((trek) => trek.municipality.name)
+  const municipalities = uniqueStrings(municipalityNames)
 
   // Catálogo de escursiones final tras aplicar filtros de isla, municipio y búsqueda
   const filteredTreks = treks.filter((trek) => {
