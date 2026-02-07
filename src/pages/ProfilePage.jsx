@@ -1,0 +1,367 @@
+import { useEffect, useState } from 'react'
+import { useAuth } from '../auth/AuthContext'
+
+const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/+$/, '')
+const buildUrl = (path) => (API_BASE_URL ? `${API_BASE_URL}${path}` : path)
+
+// Estado inicial del formulario de perfil
+const emptyForm = {
+  name: '',
+  lastname: '',
+  dni: '',
+  email: '',
+  phone: '',
+}
+
+// Formatea el texto de "Miembro desde" con mes y año
+const formatMemberSince = (createdAt) => {
+  if (!createdAt) return null
+  const date = new Date(createdAt)
+  if (Number.isNaN(date.getTime())) return null
+  const formatted = date.toLocaleDateString('es-ES', { year: 'numeric', month: 'long' })
+  return formatted ? `${formatted.charAt(0).toUpperCase()}${formatted.slice(1)}` : formatted
+}
+
+export default function ProfilePage() {
+  // Datos de autenticacion para proteger el acceso al perfil
+  const { token, isAuthenticated } = useAuth()
+  // Estado local del formulario y mensajes de la UI
+  const [form, setForm] = useState(emptyForm)
+  const [user, setUser] = useState(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [isSaving, setIsSaving] = useState(false)
+  const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
+  const [fieldErrors, setFieldErrors] = useState({ email: '', dni: '' })
+
+  const memberSince = formatMemberSince(user?.created_at)
+  const fullName = user ? [user.name, user.lastname].filter(Boolean).join(' ') : ''
+
+  // Carga los datos del perfil al montar la pagina
+  useEffect(() => {
+    if (!token) {
+      setIsLoading(false)
+      return
+    }
+
+    const fetchProfile = async () => {
+      setIsLoading(true)
+      setError('')
+      setSuccess('')
+
+      try {
+        const response = await fetch(buildUrl('/api/user'), {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: 'application/json',
+          },
+        })
+        const payload = await response.json()
+        if (!response.ok) {
+          throw new Error(payload?.message || 'No se pudo cargar el perfil')
+        }
+        const data = payload?.data ?? null
+        setUser(data)
+        setForm({
+          name: data?.name ?? '',
+          lastname: data?.lastname ?? '',
+          dni: data?.dni ?? '',
+          email: data?.email ?? '',
+          phone: data?.phone ?? '',
+        })
+      } catch (fetchError) {
+        console.error('Error al cargar perfil:', fetchError)
+        setError(fetchError?.message || 'No se pudo cargar el perfil')
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchProfile()
+  }, [token])
+
+  // Actualiza el estado del formulario y limpia errores de campo
+  const handleChange = (event) => {
+    const { name, value } = event.target
+    setForm((prev) => ({ ...prev, [name]: value }))
+    if (name === 'email' || name === 'dni') {
+      setFieldErrors((prev) => ({ ...prev, [name]: '' }))
+    }
+  }
+
+  // Valida y guarda los cambios del perfil
+  const handleSubmit = async (event) => {
+    event.preventDefault()
+    if (!token) return
+
+    setIsSaving(true)
+    setError('')
+    setSuccess('')
+    setFieldErrors({ email: '', dni: '' })
+
+    const trimmedEmail = form.email.trim()
+    const trimmedDni = form.dni.trim().toUpperCase()
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    const dniNieRegex = /^(\d{8}[A-Z]|[XYZ]\d{7}[A-Z])$/
+
+    const nextFieldErrors = { email: '', dni: '' }
+    if (!emailRegex.test(trimmedEmail)) {
+      nextFieldErrors.email = 'Introduce un correo electrónico válido'
+    }
+    if (!dniNieRegex.test(trimmedDni)) {
+      nextFieldErrors.dni = 'Introduce un DNI o NIE válido'
+    }
+    if (nextFieldErrors.email || nextFieldErrors.dni) {
+      setFieldErrors(nextFieldErrors)
+      setIsSaving(false)
+      return
+    }
+
+    try {
+      const response = await fetch(buildUrl('/api/user'), {
+        method: 'PUT',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify({
+          name: form.name,
+          lastname: form.lastname,
+          dni: trimmedDni,
+          email: trimmedEmail,
+          phone: form.phone,
+        }),
+      })
+      const payload = await response.json()
+      if (!response.ok) {
+        throw new Error(payload?.message || 'No se pudo guardar el perfil')
+      }
+      const data = payload?.data ?? null
+      if (data) {
+        setUser(data)
+        setForm({
+          name: data?.name ?? '',
+          lastname: data?.lastname ?? '',
+          dni: data?.dni ?? '',
+          email: data?.email ?? '',
+          phone: data?.phone ?? '',
+        })
+      }
+      setForm((prev) => ({
+        ...prev,
+        dni: trimmedDni,
+        email: trimmedEmail,
+      }))
+      setSuccess('Datos guardados correctamente')
+    } catch (saveError) {
+      console.error('Error al guardar perfil:', saveError)
+      setError(saveError?.message || 'No se pudo guardar el perfil')
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
+  return (
+    <div className="flex-1 w-full max-w-[1280px] mx-auto px-4 sm:px-10 py-8">
+      <div className="flex flex-col lg:flex-row gap-8">
+        <aside className="hidden lg:flex flex-col w-64 shrink-0 gap-8">
+          <div className="flex flex-col gap-6 bg-white dark:bg-white/5 p-6 rounded-xl border border-[#f0f4f4] dark:border-white/10">
+            <div className="flex flex-col gap-3">
+              <div className="flex flex-col">
+                <h1 className="text-text-main dark:text-white text-lg font-bold leading-normal">
+                  {fullName || 'Perfil'}
+                </h1>
+                <p className="text-text-sub text-sm font-normal leading-normal">
+                  {memberSince ? `Miembro desde ${memberSince}` : 'Cuenta de BalearTrek'}
+                </p>
+              </div>
+            </div>
+            <nav className="flex flex-col gap-1">
+              <button
+                type="button"
+                className="flex items-center gap-3 px-3 py-2 rounded-lg bg-primary/10 text-primary border border-primary/20"
+              >
+                <span className="material-symbols-outlined">person</span>
+                <span className="text-sm font-semibold leading-normal">Mis Datos</span>
+              </button>
+              <button
+                type="button"
+                className="flex items-center gap-3 px-3 py-2 rounded-lg text-text-sub hover:bg-[#f0f4f4] dark:hover:bg-white/5 transition-colors"
+              >
+                <span className="material-symbols-outlined">explore</span>
+                <span className="text-sm font-medium leading-normal">Mis Encuentros</span>
+              </button>
+            </nav>
+          </div>
+        </aside>
+
+        <main className="flex-1 flex flex-col gap-8 max-w-4xl">
+          <div className="flex flex-col gap-2">
+            <h1 className="text-text-main dark:text-white text-4xl font-black leading-tight tracking-[-0.033em]">
+              Mi Perfil
+            </h1>
+            <p className="text-text-sub text-base font-normal leading-normal">
+              Gestiona tus datos personales y revisa tu actividad en BalearTrek.
+            </p>
+          </div>
+
+          <div className="bg-white dark:bg-white/5 rounded-xl border border-[#f0f4f4] dark:border-white/10 overflow-hidden shadow-sm">
+            <div className="p-6 sm:p-8 flex flex-col gap-8">
+              <div className="flex items-center justify-between flex-wrap gap-4">
+                <div className="flex items-center gap-6">
+                  <div className="flex flex-col">
+                    <p className="text-text-main dark:text-white text-xl font-bold leading-tight">
+                      {fullName || 'Tu perfil'}
+                    </p>
+                    <p className="text-text-sub text-sm font-normal">Datos personales y de contacto</p>
+                  </div>
+                </div>
+              </div>
+              <hr className="border-[#f0f4f4] dark:border-white/10" />
+
+              {!isAuthenticated ? (
+                <div className="rounded-lg border border-[#f0f4f4] dark:border-white/10 bg-[#f6f8f8] dark:bg-white/5 px-4 py-3 text-sm text-text-sub">
+                  Inicia sesión para ver y editar tu perfil.
+                </div>
+              ) : isLoading ? (
+                <div className="rounded-lg border border-[#f0f4f4] dark:border-white/10 bg-[#f6f8f8] dark:bg-white/5 px-4 py-3 text-sm text-text-sub">
+                  Cargando datos del perfil...
+                </div>
+              ) : (
+                <div>
+                  <h2 className="text-text-main dark:text-white text-lg font-bold mb-6">
+                    Mis Datos Personales
+                  </h2>
+
+                  {error ? (
+                    <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                      {error}
+                    </div>
+                  ) : null}
+
+                  {success ? (
+                    <div className="mb-4 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+                      {success}
+                    </div>
+                  ) : null}
+
+                  <form className="grid grid-cols-1 md:grid-cols-2 gap-6" onSubmit={handleSubmit}>
+                    <div className="flex flex-col gap-2">
+                      <label className="text-sm font-bold text-text-main dark:text-white" htmlFor="name">
+                        Nombre
+                      </label>
+                      <input
+                        id="name"
+                        name="name"
+                        className="rounded-lg border-[#f0f4f4] dark:border-white/10 bg-transparent focus:ring-primary focus:border-primary px-4 py-2.5 dark:text-white"
+                        type="text"
+                        value={form.name}
+                        onChange={handleChange}
+                      />
+                    </div>
+                    <div className="flex flex-col gap-2">
+                      <label className="text-sm font-bold text-text-main dark:text-white" htmlFor="lastname">
+                        Apellidos
+                      </label>
+                      <input
+                        id="lastname"
+                        name="lastname"
+                        className="rounded-lg border-[#f0f4f4] dark:border-white/10 bg-transparent focus:ring-primary focus:border-primary px-4 py-2.5 dark:text-white"
+                        type="text"
+                        value={form.lastname}
+                        onChange={handleChange}
+                      />
+                    </div>
+                    <div className="flex flex-col gap-2">
+                      <label className="text-sm font-bold text-text-main dark:text-white" htmlFor="dni">
+                        DNI / NIE
+                      </label>
+                      <input
+                        id="dni"
+                        name="dni"
+                        className="rounded-lg border-[#f0f4f4] dark:border-white/10 bg-transparent focus:ring-primary focus:border-primary px-4 py-2.5 dark:text-white"
+                        type="text"
+                        value={form.dni}
+                        onChange={handleChange}
+                      />
+                      {fieldErrors.dni ? (
+                        <span className="text-xs text-rose-600 dark:text-rose-300">{fieldErrors.dni}</span>
+                      ) : null}
+                    </div>
+                    <div className="flex flex-col gap-2">
+                      <label className="text-sm font-bold text-text-main dark:text-white" htmlFor="phone">
+                        Teléfono de Contacto
+                      </label>
+                      <input
+                        id="phone"
+                        name="phone"
+                        className="rounded-lg border-[#f0f4f4] dark:border-white/10 bg-transparent focus:ring-primary focus:border-primary px-4 py-2.5 dark:text-white"
+                        type="tel"
+                        value={form.phone}
+                        onChange={handleChange}
+                      />
+                    </div>
+                    <div className="flex flex-col gap-2 md:col-span-2">
+                      <label className="text-sm font-bold text-text-main dark:text-white" htmlFor="email">
+                        Correo Electrónico
+                      </label>
+                      <input
+                        id="email"
+                        name="email"
+                        className="rounded-lg border-[#f0f4f4] dark:border-white/10 bg-transparent focus:ring-primary focus:border-primary px-4 py-2.5 dark:text-white"
+                        type="email"
+                        value={form.email}
+                        onChange={handleChange}
+                      />
+                      {fieldErrors.email ? (
+                        <span className="text-xs text-rose-600 dark:text-rose-300">{fieldErrors.email}</span>
+                      ) : null}
+                    </div>
+                    <div className="md:col-span-2 flex justify-end mt-4">
+                      <button
+                        className="bg-primary hover:bg-primary/90 text-white px-8 py-3 rounded-lg font-bold text-sm shadow-md transition-all active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed"
+                        type="submit"
+                        disabled={isSaving}
+                      >
+                        {isSaving ? 'Guardando...' : 'Guardar Cambios'}
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-4">
+            <h2 className="text-text-main dark:text-white text-[22px] font-bold leading-tight tracking-[-0.015em] px-1">
+              Resumen de Actividad
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="bg-white dark:bg-white/5 p-6 rounded-xl border border-[#f0f4f4] dark:border-white/10 flex items-center gap-4">
+                <div className="size-12 rounded-full bg-primary/20 flex items-center justify-center text-primary">
+                  <span className="material-symbols-outlined">hiking</span>
+                </div>
+                <div className="flex flex-col">
+                  <p className="text-2xl font-black text-text-main dark:text-white">0</p>
+                  <p className="text-sm text-text-sub font-medium">Rutas Completadas</p>
+                </div>
+              </div>
+              <div className="bg-white dark:bg-white/5 p-6 rounded-xl border border-[#f0f4f4] dark:border-white/10 flex items-center gap-4">
+                <div className="size-12 rounded-full bg-orange-100 dark:bg-orange-500/20 flex items-center justify-center text-orange-500">
+                  <span className="material-symbols-outlined">event_available</span>
+                </div>
+                <div className="flex flex-col">
+                  <p className="text-2xl font-black text-text-main dark:text-white">0</p>
+                  <p className="text-sm text-text-sub font-medium">Próximos Encuentros</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="h-10" />
+        </main>
+      </div>
+    </div>
+  )
+}

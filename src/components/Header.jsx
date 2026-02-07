@@ -7,7 +7,7 @@ export default function Header() {
   const isCatalogPage = pathname === '/catalogo'
   const [searchParams, setSearchParams] = useSearchParams()
   const query = searchParams.get('q') ?? ''
-  const { isAuthenticated, logout, isLoading } = useAuth()
+  const { isAuthenticated, logout, isLoading, user } = useAuth()
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false)
 
   const handleSearchChange = (event) => {
@@ -84,7 +84,7 @@ export default function Header() {
                   </div>
                   <div className="flex items-center gap-1">
                     <span className="text-sm font-bold text-text-main uppercase tracking-tight">
-                      Mi cuenta
+                      {user?.name ? user.name : 'Mi cuenta'}
                     </span>
                     <span className="material-symbols-outlined text-[20px] text-text-main/70 group-hover:text-text-main transition-colors">
                       expand_more
@@ -96,18 +96,19 @@ export default function Header() {
                   <div
                     id="profile-menu"
                     role="menu"
-                    className="absolute left-0 mt-2 w-full min-w-[200px] rounded-xl border border-[#dbe4e6] dark:border-gray-700 bg-white dark:bg-card-dark shadow-lg p-2 flex flex-col gap-2"
+                    className="absolute left-0 mt-2 w-full min-w-[200px] rounded-xl border border-primary/40 dark:border-primary/50 bg-white dark:bg-card-dark shadow-lg shadow-[0_12px_28px_-20px_rgba(34,193,231,0.9)] p-2 flex flex-col gap-2"
                   >
-                    <button
+                    <Link
                       className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-semibold bg-primary text-[#111718] hover:bg-cyan-400 transition-colors"
-                      type="button"
+                      to="/perfil"
                       role="menuitem"
+                      onClick={() => setIsProfileMenuOpen(false)}
                     >
                       <span className="material-symbols-outlined text-[18px] text-[#111718]/70">
                         account_circle
                       </span>
                       Mi perfil
-                    </button>
+                    </Link>
                     <button
                       className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-semibold bg-primary text-[#111718] hover:bg-cyan-400 transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
                       onClick={logout}

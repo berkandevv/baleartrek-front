@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from 'react'
+import { createContext, useContext, useEffect, useState } from 'react'
 const STORAGE_KEY = 'auth_token'
 
 const getToken = () => {
@@ -28,6 +28,7 @@ const buildUrl = (path) => (API_BASE_URL ? `${API_BASE_URL}${path}` : path)
 export function AuthProvider({ children }) {
   const [token, setTokenState] = useState(() => getToken())
   const [isLoading, setIsLoading] = useState(false)
+  const [user, setUser] = useState(null)
 
   // Sincroniza token en memoria y sessionStorage
   const setSessionToken = (nextToken) => {
@@ -35,6 +36,42 @@ export function AuthProvider({ children }) {
     else clearToken()
     setTokenState(nextToken ?? null)
   }
+
+  // Carga datos del usuario cuando hay token disponible
+  useEffect(() => {
+    if (!token) {
+      setUser(null)
+      return
+    }
+
+    let isActive = true
+    const fetchUser = async () => {
+      try {
+        const response = await fetch(buildUrl('/api/user'), {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: 'application/json',
+          },
+        })
+        const payload = await response.json()
+        if (!response.ok) throw new Error('No se pudo cargar el usuario')
+        if (isActive) {
+          setUser(payload?.data ?? null)
+        }
+      } catch (error) {
+        console.error('Error al cargar usuario:', error)
+        if (isActive) {
+          setUser(null)
+        }
+      }
+    }
+
+    fetchUser()
+
+    return () => {
+      isActive = false
+    }
+  }, [token])
 
   // Ejecuta login y guarda token
   const login = async (credentials) => {
@@ -104,6 +141,7 @@ export function AuthProvider({ children }) {
       })
     } finally {
       setSessionToken(null)
+      setUser(null)
       setIsLoading(false)
       if (typeof window !== 'undefined') {
         window.location.assign('/')
@@ -115,6 +153,7 @@ export function AuthProvider({ children }) {
   const value = {
     token,
     isAuthenticated: Boolean(token),
+    user,
     isLoading,
     login,
     register,
