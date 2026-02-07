@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Link, useLocation, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../auth/AuthContext'
 
@@ -7,6 +8,7 @@ export default function Header() {
   const [searchParams, setSearchParams] = useSearchParams()
   const query = searchParams.get('q') ?? ''
   const { isAuthenticated, logout, isLoading } = useAuth()
+  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false)
 
   const handleSearchChange = (event) => {
     const value = event.target.value
@@ -61,14 +63,66 @@ export default function Header() {
               </Link>
             </nav>
             {isAuthenticated ? (
-              <button
-                className="flex items-center justify-center rounded-lg h-10 px-4 bg-primary text-[#111718] text-sm font-bold hover:bg-cyan-400 transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
-                onClick={logout}
-                type="button"
-                disabled={isLoading}
+              <div
+                className="relative"
+                onBlur={(event) => {
+                  if (!event.currentTarget.contains(event.relatedTarget)) {
+                    setIsProfileMenuOpen(false)
+                  }
+                }}
               >
-                {isLoading ? 'Cerrando...' : 'Cerrar sesión'}
-              </button>
+                <button
+                  className="flex items-center gap-3 pl-2 pr-3 py-1.5 h-10 rounded-lg bg-primary text-[#111718] hover:bg-cyan-400 transition-all group"
+                  type="button"
+                  aria-haspopup="menu"
+                  aria-expanded={isProfileMenuOpen}
+                  aria-controls="profile-menu"
+                  onClick={() => setIsProfileMenuOpen((prev) => !prev)}
+                >
+                  <div className="size-8 rounded-full border border-primary/20 bg-white/80 flex items-center justify-center">
+                    <span className="material-symbols-outlined text-[18px] text-text-main">person</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <span className="text-sm font-bold text-text-main uppercase tracking-tight">
+                      Mi cuenta
+                    </span>
+                    <span className="material-symbols-outlined text-[20px] text-text-main/70 group-hover:text-text-main transition-colors">
+                      expand_more
+                    </span>
+                  </div>
+                </button>
+
+                {isProfileMenuOpen ? (
+                  <div
+                    id="profile-menu"
+                    role="menu"
+                    className="absolute left-0 mt-2 w-full min-w-[200px] rounded-xl border border-[#dbe4e6] dark:border-gray-700 bg-white dark:bg-card-dark shadow-lg p-2 flex flex-col gap-2"
+                  >
+                    <button
+                      className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-semibold bg-primary text-[#111718] hover:bg-cyan-400 transition-colors"
+                      type="button"
+                      role="menuitem"
+                    >
+                      <span className="material-symbols-outlined text-[18px] text-[#111718]/70">
+                        account_circle
+                      </span>
+                      Mi perfil
+                    </button>
+                    <button
+                      className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-semibold bg-primary text-[#111718] hover:bg-cyan-400 transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
+                      onClick={logout}
+                      type="button"
+                      disabled={isLoading}
+                      role="menuitem"
+                    >
+                      <span className="material-symbols-outlined text-[18px] text-[#111718]/70">
+                        logout
+                      </span>
+                      {isLoading ? 'Cerrando...' : 'Cerrar sesión'}
+                    </button>
+                  </div>
+                ) : null}
+              </div>
             ) : (
               <Link
                 className="flex items-center justify-center rounded-lg h-10 px-4 bg-primary text-[#111718] text-sm font-bold hover:bg-cyan-400 transition-colors"
