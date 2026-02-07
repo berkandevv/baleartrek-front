@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import fondo from "../img/fondo.png"
+import fondo from "../assets/fondo.png"
 
 export default function Hero() {
   return (
