@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
+import { Icon } from 'leaflet'
+import { MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet'
 import {
   formatFullName,
   formatMeetingDateParts,
@@ -7,9 +9,37 @@ import {
   isMeetingActive,
 } from '../utils/trekDetailsViewUtils'
 import { resolveImageUrl } from '../utils/urls'
+import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png'
+import markerIcon from 'leaflet/dist/images/marker-icon.png'
+import markerShadow from 'leaflet/dist/images/marker-shadow.png'
 
 const buildTrekEndpoint = (regNumber) =>
   `http://localhost:8000/api/treks/${encodeURIComponent(regNumber)}`
+
+const FitMapToMarkers = ({ markers, onReady }) => {
+  const map = useMap()
+
+  useEffect(() => {
+    if (onReady) {
+      onReady(map)
+    }
+    if (!markers.length) return
+    const bounds = markers.map((marker) => [marker.lat, marker.lng])
+    map.fitBounds(bounds, { padding: [32, 32] })
+  }, [map, markers, onReady])
+
+  useEffect(() => {
+    const handleResize = () => map.invalidateSize()
+    const timer = setTimeout(() => map.invalidateSize(), 0)
+    window.addEventListener('resize', handleResize)
+    return () => {
+      clearTimeout(timer)
+      window.removeEventListener('resize', handleResize)
+    }
+  }, [map])
+
+  return null
+}
 
 export default function TrekDetailsPage() {
   const { regNumber } = useParams()
@@ -19,9 +49,26 @@ export default function TrekDetailsPage() {
   const [visibleComments, setVisibleComments] = useState(4)
   const carouselRef = useRef(null)
   const dragState = useRef({ isDragging: false, startX: 0, scrollLeft: 0 })
+  const mapRef = useRef(null)
+  const markerRefs = useRef({})
 
   const meetings = trek?.meetings ?? []
   const places = trek?.interesting_places ?? []
+  const mapMarkers = places
+    .map((place) => {
+      const [latRaw, lngRaw] = place.gps.split(',').map((value) => value.trim())
+      const lat = Number(latRaw)
+      const lng = Number(lngRaw)
+      if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null
+      return { ...place, lat, lng }
+    })
+    .filter(Boolean)
+  const mapCenter = mapMarkers.length
+    ? [
+        mapMarkers.reduce((sum, place) => sum + place.lat, 0) / mapMarkers.length,
+        mapMarkers.reduce((sum, place) => sum + place.lng, 0) / mapMarkers.length,
+      ]
+    : [39.6, 2.9]
   const sortedMeetings = [...meetings].sort((a, b) => {
     const dateA = new Date(`${a.day}T${a.hour}`).getTime()
     const dateB = new Date(`${b.day}T${b.hour}`).getTime()
@@ -90,6 +137,15 @@ export default function TrekDetailsPage() {
   ]
 
   const nowMadrid = getMadridNow()
+  const defaultIcon = new Icon({
+    iconUrl: markerIcon,
+    iconRetinaUrl: markerIcon2x,
+    shadowUrl: markerShadow,
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowSize: [41, 41],
+  })
   const scrollCarouselBy = (offset) => {
     if (!carouselRef.current) return
     carouselRef.current.scrollBy({ left: offset, behavior: 'smooth' })
@@ -118,6 +174,19 @@ export default function TrekDetailsPage() {
     container.releasePointerCapture(event.pointerId)
     container.classList.remove('carousel-dragging')
     dragState.current.isDragging = false
+  }
+
+  const focusPlaceOnMap = (place) => {
+    if (!mapRef.current) return
+    mapRef.current.setView([place.lat, place.lng], 12, { animate: true })
+    const marker = markerRefs.current[place.id]
+    if (marker) {
+      marker.openPopup()
+    }
+  }
+
+  const handleMapReady = (mapInstance) => {
+    mapRef.current = mapInstance
   }
 
   return (
@@ -345,19 +414,46 @@ export default function TrekDetailsPage() {
               Explora los puntos estratégicos que definen la esencia de la ruta, desde cumbres míticas hasta calas escondidas.
             </p>
             <div className="relative w-full aspect-[4/3] rounded-[1.75rem] bg-gray-100 dark:bg-[#1a2c30] overflow-hidden shadow-xl border-2 border-white dark:border-[#2a3c40]">
-              <div className="absolute inset-0 flex items-center justify-center text-text-muted italic">
-                <div className="text-center">
-                  <span className="material-symbols-outlined text-6xl mb-4 block">map</span>
-                  <p className="text-sm font-black uppercase tracking-widest">Mapa Interactivo</p>
-                </div>
-              </div>
+              <MapContainer
+                center={mapCenter}
+                zoom={12}
+                scrollWheelZoom={false}
+                className="absolute inset-0 h-full w-full"
+                ref={mapRef}
+              >
+                <FitMapToMarkers markers={mapMarkers} onReady={handleMapReady} />
+                <TileLayer
+                  attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                />
+                {mapMarkers.map((place) => (
+                  <Marker
+                    key={place.id}
+                    position={[place.lat, place.lng]}
+                    icon={defaultIcon}
+                    ref={(marker) => {
+                      if (marker) {
+                        markerRefs.current[place.id] = marker
+                      }
+                    }}
+                  >
+                    <Popup autoPan={false}>
+                      <div className="text-sm font-semibold">{place.name}</div>
+                      <div className="text-xs text-gray-500">{place.place_type.name}</div>
+                    </Popup>
+                  </Marker>
+                ))}
+              </MapContainer>
             </div>
           </div>
           <div className="lg:col-span-7 space-y-7">
-            {places.map((place) => (
-              <div
-                className="group flex gap-6 p-6 bg-white dark:bg-[#1a2c30] rounded-[2rem] editorial-shadow border border-transparent hover:border-primary/20 transition-all"
+            {mapMarkers.map((place) => (
+              <button
+                className="group flex gap-6 p-6 bg-white dark:bg-[#1a2c30] rounded-[2rem] editorial-shadow border border-transparent hover:border-primary/20 transition-all text-left w-full"
                 key={place.id}
+                type="button"
+                onClick={() => focusPlaceOnMap(place)}
+                aria-label={`Enfocar ${place.name} en el mapa`}
               >
                 <div className="flex-none size-14 rounded-2xl bg-[#101f22] text-white flex items-center justify-center font-black text-xl group-hover:bg-primary group-hover:text-corporate-blue transition-colors">
                   {String(place.order).padStart(2, '0')}
@@ -377,14 +473,14 @@ export default function TrekDetailsPage() {
                     {place.gps}
                   </div>
                 </div>
-              </div>
+              </button>
             ))}
           </div>
         </section>
 
         <section className="max-w-7xl mx-auto px-4 md:px-10 lg:px-20">
           <div className="bg-background-light dark:bg-[#1a2c30] rounded-[2.5rem] p-10 md:p-14 editorial-shadow relative overflow-hidden">
-            <div className="absolute top-0 right-0 p-8 text-primary/5">
+            <div className="absolute top-0 right-0 p-8 text-primary/15">
               <span className="material-symbols-outlined text-[9rem] leading-none">forum</span>
             </div>
             <div className="relative z-10">
