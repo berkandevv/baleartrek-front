@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { Icon } from 'leaflet'
 import { MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet'
+import { useAuth } from '../auth/AuthContext'
 import {
   formatFullName,
   formatMeetingDateParts,
@@ -13,8 +14,10 @@ import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png'
 import markerIcon from 'leaflet/dist/images/marker-icon.png'
 import markerShadow from 'leaflet/dist/images/marker-shadow.png'
 
-const buildTrekEndpoint = (regNumber) =>
-  `http://localhost:8000/api/treks/${encodeURIComponent(regNumber)}`
+const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/+$/, '')
+const buildUrl = (path) => (API_BASE_URL ? `${API_BASE_URL}${path}` : path)
+
+const buildTrekEndpoint = (regNumber) => buildUrl(`/api/treks/${encodeURIComponent(regNumber)}`)
 
 const FitMapToMarkers = ({ markers, onReady }) => {
   const map = useMap()
@@ -43,9 +46,13 @@ const FitMapToMarkers = ({ markers, onReady }) => {
 
 export default function TrekDetailsPage() {
   const { regNumber } = useParams()
+  const navigate = useNavigate()
+  const { token, isAuthenticated, user } = useAuth()
   const [trek, setTrek] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState('')
+  const [subscribeError, setSubscribeError] = useState('')
+  const [activeMeetingId, setActiveMeetingId] = useState(null)
   const [visibleComments, setVisibleComments] = useState(4)
   const carouselRef = useRef(null)
   const dragState = useRef({ isDragging: false, startX: 0, scrollLeft: 0 })
@@ -86,28 +93,28 @@ export default function TrekDetailsPage() {
   const hasMoreComments = comments.length > 4
   const shownComments = comments.slice(0, visibleComments)
 
-  useEffect(() => {
-    const fetchTrek = async () => {
-      setIsLoading(true)
-      try {
+  const fetchTrek = async () => {
+    setIsLoading(true)
+    try {
+      setError('')
+      const response = await fetch(buildTrekEndpoint(regNumber))
+      const payload = await response.json()
+      const trekData = payload?.data
+      if (trekData?.status === 'y') {
+        setTrek(trekData)
+      } else {
+        setTrek(null)
         setError('')
-        const response = await fetch(buildTrekEndpoint(regNumber))
-        const payload = await response.json()
-        const trekData = payload?.data
-        if (trekData?.status === 'y') {
-          setTrek(trekData)
-        } else {
-          setTrek(null)
-          setError('')
-        }
-      } catch (error) {
-        console.error('Error al cargar el trek:', error)
-        setError('No se pudo cargar este trek. Intenta de nuevo más tarde.')
-      } finally {
-        setIsLoading(false)
       }
+    } catch (error) {
+      console.error('Error al cargar el trek:', error)
+      setError('No se pudo cargar este trek. Intenta de nuevo más tarde.')
+    } finally {
+      setIsLoading(false)
     }
+  }
 
+  useEffect(() => {
     fetchTrek()
   }, [regNumber])
 
@@ -135,7 +142,6 @@ export default function TrekDetailsPage() {
     return null
   }
 
-  const totalAttendees = meetings.reduce((total, meeting) => total + meeting.attendees.length, 0)
   const averageScore = trek.score?.average ?? 0
   const scoreCount = trek.score?.count ?? 0
   const averageScoreLabel = Number.isFinite(averageScore) ? averageScore.toFixed(2) : '0.00'
@@ -165,6 +171,7 @@ export default function TrekDetailsPage() {
   const handlePointerDown = (event) => {
     const container = carouselRef.current
     if (!container) return
+    if (event.target.closest('button')) return
     container.setPointerCapture(event.pointerId)
     container.classList.add('carousel-dragging')
     dragState.current.isDragging = true
@@ -198,6 +205,55 @@ export default function TrekDetailsPage() {
 
   const handleMapReady = (mapInstance) => {
     mapRef.current = mapInstance
+  }
+
+  const getAttendeeId = (attendee) => attendee?.id ?? attendee?.user_id ?? attendee?.pivot?.user_id
+  const currentUserId = user?.id ?? user?.user_id
+  const getGuideId = (meeting) => meeting?.guide?.id ?? meeting?.guide?.user_id
+  const isCurrentUserGuide = (meeting) =>
+    Boolean(currentUserId) && String(getGuideId(meeting)) === String(currentUserId)
+  const getAttendeeCount = (meeting) => {
+    const guideId = getGuideId(meeting)
+    const attendees = meeting?.attendees ?? []
+    if (!guideId) return attendees.length
+    return attendees.filter((attendee) => String(getAttendeeId(attendee)) !== String(guideId)).length
+  }
+  const totalAttendees = meetings.reduce((total, meeting) => total + getAttendeeCount(meeting), 0)
+
+  const handleToggleSubscription = async (meetingId, isSubscribed, isGuide) => {
+    if (!isAuthenticated || !token) {
+      navigate('/login')
+      return
+    }
+    if (isGuide) {
+      window.alert('Como guía de este encuentro no puedes inscribirte.')
+      return
+    }
+    if (isSubscribed) {
+      const confirmed = window.confirm('¿Estás seguro de cancelar tu asistencia?')
+      if (!confirmed) return
+    }
+    setSubscribeError('')
+    setActiveMeetingId(meetingId)
+    try {
+      const response = await fetch(buildUrl(`/api/meetings/${meetingId}/subscribe`), {
+        method: isSubscribed ? 'DELETE' : 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/json',
+        },
+      })
+      const payload = await response.json().catch(() => ({}))
+      if (!response.ok) {
+        throw new Error(payload?.message || 'No se pudo actualizar la suscripción')
+      }
+      await fetchTrek()
+    } catch (subscribeError) {
+      console.error('Error al actualizar suscripción:', subscribeError)
+      setSubscribeError(subscribeError?.message || 'No se pudo actualizar la suscripción')
+    } finally {
+      setActiveMeetingId(null)
+    }
   }
 
   return (
@@ -337,6 +393,11 @@ export default function TrekDetailsPage() {
                 </div>
               </div>
             </div>
+            {subscribeError ? (
+              <div className="mt-4 rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+                {subscribeError}
+              </div>
+            ) : null}
           </div>
           <div className="max-w-7xl mx-auto px-4 md:px-10 lg:px-20">
             <div className="relative group overflow-hidden">
@@ -353,7 +414,17 @@ export default function TrekDetailsPage() {
                 {sortedMeetings.map((meeting, index) => {
                   const { day, monthYear, time } = formatMeetingDateParts(meeting)
                   const isActive = isMeetingActive(meeting, nowMadrid)
+                  const isClosed = !isActive
                   const isFeatured = isActive
+                  const isGuide = isCurrentUserGuide(meeting)
+                  const isSubscribed =
+                    Boolean(currentUserId) &&
+                    !isGuide &&
+                    (meeting.attendees ?? []).some(
+                      (attendee) => String(getAttendeeId(attendee)) === String(currentUserId),
+                    )
+                  const isPending = activeMeetingId === meeting.id
+                  const isDisabled = isPending || isGuide || isClosed
                   return (
                     <div
                       className={`flex-none ${isFeatured ? 'w-80' : 'w-72'} snap-center ${
@@ -374,7 +445,7 @@ export default function TrekDetailsPage() {
                             </span>
                           </div>
                           <span className="px-3 py-1 bg-primary/10 text-corporate-blue text-[10px] font-black rounded-full uppercase">
-                            {meeting.attendees.length} participantes
+                            {getAttendeeCount(meeting)} participantes
                           </span>
                         </div>
                         <div className={`${isFeatured ? 'space-y-4 mb-8' : 'space-y-3 mb-6'}`}>
@@ -397,12 +468,29 @@ export default function TrekDetailsPage() {
                         </div>
                         <button
                           className={`w-full ${
-                            isFeatured
-                              ? 'py-4 bg-primary text-[#0f2a33] font-black rounded-xl text-sm hover:bg-[#0fb6d8]'
-                              : 'py-3 bg-white/80 dark:bg-[#203438] border-2 border-primary text-primary font-black rounded-xl text-xs hover:bg-primary/10'
-                          } transition-all`}
+                            isClosed
+                              ? 'py-3 bg-slate-200 text-slate-700 font-black rounded-xl text-xs'
+                              : isSubscribed
+                              ? 'py-3 bg-rose-600 text-white font-black rounded-xl text-xs hover:bg-rose-700'
+                              : isFeatured
+                                ? 'py-4 bg-primary text-[#0f2a33] font-black rounded-xl text-sm hover:bg-[#0fb6d8]'
+                                : 'py-3 bg-white/80 dark:bg-[#203438] border-2 border-primary text-primary font-black rounded-xl text-xs hover:bg-primary/10'
+                          } transition-all disabled:opacity-60 disabled:cursor-not-allowed`}
+                          type="button"
+                          onClick={() => handleToggleSubscription(meeting.id, isSubscribed, isGuide)}
+                          disabled={isDisabled}
                         >
-                          {isFeatured ? 'UNIRSE AHORA' : 'INSCRIBIRSE AHORA'}
+                          {isGuide
+                            ? 'ERES EL GUÍA'
+                            : isPending
+                              ? 'PROCESANDO...'
+                              : isClosed
+                                ? 'ENCUENTRO FINALIZADO'
+                                : isSubscribed
+                                  ? 'CANCELAR ASISTENCIA'
+                                  : isFeatured
+                                    ? 'UNIRSE AHORA'
+                                    : 'INSCRIBIRSE AHORA'}
                         </button>
                       </div>
                     </div>

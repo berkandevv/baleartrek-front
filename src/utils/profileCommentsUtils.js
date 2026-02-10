@@ -45,10 +45,11 @@ export const clampRating = (score) =>
 
 // Obtiene la fecha del encuentro para ordenar por recientes
 export const getMeetingDateValue = (meeting) => {
-  const raw = meeting?.appDateIni || meeting?.day || meeting?.appDateEnd
-  if (!raw) return 0
-  const safe = normalizeDateInput(raw)
-  const date = new Date(`${safe}T00:00:00`)
+  const rawDay = meeting?.day || meeting?.appDateIni || meeting?.appDateEnd
+  if (!rawDay) return 0
+  const safeDay = normalizeDateInput(rawDay)
+  const safeHour = meeting?.hour
+  const date = new Date(`${safeDay}T${safeHour || '00:00:00'}`)
   const value = date.getTime()
   return Number.isNaN(value) ? 0 : value
 }

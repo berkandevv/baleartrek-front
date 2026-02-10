@@ -8,8 +8,10 @@ import {
   formatMeetingDate,
   formatMeetingHour,
   formatMeetingRange,
+  getMeetingDateValue,
   sortMeetings,
 } from '../utils/profileCommentsUtils'
+import { getMadridNow } from '../utils/trekDetailsViewUtils'
 
 const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/+$/, '')
 const buildUrl = (path) => (API_BASE_URL ? `${API_BASE_URL}${path}` : path)
@@ -19,6 +21,8 @@ export default function ProfileCommentsPage() {
   const { token } = useAuth()
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState('')
+  const [cancelError, setCancelError] = useState('')
+  const [cancelingMeetingId, setCancelingMeetingId] = useState(null)
   const [user, setUser] = useState(null)
   const [sortKey, setSortKey] = useState('recent')
 
@@ -65,11 +69,79 @@ export default function ProfileCommentsPage() {
     }
   }, [token])
 
+  const refreshMeetings = async () => {
+    if (!token) return
+    setError('')
+    try {
+      const response = await fetch(buildUrl('/api/user'), {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/json',
+        },
+      })
+      const payload = await response.json()
+      if (!response.ok) {
+        throw new Error(payload?.message || 'No se pudo cargar el historial')
+      }
+      setUser(payload?.data ?? null)
+    } catch (fetchError) {
+      console.error('Error al cargar encuentros:', fetchError)
+      setError(fetchError?.message || 'No se pudo cargar el historial')
+    }
+  }
+
+  const handleCancelMeeting = async (meetingId) => {
+    if (!token) return
+    const confirmed = window.confirm('¿Seguro que quieres cancelar tu asistencia?')
+    if (!confirmed) return
+    setCancelError('')
+    setCancelingMeetingId(meetingId)
+    try {
+      const response = await fetch(buildUrl(`/api/meetings/${meetingId}/subscribe`), {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/json',
+        },
+      })
+      const payload = await response.json().catch(() => ({}))
+      if (!response.ok) {
+        throw new Error(payload?.message || 'No se pudo cancelar la asistencia')
+      }
+      await refreshMeetings()
+    } catch (cancelError) {
+      console.error('Error al cancelar asistencia:', cancelError)
+      setCancelError(cancelError?.message || 'No se pudo cancelar la asistencia')
+    } finally {
+      setCancelingMeetingId(null)
+    }
+  }
+
   const memberSince = formatMemberSince(user?.created_at)
   const fullName = getFullName(user)
 
   const meetings = user?.meetings ?? []
-  const sortedMeetings = sortMeetings(meetings, sortKey)
+  const nowValue = getMadridNow().getTime()
+
+  const upcomingMeetings = []
+  const pastMeetings = []
+
+  meetings.forEach((meeting) => {
+    const dateValue = getMeetingDateValue(meeting)
+    if (!dateValue || dateValue >= nowValue) {
+      upcomingMeetings.push(meeting)
+    } else {
+      pastMeetings.push(meeting)
+    }
+  })
+
+  const sortedUpcomingMeetings = [...upcomingMeetings].sort((a, b) => {
+    const dateA = getMeetingDateValue(a) || Number.MAX_SAFE_INTEGER
+    const dateB = getMeetingDateValue(b) || Number.MAX_SAFE_INTEGER
+    return dateA - dateB
+  })
+
+  const sortedMeetings = sortMeetings(pastMeetings, sortKey)
 
   return (
     <div className="flex-1 w-full max-w-[1280px] mx-auto px-4 sm:px-10 py-8">
@@ -99,115 +171,225 @@ export default function ProfileCommentsPage() {
               Aún no tienes encuentros registrados.
             </div>
           ) : (
-            <div className="flex flex-col gap-6">
-              <div className="flex items-center justify-between gap-4 px-1">
-                <h2 className="text-text-main dark:text-white text-[22px] font-bold leading-tight tracking-[-0.015em]">
-                  Encuentros Realizados
-                </h2>
-                <div className="flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-white/10 rounded-lg border border-[#e3eaec] dark:border-white/20 shadow-sm">
-                  <span className="text-sm font-medium text-text-sub dark:text-gray-400">
-                    Ordenar por:
-                  </span>
-                  <select
-                    className="bg-transparent border-none text-sm font-bold text-text-main dark:text-white focus:ring-0 cursor-pointer py-0 pl-0 pr-8"
-                    onChange={({ target }) => setSortKey(target.value)}
-                    value={sortKey}
-                  >
-                    <option value="recent">Más recientes</option>
-                    <option value="best">Mejor valorados</option>
-                  </select>
+            <div className="flex flex-col gap-10">
+              {cancelError ? (
+                <div className="rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+                  {cancelError}
                 </div>
-              </div>
-              {sortedMeetings.map((meeting) => {
-                const comments = meeting?.comments ?? []
-                const publishedComment = comments.find((comment) => comment.status === 'y') ?? comments[0]
-                const statusLabel = publishedComment ? 'Publicado' : 'Pendiente'
-                const statusTone = publishedComment ? 'text-primary' : 'text-text-sub'
-                const cardOpacity = publishedComment ? '' : 'opacity-80'
-                const ratingValue =
-                  publishedComment?.score ?? meeting?.score?.average ?? meeting?.score?.total ?? 0
-                const coverImage = publishedComment?.image?.url
-                const rating = clampRating(ratingValue)
-
-                const meetingDateLabel = formatMeetingRange(meeting?.appDateIni, meeting?.appDateEnd)
-
-                return (
-                  <div
-                    key={meeting.id}
-                    className={`bg-white dark:bg-white/5 rounded-xl border border-[#f0f4f4] dark:border-white/10 overflow-hidden shadow-sm ${cardOpacity}`}
-                  >
-                    <div className="p-6">
-                      <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
-                        <div className="flex items-center gap-4">
-                          <div className="bg-primary/10 text-primary p-2 rounded-lg">
-                            <span className="material-symbols-outlined">event</span>
-                          </div>
-                          <div className="flex flex-col">
-                            <p className="text-text-main dark:text-white font-bold leading-tight">
-                              {meeting?.trek_name ||
-                                meeting?.trek?.name ||
-                                meeting?.route?.name ||
-                                `Encuentro #${meeting.id}`}
-                            </p>
-                            <div className="flex items-center gap-3 mt-1">
-                              <div className="flex items-center gap-1 text-text-sub text-xs">
-                                <span className="material-symbols-outlined text-sm">calendar_today</span>
-                                {meetingDateLabel || formatMeetingDate(meeting?.day)}
-                              </div>
-                              <div className="flex items-center gap-1 text-text-sub text-xs">
-                                <span className="material-symbols-outlined text-sm">schedule</span>
-                                {formatMeetingHour(meeting?.hour)}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        <span className="px-3 py-1 bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-400 text-xs font-bold rounded-full">
-                          Completado
-                        </span>
-                      </div>
-                      <hr className="border-[#f0f4f4] dark:border-white/10 mb-6" />
-
-                      {publishedComment ? (
-                        <div className="bg-background-light dark:bg-white/5 p-5 rounded-lg border border-[#f0f4f4] dark:border-white/10">
-                          <div className="flex justify-between items-start mb-4">
-                            <h3 className="text-sm font-bold text-text-main dark:text-white">Mi Valoración</h3>
-                            <div
-                              className={`flex items-center gap-1.5 px-2 py-1 bg-blue-50 dark:bg-primary/10 rounded border border-primary/20 ${statusTone}`}
-                            >
-                              <span className="material-symbols-outlined text-[14px] filled">check_circle</span>
-                              <span className="text-[10px] font-bold uppercase tracking-wider">{statusLabel}</span>
-                            </div>
-                          </div>
-                          <div className="flex flex-col md:flex-row gap-6">
-                            <div className="flex-1 flex flex-col gap-3">
-                              <div className="flex gap-1 items-center">
-                                <Stars id={`meeting-${meeting.id}`} rating={rating} max={5} />
-                              </div>
-                              {publishedComment?.comment ? (
-                                <p className="text-text-sub text-sm italic leading-relaxed">
-                                  &quot;{publishedComment.comment}&quot;
-                                </p>
-                              ) : null}
-                            </div>
-                            {coverImage ? (
-                              <div className="shrink-0">
-                                <div
-                                  className="bg-center bg-no-repeat aspect-square bg-cover rounded-lg size-24 border-2 border-white dark:border-white/10 shadow-sm"
-                                  style={{ backgroundImage: `url("${coverImage}")` }}
-                                />
-                              </div>
-                            ) : null}
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="rounded-lg border border-[#f0f4f4] dark:border-white/10 bg-[#f6f8f8] dark:bg-white/5 px-4 py-3 text-sm text-text-sub">
-                          Aún no has dejado una valoración de este encuentro.
-                        </div>
-                      )}
-                    </div>
+              ) : null}
+              <section className="flex flex-col gap-4">
+                <div className="flex items-center gap-2 px-1">
+                  <span className="material-symbols-outlined text-primary">calendar_month</span>
+                  <h2 className="text-text-main dark:text-white text-2xl font-bold leading-tight tracking-[-0.015em]">
+                    Próximos Encuentros
+                  </h2>
+                </div>
+                {sortedUpcomingMeetings.length === 0 ? (
+                  <div className="rounded-lg border border-[#f0f4f4] dark:border-white/10 bg-[#f6f8f8] dark:bg-white/5 px-4 py-3 text-sm text-text-sub">
+                    No tienes encuentros próximos.
                   </div>
-                )
-              })}
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {sortedUpcomingMeetings.map((meeting) => {
+                      const meetingName =
+                        meeting?.trek_name ||
+                        meeting?.trek?.name ||
+                        meeting?.route?.name ||
+                        `Encuentro #${meeting.id}`
+                      const meetingDateLabel =
+                        formatMeetingDate(meeting?.day) ||
+                        formatMeetingRange(meeting?.appDateIni, meeting?.appDateEnd)
+
+                      return (
+                        <div
+                          key={meeting.id}
+                          className="bg-white dark:bg-white/5 p-5 rounded-xl border border-[#f0f4f4] dark:border-white/10 shadow-sm flex flex-col gap-4"
+                        >
+                          <div className="flex justify-between items-start">
+                            <div className="flex items-center gap-3">
+                              <div className="bg-primary/10 text-primary p-2 rounded-lg">
+                                <span className="material-symbols-outlined">hiking</span>
+                              </div>
+                              <div className="flex flex-col">
+                                <p className="text-text-main dark:text-white font-bold leading-tight">
+                                  {meetingName}
+                                </p>
+                                <div className="flex items-center gap-2 mt-1">
+                                  <div className="flex items-center gap-1 text-text-sub text-xs">
+                                    <span className="material-symbols-outlined text-sm">calendar_today</span>
+                                    {meetingDateLabel}
+                                  </div>
+                                  <div className="flex items-center gap-1 text-text-sub text-xs">
+                                    <span className="material-symbols-outlined text-sm">schedule</span>
+                                    {formatMeetingHour(meeting?.hour)}
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            <span className="px-3 py-1 bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-400 text-[10px] font-bold uppercase tracking-wider rounded-full">
+                              Inscrito
+                            </span>
+                          </div>
+                          <div className="flex items-center justify-between gap-3">
+                            <div className="text-xs text-text-sub">
+                              Guía principal:{' '}
+                              <span className="font-bold text-text-main dark:text-white">
+                                {meeting?.guide?.name ? `${meeting.guide.name} ${meeting?.guide?.lastname ?? ''}`.trim() : 'Pendiente'}
+                              </span>
+                            </div>
+                            <button
+                              className="px-3 py-2 text-xs font-bold text-white bg-rose-600 rounded-lg hover:bg-rose-700 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+                              type="button"
+                              onClick={() => handleCancelMeeting(meeting.id)}
+                              disabled={cancelingMeetingId === meeting.id}
+                            >
+                              {cancelingMeetingId === meeting.id ? 'Cancelando...' : 'Cancelar'}
+                            </button>
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                )}
+              </section>
+
+              <section className="flex flex-col gap-6">
+                <div className="flex items-center justify-between gap-4 px-1">
+                  <div className="flex items-center gap-2">
+                    <span className="material-symbols-outlined text-text-sub">history</span>
+                    <h2 className="text-text-main dark:text-white text-2xl font-bold leading-tight tracking-[-0.015em]">
+                      Historial de Encuentros
+                    </h2>
+                  </div>
+                  <div className="flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-white/10 rounded-lg border border-[#e3eaec] dark:border-white/20 shadow-sm">
+                    <span className="text-sm font-medium text-text-sub dark:text-gray-400">
+                      Ordenar por:
+                    </span>
+                    <select
+                      className="bg-transparent border-none text-sm font-bold text-text-main dark:text-white focus:ring-0 cursor-pointer py-0 pl-0 pr-8"
+                      onChange={({ target }) => setSortKey(target.value)}
+                      value={sortKey}
+                    >
+                      <option value="recent">Más recientes</option>
+                      <option value="best">Mejor valorados</option>
+                    </select>
+                  </div>
+                </div>
+                {sortedMeetings.length === 0 ? (
+                  <div className="rounded-lg border border-[#f0f4f4] dark:border-white/10 bg-[#f6f8f8] dark:bg-white/5 px-4 py-3 text-sm text-text-sub">
+                    Aún no tienes encuentros en el historial.
+                  </div>
+                ) : (
+                  <div className="flex flex-col gap-6">
+                    {sortedMeetings.map((meeting) => {
+                      const comments = meeting?.comments ?? []
+                      const publishedComment =
+                        comments.find((comment) => comment.status === 'y') ?? comments[0]
+                      const statusLabel = publishedComment ? 'Publicado' : 'Pendiente'
+                      const statusTone = publishedComment ? 'text-primary' : 'text-text-sub'
+                      const cardOpacity = publishedComment ? '' : 'opacity-80'
+                      const ratingValue =
+                        publishedComment?.score ?? meeting?.score?.average ?? meeting?.score?.total ?? 0
+                      const coverImage = publishedComment?.image?.url
+                      const rating = clampRating(ratingValue)
+
+                      const meetingName =
+                        meeting?.trek_name ||
+                        meeting?.trek?.name ||
+                        meeting?.route?.name ||
+                        `Encuentro #${meeting.id}`
+                      const meetingDateLabel =
+                        formatMeetingDate(meeting?.day) ||
+                        formatMeetingRange(meeting?.appDateIni, meeting?.appDateEnd)
+
+                      return (
+                        <div
+                          key={meeting.id}
+                          className={`bg-white dark:bg-white/5 rounded-xl border border-[#f0f4f4] dark:border-white/10 overflow-hidden shadow-sm ${cardOpacity}`}
+                        >
+                          <div className="p-6">
+                            <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+                              <div className="flex items-center gap-4">
+                                <div className="bg-primary/10 text-primary p-2 rounded-lg">
+                                  <span className="material-symbols-outlined">event</span>
+                                </div>
+                                <div className="flex flex-col">
+                                  <p className="text-text-main dark:text-white font-bold leading-tight">
+                                    {meetingName}
+                                  </p>
+                                  <div className="flex items-center gap-3 mt-1">
+                                    <div className="flex items-center gap-1 text-text-sub text-xs">
+                                      <span className="material-symbols-outlined text-sm">
+                                        calendar_today
+                                      </span>
+                                      {meetingDateLabel}
+                                    </div>
+                                    <div className="flex items-center gap-1 text-text-sub text-xs">
+                                      <span className="material-symbols-outlined text-sm">schedule</span>
+                                      {formatMeetingHour(meeting?.hour)}
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                              <span className="px-3 py-1 bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-400 text-xs font-bold rounded-full">
+                                Completado
+                              </span>
+                            </div>
+                            <hr className="border-[#f0f4f4] dark:border-white/10 mb-6" />
+
+                            {publishedComment ? (
+                              <div className="bg-background-light dark:bg-white/5 p-5 rounded-lg border border-[#f0f4f4] dark:border-white/10">
+                                <div className="flex justify-between items-start mb-4">
+                                  <h3 className="text-sm font-bold text-text-main dark:text-white">
+                                    Mi Valoración
+                                  </h3>
+                                  <div
+                                    className={`flex items-center gap-1.5 px-2 py-1 bg-blue-50 dark:bg-primary/10 rounded border border-primary/20 ${statusTone}`}
+                                  >
+                                    <span className="material-symbols-outlined text-[14px] filled">
+                                      check_circle
+                                    </span>
+                                    <span className="text-[10px] font-bold uppercase tracking-wider">
+                                      {statusLabel}
+                                    </span>
+                                  </div>
+                                </div>
+                                <div className="flex flex-col md:flex-row gap-6">
+                                  <div className="flex-1 flex flex-col gap-3">
+                                    <div className="flex gap-1 items-center text-orange-400">
+                                      <Stars id={`meeting-${meeting.id}`} rating={rating} max={5} />
+                                      <span className="ml-2 text-text-main dark:text-white text-sm font-bold">
+                                        {rating}/5
+                                      </span>
+                                    </div>
+                                    {publishedComment?.comment ? (
+                                      <p className="text-text-sub text-sm italic leading-relaxed">
+                                        &quot;{publishedComment.comment}&quot;
+                                      </p>
+                                    ) : null}
+                                  </div>
+                                  {coverImage ? (
+                                    <div className="shrink-0">
+                                      <div
+                                        className="bg-center bg-no-repeat aspect-square bg-cover rounded-lg size-24 border-2 border-white dark:border-white/10 shadow-sm"
+                                        style={{ backgroundImage: `url("${coverImage}")` }}
+                                      />
+                                    </div>
+                                  ) : null}
+                                </div>
+                              </div>
+                            ) : (
+                              <div className="rounded-lg border border-[#f0f4f4] dark:border-white/10 bg-[#f6f8f8] dark:bg-white/5 px-4 py-3 text-sm text-text-sub">
+                                Aún no has dejado una valoración de este encuentro.
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                )}
+              </section>
             </div>
           )}
 
