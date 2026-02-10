@@ -106,13 +106,13 @@ export function AuthProvider({ children }) {
           if (nextUser?.status === 'n') {
             setSessionToken(null)
             setUser(null)
-            throw new Error('Tu cuenta está desactivada')
+            throw new Error('Cuenta eliminada')
           }
           setUser(nextUser)
         } catch (error) {
-          if (error?.message === 'Tu cuenta está desactivada') {
-            throw error
-          }
+        if (error?.message === 'Cuenta eliminada') {
+          throw error
+        }
         }
       }
       return data

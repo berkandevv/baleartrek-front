@@ -18,7 +18,15 @@ export default function LoadingPage() {
       await login({ email, password })
       navigate('/')
     } catch (err) {
-      setError('Error de credenciales')
+      if (err?.message === 'Cuenta eliminada') {
+        setError('Cuenta eliminada')
+        return
+      }
+      if (err?.message === 'Failed to fetch' || err?.name === 'TypeError') {
+        setError('Error de credenciales')
+        return
+      }
+      setError(err?.message || 'Error de credenciales')
     }
   }
 
