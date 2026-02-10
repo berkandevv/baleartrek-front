@@ -59,21 +59,23 @@ export default function CatalogPage() {
     fetchTreks()
   }, [])
 
+  const activeTreks = treks.filter((trek) => trek.status === 'y')
+
   // Lista total de islas disponibles
-  const islandNames = treks.map((trek) => trek.municipality.island.name)
+  const islandNames = activeTreks.map((trek) => trek.municipality.island.name)
   const islands = uniqueStrings(islandNames)
 
   // Set para validación rápida de islas activas
   const islandSet = new Set(selectedIslands)
 
   // Municipios disponibles según las islas activas (sin duplicados)
-  const municipalityNames = treks
+  const municipalityNames = activeTreks
     .filter((trek) => islandSet.has(trek.municipality.island.name))
     .map((trek) => trek.municipality.name)
   const municipalities = uniqueStrings(municipalityNames)
 
   // Catálogo de escursiones final tras aplicar filtros de isla, municipio y búsqueda
-  const filteredTreks = treks.filter((trek) => {
+  const filteredTreks = activeTreks.filter((trek) => {
     const island = trek.municipality.island.name
     const municipality = trek.municipality.name
     const name = trek.name

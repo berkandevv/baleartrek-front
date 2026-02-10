@@ -56,7 +56,13 @@ export function AuthProvider({ children }) {
         const payload = await response.json()
         if (!response.ok) throw new Error('No se pudo cargar el usuario')
         if (isActive) {
-          setUser(payload?.data ?? null)
+          const nextUser = payload?.data ?? null
+          if (nextUser?.status === 'n') {
+            setSessionToken(null)
+            setUser(null)
+          } else {
+            setUser(nextUser)
+          }
         }
       } catch (error) {
         console.error('Error al cargar usuario:', error)
@@ -85,7 +91,30 @@ export function AuthProvider({ children }) {
       const data = await response.json()
       if (!response.ok) throw new Error('Error de credenciales')
       const nextToken = data?.token || null
-      if (nextToken) setSessionToken(nextToken)
+      if (nextToken) {
+        setSessionToken(nextToken)
+        try {
+          const userResponse = await fetch(buildUrl('/api/user'), {
+            headers: {
+              Authorization: `Bearer ${nextToken}`,
+              Accept: 'application/json',
+            },
+          })
+          const userPayload = await userResponse.json()
+          const nextUser = userPayload?.data ?? null
+          if (!userResponse.ok) throw new Error('No se pudo cargar el usuario')
+          if (nextUser?.status === 'n') {
+            setSessionToken(null)
+            setUser(null)
+            throw new Error('Tu cuenta está desactivada')
+          }
+          setUser(nextUser)
+        } catch (error) {
+          if (error?.message === 'Tu cuenta está desactivada') {
+            throw error
+          }
+        }
+      }
       return data
     } finally {
       setIsLoading(false)

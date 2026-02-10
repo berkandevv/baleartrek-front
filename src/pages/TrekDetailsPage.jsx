@@ -76,12 +76,13 @@ export default function TrekDetailsPage() {
   })
   const comments = meetings
     .flatMap((meeting) =>
-      meeting.comments.map((comment) => ({
-        ...comment,
-        meetingDay: meeting.day,
-      })),
+      (meeting.comments ?? [])
+        .filter((comment) => String(comment?.status ?? '').toLowerCase() === 'y')
+        .map((comment) => ({
+          ...comment,
+          meetingDay: meeting.day,
+        })),
     )
-    .filter((comment) => comment.status === 'y')
   const hasMoreComments = comments.length > 4
   const shownComments = comments.slice(0, visibleComments)
 
@@ -92,7 +93,13 @@ export default function TrekDetailsPage() {
         setError('')
         const response = await fetch(buildTrekEndpoint(regNumber))
         const payload = await response.json()
-        setTrek(payload.data)
+        const trekData = payload?.data
+        if (trekData?.status === 'y') {
+          setTrek(trekData)
+        } else {
+          setTrek(null)
+          setError('')
+        }
       } catch (error) {
         console.error('Error al cargar el trek:', error)
         setError('No se pudo cargar este trek. Intenta de nuevo más tarde.')
@@ -114,7 +121,7 @@ export default function TrekDetailsPage() {
     )
   }
 
-  if (error || !trek) {
+  if (error) {
     return (
       <main className="flex-grow w-full max-w-[1280px] mx-auto px-4 sm:px-10 py-10">
         <div className="bg-rose-50 dark:bg-rose-900/20 rounded-xl border border-rose-200 dark:border-rose-900/40 p-8 text-center">
@@ -122,6 +129,10 @@ export default function TrekDetailsPage() {
         </div>
       </main>
     )
+  }
+
+  if (!trek || trek.status !== 'y') {
+    return null
   }
 
   const totalAttendees = meetings.reduce((total, meeting) => total + meeting.attendees.length, 0)
@@ -329,7 +340,6 @@ export default function TrekDetailsPage() {
           </div>
           <div className="max-w-7xl mx-auto px-4 md:px-10 lg:px-20">
             <div className="relative group overflow-hidden">
-              <div className="pointer-events-none absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-[#f9fafb]/90 to-transparent dark:from-[#132226]/90" />
               <div className="pointer-events-none absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-[#f9fafb]/90 to-transparent dark:from-[#132226]/90" />
               <div
                 className="no-scrollbar flex overflow-x-auto gap-5 py-6 snap-x snap-mandatory cursor-grab active:cursor-grabbing"

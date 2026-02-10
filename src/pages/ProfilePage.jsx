@@ -17,12 +17,13 @@ const emptyForm = {
 
 export default function ProfilePage() {
   // Datos de autenticacion para proteger el acceso al perfil
-  const { token, isAuthenticated } = useAuth()
+  const { token, isAuthenticated, logout } = useAuth()
   // Estado local del formulario y mensajes de la UI
   const [form, setForm] = useState(emptyForm)
   const [user, setUser] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
   const [fieldErrors, setFieldErrors] = useState({ email: '', dni: '' })
@@ -159,6 +160,36 @@ export default function ProfilePage() {
     }
   }
 
+  const handleDelete = async () => {
+    if (!token) return
+    const confirmed = window.confirm('¿Estás seguro de eliminar tu cuenta? Esta acción no se puede deshacer.')
+    if (!confirmed) return
+    setIsDeleting(true)
+    setError('')
+    setSuccess('')
+    try {
+      const response = await fetch(buildUrl('/api/user'), {
+        method: 'PUT',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify({ status: 'n' }),
+      })
+      const payload = await response.json()
+      if (!response.ok) {
+        throw new Error(payload?.message || 'No se pudo eliminar la cuenta')
+      }
+      await logout()
+    } catch (deleteError) {
+      console.error('Error al eliminar cuenta:', deleteError)
+      setError(deleteError?.message || 'No se pudo eliminar la cuenta')
+    } finally {
+      setIsDeleting(false)
+    }
+  }
+
   return (
     <div className="flex-1 w-full max-w-[1280px] mx-auto px-4 sm:px-10 py-8">
       <div className="flex flex-col lg:flex-row gap-8">
@@ -286,7 +317,15 @@ export default function ProfilePage() {
                         <span className="text-xs text-rose-600 dark:text-rose-300">{fieldErrors.email}</span>
                       ) : null}
                     </div>
-                    <div className="md:col-span-2 flex justify-end mt-4">
+                    <div className="md:col-span-2 flex flex-col sm:flex-row justify-between gap-3 mt-4">
+                      <button
+                        className="bg-rose-600 text-white px-6 py-3 rounded-lg font-bold text-sm shadow-sm transition-all hover:bg-rose-700 active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed"
+                        type="button"
+                        onClick={handleDelete}
+                        disabled={isDeleting}
+                      >
+                        {isDeleting ? 'Eliminando...' : 'Eliminar cuenta'}
+                      </button>
                       <button
                         className="bg-primary hover:bg-primary/90 text-white px-8 py-3 rounded-lg font-bold text-sm shadow-md transition-all active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed"
                         type="submit"
