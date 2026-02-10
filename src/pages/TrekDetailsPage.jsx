@@ -5,8 +5,10 @@ import { MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet'
 import { useAuth } from '../auth/AuthContext'
 import {
   formatFullName,
+  formatApplicationDate,
   formatMeetingDateParts,
   getMadridNow,
+  isApplicationOpenToday,
   isMeetingActive,
 } from '../utils/trekDetailsViewUtils'
 import { resolveImageUrl } from '../utils/urls'
@@ -415,7 +417,8 @@ export default function TrekDetailsPage() {
                   const { day, monthYear, time } = formatMeetingDateParts(meeting)
                   const isActive = isMeetingActive(meeting, nowMadrid)
                   const isClosed = !isActive
-                  const isFeatured = isActive
+                  const isApplicationOpen = isApplicationOpenToday(meeting, nowMadrid)
+                  const isFeatured = isApplicationOpen
                   const isGuide = isCurrentUserGuide(meeting)
                   const isSubscribed =
                     Boolean(currentUserId) &&
@@ -424,7 +427,9 @@ export default function TrekDetailsPage() {
                       (attendee) => String(getAttendeeId(attendee)) === String(currentUserId),
                     )
                   const isPending = activeMeetingId === meeting.id
-                  const isDisabled = isPending || isGuide || isClosed
+                  const isDisabled = isPending || isGuide || isClosed || !isApplicationOpen
+                  const openingDate = formatApplicationDate(meeting.appDateIni)
+                  const closingDate = formatApplicationDate(meeting.appDateEnd)
                   return (
                     <div
                       className={`flex-none ${isFeatured ? 'w-80' : 'w-72'} snap-center ${
@@ -466,8 +471,18 @@ export default function TrekDetailsPage() {
                             </span>
                           </div>
                         </div>
+                        <div className="flex flex-col gap-2 py-4 border-y-2 border-corporate-blue/10">
+                          <div className="flex items-center gap-3 text-xs font-bold text-corporate-blue/80 uppercase">
+                            <span className="material-symbols-outlined text-lg text-green-500">calendar_today</span>
+                            Apertura: {openingDate}
+                          </div>
+                          <div className="flex items-center gap-3 text-xs font-bold text-corporate-blue/80 uppercase">
+                            <span className="material-symbols-outlined text-lg text-red-500">event_busy</span>
+                            Cierre: {closingDate}
+                          </div>
+                        </div>
                         <button
-                          className={`w-full ${
+                          className={`w-full mt-4 ${
                             isClosed
                               ? 'py-3 bg-slate-200 text-slate-700 font-black rounded-xl text-xs'
                               : isSubscribed
@@ -490,7 +505,7 @@ export default function TrekDetailsPage() {
                                   ? 'CANCELAR ASISTENCIA'
                                   : isFeatured
                                     ? 'UNIRSE AHORA'
-                                    : 'INSCRIBIRSE AHORA'}
+                                    : 'UNIRSE AHORA'}
                         </button>
                       </div>
                     </div>

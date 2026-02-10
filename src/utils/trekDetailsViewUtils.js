@@ -33,5 +33,43 @@ export const formatMeetingDateParts = (meeting) => {
   return { day, monthYear, time }
 }
 
+const normalizeDateInput = (value) => {
+  if (!value) return null
+  if (typeof value === 'string') {
+    return value.split(' ')[0]
+  }
+  return value
+}
+
+export const formatApplicationDate = (value) => {
+  const safeDay = normalizeDateInput(value)
+  if (!safeDay) return 'Fecha pendiente'
+  const date = new Date(`${safeDay}T00:00:00`)
+  if (Number.isNaN(date.getTime())) return value
+  const formatted = date.toLocaleDateString('es-ES', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+  })
+  return formatted.replace('.', '')
+}
+
+export const isApplicationOpenToday = (meeting, nowMadrid = getMadridNow()) => {
+  const start = normalizeDateInput(meeting?.appDateIni) ?? normalizeDateInput(meeting?.day)
+  const end = normalizeDateInput(meeting?.appDateEnd) ?? start
+  if (!start) return false
+  const today = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Europe/Madrid',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).format(nowMadrid)
+  const todayDate = new Date(`${today}T00:00:00`)
+  const startDate = new Date(`${start}T00:00:00`)
+  const endDate = new Date(`${end}T00:00:00`)
+  if ([todayDate, startDate, endDate].some((date) => Number.isNaN(date.getTime()))) return false
+  return todayDate >= startDate && todayDate <= endDate
+}
+
 // Forma el nombre completo con nombre y apellidos
 export const formatFullName = (person) => `${person.name} ${person.lastname}`.trim()
