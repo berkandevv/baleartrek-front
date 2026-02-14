@@ -621,33 +621,38 @@ export default function TrekDetailsPage() {
               </h3>
               {comments.length ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10">
-                  {shownComments.map((comment) => (
-                    <div className="relative pl-8 border-l-4 border-primary/20" key={comment.id}>
-                      <div className="flex items-center justify-between mb-6">
-                        <div>
-                          <span className="block font-black text-base tracking-tight">
-                            {formatFullName(comment.user)}
-                          </span>
-                          <span className="text-xs text-corporate-blue uppercase font-black tracking-widest">
-                            Comentario verificado
-                          </span>
-                        </div>
-                        <div className="flex text-orange-400">
-                          {Array.from({ length: 5 }).map((_, index) => (
-                            <span
-                              className="material-symbols-outlined star-rating"
-                              key={`${comment.id}-star-${index}`}
-                            >
-                              star
+                  {shownComments.map((comment) => {
+                    const rating = Math.max(0, Math.min(5, Math.floor(Number(comment?.score) || 0)))
+                    return (
+                      <div className="relative pl-8 border-l-4 border-primary/20" key={comment.id}>
+                        <div className="flex items-center justify-between mb-6">
+                          <div>
+                            <span className="block font-black text-base tracking-tight">
+                              {formatFullName(comment.user)}
                             </span>
-                          ))}
+                            <span className="text-xs text-corporate-blue uppercase font-black tracking-widest">
+                              Comentario verificado
+                            </span>
+                          </div>
+                          <div className="flex">
+                            {Array.from({ length: 5 }).map((_, index) => (
+                              <span
+                                className={`material-symbols-outlined ${
+                                  index < rating ? 'star-rating text-orange-400' : 'text-slate-300 dark:text-slate-600'
+                                }`}
+                                key={`${comment.id}-star-${index}`}
+                              >
+                                star
+                              </span>
+                            ))}
+                          </div>
                         </div>
+                        <p className="text-base text-text-muted dark:text-gray-300 font-light italic leading-relaxed">
+                          "{comment.comment}"
+                        </p>
                       </div>
-                      <p className="text-base text-text-muted dark:text-gray-300 font-light italic leading-relaxed">
-                        "{comment.comment}"
-                      </p>
-                    </div>
-                  ))}
+                    )
+                  })}
                 </div>
               ) : (
                 <p className="text-base text-text-muted dark:text-gray-300">
