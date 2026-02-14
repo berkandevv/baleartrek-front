@@ -6,7 +6,7 @@ export default function Stars({
   max = DEFAULT_MAX,
   className = 'text-[16px] leading-none',
   filledClassName = 'text-yellow-500',
-  emptyClassName = 'text-gray-300 dark:text-gray-600',
+  emptyClassName = 'text-gray-300',
 }) {
   const safeRating = Math.max(0, Math.min(max, Number(rating) || 0))
   const items = []

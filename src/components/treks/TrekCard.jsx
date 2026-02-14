@@ -26,16 +26,16 @@ export default function TrekCard({ trek }) {
   const detailsHref = `/treks/${trek.regNumber}`
 
   return (
-    <article className="group relative bg-white dark:bg-gray-900 rounded-xl overflow-hidden shadow-sm border border-gray-100 dark:border-gray-800 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col">
+    <article className="group relative bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col">
       <div className="aspect-[4/3] xl:aspect-[3/4] w-full overflow-hidden relative">
         <div
-          className="w-full h-full bg-cover bg-center group-hover:scale-105 transition-transform duration-500 bg-gray-100 dark:bg-gray-800"
+          className="w-full h-full bg-cover bg-center group-hover:scale-105 transition-transform duration-500 bg-gray-100"
           style={{ backgroundImage: `url('${imageSrc}')` }}
         />
-        <div className="absolute top-3 right-3 bg-white/95 dark:bg-black/90 backdrop-blur-sm px-2.5 py-1 rounded-md text-sm font-bold text-text-main dark:text-white shadow-md flex items-center gap-1.5 border border-gray-100 dark:border-gray-700">
+        <div className="absolute top-3 right-3 bg-white/95 backdrop-blur-sm px-2.5 py-1 rounded-md text-sm font-bold text-text-main shadow-md flex items-center gap-1.5 border border-gray-100">
           <span className="material-symbols-outlined text-yellow-500 text-[16px] fill-current">star</span>
           {averageLabel}
-          <span className="text-[10px] font-semibold text-text-muted dark:text-gray-400">
+          <span className="text-[10px] font-semibold text-text-muted">
             ({trek.score.count})
           </span>
         </div>
@@ -47,14 +47,14 @@ export default function TrekCard({ trek }) {
               {island}
             </p>
           </div>
-          <h3 className="text-base font-bold text-text-main dark:text-white leading-tight group-hover:text-primary transition-colors">
+          <h3 className="text-base font-bold text-text-main leading-tight group-hover:text-primary transition-colors">
             {trek.name}
           </h3>
-          <p className="text-xs text-text-muted dark:text-gray-400 mt-2">
+          <p className="text-xs text-text-muted mt-2">
             {trek.description}
           </p>
-          <p className="text-xs md:text-sm text-text-muted dark:text-gray-400 mt-2">
-            Municipio: <span className="font-semibold text-text-main dark:text-white">{municipality}</span>
+          <p className="text-xs md:text-sm text-text-muted mt-2">
+            Municipio: <span className="font-semibold text-text-main">{municipality}</span>
           </p>
         </div>
         <div className="mt-auto flex flex-col gap-3">
@@ -62,11 +62,11 @@ export default function TrekCard({ trek }) {
             Detalles
           </Link>
           {meetingInfo ? (
-            <div className="border-t border-gray-100 dark:border-gray-800 pt-3 text-center text-xs text-text-muted dark:text-gray-400">
+            <div className="border-t border-gray-100 pt-3 text-center text-xs text-text-muted">
               {meetingInfo.isConfirmed ? (
                 <span className="block text-[10px] uppercase font-bold text-text-muted tracking-wider">Próxima salida</span>
               ) : null}
-              <span className="text-xs md:text-sm text-text-muted dark:text-gray-400">
+              <span className="text-xs md:text-sm text-text-muted">
                 {meetingInfo.label}
               </span>
             </div>

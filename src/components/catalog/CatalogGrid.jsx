@@ -3,7 +3,7 @@ import CatalogCard from './CatalogCard'
 export default function CatalogGrid({ treks, isLoading, error }) {
   if (isLoading) {
     return (
-      <div className="rounded-xl border border-dashed border-gray-300 dark:border-gray-700 p-10 text-center text-text-sub">
+      <div className="rounded-xl border border-dashed border-gray-300 p-10 text-center text-text-sub">
         Cargando excursiones...
       </div>
     )
@@ -11,7 +11,7 @@ export default function CatalogGrid({ treks, isLoading, error }) {
 
   if (error) {
     return (
-      <div className="rounded-xl border border-rose-200 bg-rose-50 p-10 text-center text-rose-700 dark:border-rose-900/40 dark:bg-rose-900/20 dark:text-rose-200">
+      <div className="rounded-xl border border-rose-200 bg-rose-50 p-10 text-center text-rose-700">
         {error}
       </div>
     )

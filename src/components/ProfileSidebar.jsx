@@ -3,10 +3,10 @@ import { NavLink } from 'react-router-dom'
 export default function ProfileSidebar({ fullName, memberSince }) {
   return (
     <aside className="hidden lg:flex flex-col w-64 shrink-0 gap-8">
-      <div className="flex flex-col gap-6 bg-white dark:bg-white/5 p-6 rounded-xl border border-[#f0f4f4] dark:border-white/10">
+      <div className="flex flex-col gap-6 bg-white p-6 rounded-xl border border-[#f0f4f4]">
         <div className="flex flex-col gap-3">
           <div className="flex flex-col">
-            <h1 className="text-text-main dark:text-white text-lg font-bold leading-normal">
+            <h1 className="text-text-main text-lg font-bold leading-normal">
               {fullName || 'Perfil'}
             </h1>
             <p className="text-text-sub text-sm font-normal leading-normal">
@@ -21,7 +21,7 @@ export default function ProfileSidebar({ fullName, memberSince }) {
             className={({ isActive }) =>
               isActive
                 ? 'flex items-center gap-3 px-3 py-2 rounded-lg bg-primary/10 text-primary border border-primary/20'
-                : 'flex items-center gap-3 px-3 py-2 rounded-lg text-text-sub hover:bg-[#f0f4f4] dark:hover:bg-white/5 transition-colors'
+                : 'flex items-center gap-3 px-3 py-2 rounded-lg text-text-sub hover:bg-[#f0f4f4] transition-colors'
             }
           >
             <span className="material-symbols-outlined">person</span>
@@ -33,7 +33,7 @@ export default function ProfileSidebar({ fullName, memberSince }) {
             className={({ isActive }) =>
               isActive
                 ? 'flex items-center gap-3 px-3 py-2 rounded-lg bg-primary/10 text-primary border border-primary/20'
-                : 'flex items-center gap-3 px-3 py-2 rounded-lg text-text-sub hover:bg-[#f0f4f4] dark:hover:bg-white/5 transition-colors'
+                : 'flex items-center gap-3 px-3 py-2 rounded-lg text-text-sub hover:bg-[#f0f4f4] transition-colors'
             }
           >
             <span className="material-symbols-outlined">explore</span>

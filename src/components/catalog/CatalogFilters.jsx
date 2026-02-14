@@ -17,7 +17,7 @@ export default function CatalogFilters({
             return (
               <label
                 key={island}
-                className="group flex items-center gap-3 p-3 rounded-lg border border-[#dbe4e6] dark:border-gray-700 hover:border-primary dark:hover:border-primary cursor-pointer bg-white dark:bg-card-dark transition-all"
+                className="group flex items-center gap-3 p-3 rounded-lg border border-[#dbe4e6] hover:border-primary cursor-pointer bg-white transition-all"
               >
                 <input
                   checked={checked}
@@ -25,7 +25,7 @@ export default function CatalogFilters({
                   type="checkbox"
                   onChange={() => onToggleIsland(island)}
                 />
-                <span className="text-sm font-medium text-text-main dark:text-gray-200">{island}</span>
+                <span className="text-sm font-medium text-text-main">{island}</span>
               </label>
             )
           })}
@@ -38,7 +38,7 @@ export default function CatalogFilters({
         <select
           value={selectedMunicipality}
           onChange={(event) => onMunicipalityChange(event.target.value)}
-          className="w-full rounded-lg bg-white dark:bg-card-dark border border-[#dbe4e6] dark:border-gray-700 text-text-main dark:text-white py-3 px-4 focus:border-primary focus:ring-0"
+          className="w-full rounded-lg bg-white border border-[#dbe4e6] text-text-main py-3 px-4 focus:border-primary focus:ring-0"
         >
           <option value="all">Todos los municipios</option>
           {municipalities.map((municipality) => (

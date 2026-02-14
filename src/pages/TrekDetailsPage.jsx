@@ -106,7 +106,7 @@ export default function TrekDetailsPage() {
   if (isLoading) {
     return (
       <main className="flex-grow w-full max-w-[1280px] mx-auto px-4 sm:px-10 py-10">
-        <div className="bg-white dark:bg-[#1a2c30] rounded-xl border border-[#dbe4e6] dark:border-[#2a3c40] p-8 text-center">
+        <div className="bg-white rounded-xl border border-[#dbe4e6] p-8 text-center">
           <p className="text-sm text-text-muted">Cargando detalles del trek...</p>
         </div>
       </main>
@@ -116,8 +116,8 @@ export default function TrekDetailsPage() {
   if (error) {
     return (
       <main className="flex-grow w-full max-w-[1280px] mx-auto px-4 sm:px-10 py-10">
-        <div className="bg-rose-50 dark:bg-rose-900/20 rounded-xl border border-rose-200 dark:border-rose-900/40 p-8 text-center">
-          <p className="text-sm text-rose-700 dark:text-rose-200">{error || 'No se encontró el trek solicitado.'}</p>
+        <div className="bg-rose-50 rounded-xl border border-rose-200 p-8 text-center">
+          <p className="text-sm text-rose-700">{error || 'No se encontró el trek solicitado.'}</p>
         </div>
       </main>
     )
@@ -126,8 +126,8 @@ export default function TrekDetailsPage() {
   if (!trek) {
     return (
       <main className="flex-grow w-full max-w-[1280px] mx-auto px-4 sm:px-10 py-10">
-        <div className="bg-amber-50 dark:bg-amber-900/20 rounded-xl border border-amber-200 dark:border-amber-900/40 p-8 text-center">
-          <p className="text-sm text-amber-800 dark:text-amber-200">
+        <div className="bg-amber-50 rounded-xl border border-amber-200 p-8 text-center">
+          <p className="text-sm text-amber-800">
             No se encontró el trek solicitado.
           </p>
         </div>
@@ -296,22 +296,22 @@ export default function TrekDetailsPage() {
               <span className="h-px w-12 bg-primary" />
               <span className="text-xs font-black uppercase tracking-[0.2em]">Crónica de Ruta</span>
             </div>
-            <h2 className="text-3xl md:text-4xl font-black dark:text-white mb-6 leading-tight">Resumen de la Ruta</h2>
-            <div className="prose prose-lg dark:prose-invert max-w-none text-text-muted dark:text-gray-300 leading-relaxed space-y-6">
-              <p className="text-lg md:text-xl font-light text-text-main dark:text-gray-100 first-letter:text-6xl first-letter:font-black first-letter:mr-3 first-letter:float-left first-letter:text-primary">
+            <h2 className="text-3xl md:text-4xl font-black mb-6 leading-tight">Resumen de la Ruta</h2>
+            <div className="prose prose-lg max-w-none text-text-muted leading-relaxed space-y-6">
+              <p className="text-lg md:text-xl font-light text-text-main first-letter:text-6xl first-letter:font-black first-letter:mr-3 first-letter:float-left first-letter:text-primary">
                 {aboutParagraphs[0]}
               </p>
               <p className="text-base md:text-lg">{aboutParagraphs[1]}</p>
             </div>
           </div>
           <div className="lg:col-span-5">
-            <div className="bg-background-light dark:bg-[#1a2c30] p-8 rounded-[1.75rem] editorial-shadow border border-[#f0f4f4] dark:border-[#2a3c40]">
+            <div className="bg-background-light p-8 rounded-[1.75rem] editorial-shadow border border-[#f0f4f4]">
               <div className="grid grid-cols-2 gap-y-8">
                 <div className="flex flex-col">
                   <span className="text-[11px] font-black text-text-muted uppercase tracking-[0.2em] mb-2">
                     Puntuación media
                   </span>
-                  <span className="text-2xl md:text-3xl font-black dark:text-white tracking-tighter">
+                  <span className="text-2xl md:text-3xl font-black tracking-tighter">
                     {averageScoreLabel}/5
                   </span>
                 </div>
@@ -319,7 +319,7 @@ export default function TrekDetailsPage() {
                   <span className="text-[11px] font-black text-text-muted uppercase tracking-[0.2em] mb-2">
                     Valoraciones
                   </span>
-                  <span className="text-2xl md:text-3xl font-black dark:text-white tracking-tighter">
+                  <span className="text-2xl md:text-3xl font-black tracking-tighter">
                     {scoreCount}
                   </span>
                 </div>
@@ -327,7 +327,7 @@ export default function TrekDetailsPage() {
                   <span className="text-[11px] font-black text-text-muted uppercase tracking-[0.2em] mb-2">
                     Encuentros
                   </span>
-                  <span className="text-2xl md:text-3xl font-black dark:text-white tracking-tighter">
+                  <span className="text-2xl md:text-3xl font-black tracking-tighter">
                     {meetings.length}
                   </span>
                 </div>
@@ -335,7 +335,7 @@ export default function TrekDetailsPage() {
                   <span className="text-[11px] font-black text-text-muted uppercase tracking-[0.2em] mb-2">
                     Participantes
                   </span>
-                  <span className="text-2xl md:text-3xl font-black dark:text-white tracking-tighter">
+                  <span className="text-2xl md:text-3xl font-black tracking-tighter">
                     {totalAttendees}
                   </span>
                 </div>

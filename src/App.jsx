@@ -16,7 +16,7 @@ import ProtectedRoute from './auth/ProtectedRoute'
 
 function AppContent() {
   return (
-    <div className="font-display bg-background-light dark:bg-background-dark text-text-main dark:text-white antialiased flex flex-col min-h-screen">
+    <div className="font-display bg-background-light text-text-main antialiased flex flex-col min-h-screen">
       <Header />
       <ScrollToTop />
       <Routes>

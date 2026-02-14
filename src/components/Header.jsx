@@ -19,27 +19,27 @@ export default function Header() {
   }
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-white/90 dark:bg-background-dark/90 backdrop-blur-md border-b border-gray-100 dark:border-gray-800">
+    <header className="sticky top-0 z-50 w-full bg-white/90 backdrop-blur-md border-b border-gray-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <Link className="flex items-center gap-2" to="/">
             <div className="size-8 rounded-lg bg-gradient-to-br from-primary to-blue-500 flex items-center justify-center text-white">
               <span className="material-symbols-outlined text-xl">hiking</span>
             </div>
-            <span className="text-xl font-bold tracking-tight text-text-main dark:text-white">BalearTrek</span>
+            <span className="text-xl font-bold tracking-tight text-text-main">BalearTrek</span>
           </Link>
 
           {isCatalogPage ? (
             <div className="hidden md:flex flex-1 max-w-lg mx-8">
               <label className="flex flex-col w-full h-10">
-                <div className="flex w-full flex-1 items-stretch rounded-lg h-full overflow-hidden border border-[#dbe4e6] dark:border-gray-700 focus-within:border-primary">
-                  <div className="text-text-sub flex bg-[#f0f4f4] dark:bg-gray-800 items-center justify-center pl-4 pr-2">
+                <div className="flex w-full flex-1 items-stretch rounded-lg h-full overflow-hidden border border-[#dbe4e6] focus-within:border-primary">
+                  <div className="text-text-sub flex bg-[#f0f4f4] items-center justify-center pl-4 pr-2">
                     <span className="material-symbols-outlined text-[20px]">search</span>
                   </div>
                   <input
                     value={query}
                     onChange={handleSearchChange}
-                    className="flex w-full min-w-0 flex-1 resize-none bg-[#f0f4f4] dark:bg-gray-800 text-text-main dark:text-white focus:outline-0 border-none h-full placeholder:text-text-sub px-2 text-sm"
+                    className="flex w-full min-w-0 flex-1 resize-none bg-[#f0f4f4] text-text-main focus:outline-0 border-none h-full placeholder:text-text-sub px-2 text-sm"
                     placeholder="Buscar excursiones..."
                   />
                 </div>
@@ -49,16 +49,16 @@ export default function Header() {
 
           <div className="hidden md:flex items-center gap-6">
             <nav className="hidden md:flex gap-6 lg:gap-8">
-              <Link className={`text-sm ${pathname === '/' ? 'font-semibold text-primary' : 'font-medium text-text-main/80 dark:text-white/80 hover:text-primary dark:hover:text-primary transition-colors'}`} to="/">
+              <Link className={`text-sm ${pathname === '/' ? 'font-semibold text-primary' : 'font-medium text-text-main/80 hover:text-primary transition-colors'}`} to="/">
                 Inicio
               </Link>
-              <Link className={`text-sm ${pathname === '/catalogo' ? 'font-semibold text-primary' : 'font-medium text-text-main/80 dark:text-white/80 hover:text-primary dark:hover:text-primary transition-colors'}`} to="/catalogo">
+              <Link className={`text-sm ${pathname === '/catalogo' ? 'font-semibold text-primary' : 'font-medium text-text-main/80 hover:text-primary transition-colors'}`} to="/catalogo">
                 Excursiones
               </Link>
-              <Link className={`text-sm ${pathname === '/contacto' ? 'font-semibold text-primary' : 'font-medium text-text-main/80 dark:text-white/80 hover:text-primary dark:hover:text-primary transition-colors'}`} to="/contacto">
+              <Link className={`text-sm ${pathname === '/contacto' ? 'font-semibold text-primary' : 'font-medium text-text-main/80 hover:text-primary transition-colors'}`} to="/contacto">
                 Contacto
               </Link>
-              <Link className={`text-sm ${pathname === '/faq' ? 'font-semibold text-primary' : 'font-medium text-text-main/80 dark:text-white/80 hover:text-primary dark:hover:text-primary transition-colors'}`} to="/faq">
+              <Link className={`text-sm ${pathname === '/faq' ? 'font-semibold text-primary' : 'font-medium text-text-main/80 hover:text-primary transition-colors'}`} to="/faq">
                 FAQ
               </Link>
             </nav>
@@ -96,7 +96,7 @@ export default function Header() {
                   <div
                     id="profile-menu"
                     role="menu"
-                    className="absolute left-0 mt-2 w-full min-w-[200px] rounded-xl border border-primary/40 dark:border-primary/50 bg-white dark:bg-card-dark shadow-lg shadow-[0_12px_28px_-20px_rgba(34,193,231,0.9)] p-2 flex flex-col gap-2"
+                    className="absolute left-0 mt-2 w-full min-w-[200px] rounded-xl border border-primary/40 bg-white shadow-lg shadow-[0_12px_28px_-20px_rgba(34,193,231,0.9)] p-2 flex flex-col gap-2"
                   >
                     <Link
                       className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-semibold bg-primary text-[#111718] hover:bg-cyan-400 transition-colors"

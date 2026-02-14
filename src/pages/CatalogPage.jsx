@@ -136,7 +136,7 @@ export default function CatalogPage() {
   return (
     <div className="flex-1 w-full max-w-[1440px] mx-auto px-4 md:px-10 py-8">
       <div className="mb-8">
-        <h1 className="text-3xl md:text-4xl font-black tracking-[-0.033em] text-text-main dark:text-white mb-2">
+        <h1 className="text-3xl md:text-4xl font-black tracking-[-0.033em] text-text-main mb-2">
           Encuentra tu próxima aventura en Baleares
         </h1>
         <p className="text-text-sub text-base max-w-2xl">
@@ -167,7 +167,7 @@ export default function CatalogPage() {
                   onClick={() => setCurrentPage((prevPage) => Math.max(prevPage - 1, 1))}
                   disabled={currentPage === 1}
                   aria-label="Página anterior"
-                  className={`flex items-center justify-center size-10 rounded-lg border border-[#dbe4e6] dark:border-gray-700 bg-white dark:bg-card-dark text-text-main dark:text-white hover:bg-[#f0f4f4] dark:hover:bg-gray-800 ${
+                  className={`flex items-center justify-center size-10 rounded-lg border border-[#dbe4e6] bg-white text-text-main hover:bg-[#f0f4f4] ${
                     currentPage === 1 ? 'opacity-50 pointer-events-none' : ''
                   }`}
                 >
@@ -184,7 +184,7 @@ export default function CatalogPage() {
                     className={`flex items-center justify-center size-10 rounded-lg ${
                       currentPage === pageNumber
                         ? 'bg-primary text-white font-bold'
-                        : 'border border-[#dbe4e6] dark:border-gray-700 bg-white dark:bg-card-dark text-text-main dark:text-white hover:bg-[#f0f4f4] dark:hover:bg-gray-800'
+                        : 'border border-[#dbe4e6] bg-white text-text-main hover:bg-[#f0f4f4]'
                     }`}
                   >
                     {pageNumber}
@@ -196,7 +196,7 @@ export default function CatalogPage() {
                   onClick={() => setCurrentPage((prevPage) => Math.min(prevPage + 1, totalPages))}
                   disabled={currentPage === totalPages}
                   aria-label="Página siguiente"
-                  className={`flex items-center justify-center size-10 rounded-lg border border-[#dbe4e6] dark:border-gray-700 bg-white dark:bg-card-dark text-text-main dark:text-white hover:bg-[#f0f4f4] dark:hover:bg-gray-800 ${
+                  className={`flex items-center justify-center size-10 rounded-lg border border-[#dbe4e6] bg-white text-text-main hover:bg-[#f0f4f4] ${
                     currentPage === totalPages ? 'opacity-50 pointer-events-none' : ''
                   }`}
                 >

@@ -18,7 +18,7 @@ export default function MeetingsSection({
 }) {
   return (
     <section
-      className="w-full bg-[#f9fafb] dark:bg-[#132226] py-12 overflow-hidden"
+      className="w-full bg-[#f9fafb] py-12 overflow-hidden"
       id="proximos-encuentros"
     >
       <div className="max-w-7xl mx-auto px-4 md:px-10 lg:px-20 mb-12">
@@ -28,7 +28,7 @@ export default function MeetingsSection({
               <span className="h-px w-12 bg-primary" />
               <span className="text-xs font-black uppercase tracking-[0.2em]">Agenda de la Comunidad</span>
             </div>
-            <h2 className="text-3xl md:text-4xl font-black dark:text-white leading-tight">Próximos Encuentros</h2>
+            <h2 className="text-3xl md:text-4xl font-black leading-tight">Próximos Encuentros</h2>
           </div>
           <div className="flex items-center gap-6">
             <div className="flex items-center gap-2">
@@ -67,7 +67,7 @@ export default function MeetingsSection({
       </div>
       <div className="max-w-7xl mx-auto px-4 md:px-10 lg:px-20">
         <div className="relative group overflow-hidden">
-          <div className="pointer-events-none absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-[#f9fafb]/90 to-transparent dark:from-[#132226]/90" />
+          <div className="pointer-events-none absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-[#f9fafb]/90 to-transparent" />
           <div
             className="no-scrollbar flex overflow-x-auto gap-5 py-6 snap-x snap-mandatory cursor-grab active:cursor-grabbing"
             ref={carouselRef}
@@ -103,10 +103,10 @@ export default function MeetingsSection({
                   key={meeting.id}
                 >
                   <div
-                    className={`bg-white dark:bg-[#1a2c30] ${
+                    className={`bg-white ${
                       isFeatured
                         ? 'p-7 rounded-[2rem] border-4 border-corporate-blue'
-                        : 'p-6 rounded-[1.5rem] border border-gray-100 dark:border-[#2a3c40]'
+                        : 'p-6 rounded-[1.5rem] border border-gray-100'
                     } editorial-shadow h-full`}
                   >
                     <div className={`${isFeatured ? 'text-corporate-blue' : 'text-primary'} mb-6 flex justify-between items-start`}>
@@ -134,7 +134,7 @@ export default function MeetingsSection({
                           person_pin
                         </span>
                         <span className="text-xs text-text-muted">
-                          Guía: <span className="font-black text-text-main dark:text-white uppercase">{guideLabel}</span>
+                          Guía: <span className="font-black text-text-main uppercase">{guideLabel}</span>
                         </span>
                       </div>
                     </div>
@@ -156,7 +156,7 @@ export default function MeetingsSection({
                             ? 'py-3 bg-rose-600 text-white font-black rounded-xl text-xs hover:bg-rose-700'
                             : isFeatured
                               ? 'py-4 bg-primary text-[#0f2a33] font-black rounded-xl text-sm hover:bg-[#0fb6d8]'
-                              : 'py-3 bg-white/80 dark:bg-[#203438] border-2 border-primary text-primary font-black rounded-xl text-xs hover:bg-primary/10'
+                              : 'py-3 bg-white/80 border-2 border-primary text-primary font-black rounded-xl text-xs hover:bg-primary/10'
                       } transition-all disabled:opacity-60 disabled:cursor-not-allowed`}
                       type="button"
                       onClick={() => handleToggleSubscription(meeting.id, isSubscribed, isGuide)}

@@ -87,7 +87,7 @@ export default function ProfileCommentsPage() {
 
         <main className="flex-1 flex flex-col gap-8 max-w-4xl">
           <div className="flex flex-col gap-2">
-            <h1 className="text-text-main dark:text-white text-4xl font-black leading-tight tracking-[-0.033em]">
+            <h1 className="text-text-main text-4xl font-black leading-tight tracking-[-0.033em]">
               Mis Encuentros
             </h1>
             <p className="text-text-sub text-base font-normal leading-normal">
@@ -96,7 +96,7 @@ export default function ProfileCommentsPage() {
           </div>
 
           {isUserLoading ? (
-            <div className="rounded-lg border border-[#f0f4f4] dark:border-white/10 bg-[#f6f8f8] dark:bg-white/5 px-4 py-3 text-sm text-text-sub">
+            <div className="rounded-lg border border-[#f0f4f4] bg-[#f6f8f8] px-4 py-3 text-sm text-text-sub">
               Cargando encuentros...
             </div>
           ) : error ? (
@@ -104,7 +104,7 @@ export default function ProfileCommentsPage() {
               {error}
             </div>
           ) : meetings.length === 0 ? (
-            <div className="rounded-lg border border-[#f0f4f4] dark:border-white/10 bg-[#f6f8f8] dark:bg-white/5 px-4 py-3 text-sm text-text-sub">
+            <div className="rounded-lg border border-[#f0f4f4] bg-[#f6f8f8] px-4 py-3 text-sm text-text-sub">
               Aún no tienes encuentros registrados.
             </div>
           ) : (
@@ -117,12 +117,12 @@ export default function ProfileCommentsPage() {
               <section className="flex flex-col gap-4">
                 <div className="flex items-center gap-2 px-1">
                   <span className="material-symbols-outlined text-primary">calendar_month</span>
-                  <h2 className="text-text-main dark:text-white text-2xl font-bold leading-tight tracking-[-0.015em]">
+                  <h2 className="text-text-main text-2xl font-bold leading-tight tracking-[-0.015em]">
                     Próximos Encuentros
                   </h2>
                 </div>
                 {sortedUpcomingMeetings.length === 0 ? (
-                  <div className="rounded-lg border border-[#f0f4f4] dark:border-white/10 bg-[#f6f8f8] dark:bg-white/5 px-4 py-3 text-sm text-text-sub">
+                  <div className="rounded-lg border border-[#f0f4f4] bg-[#f6f8f8] px-4 py-3 text-sm text-text-sub">
                     No tienes encuentros próximos.
                   </div>
                 ) : (
@@ -140,7 +140,7 @@ export default function ProfileCommentsPage() {
                       return (
                         <div
                           key={meeting.id}
-                          className="bg-white dark:bg-white/5 p-5 rounded-xl border border-[#f0f4f4] dark:border-white/10 shadow-sm flex flex-col gap-4"
+                          className="bg-white p-5 rounded-xl border border-[#f0f4f4] shadow-sm flex flex-col gap-4"
                         >
                           <div className="flex justify-between items-start">
                             <div className="flex items-center gap-3">
@@ -148,7 +148,7 @@ export default function ProfileCommentsPage() {
                                 <span className="material-symbols-outlined">hiking</span>
                               </div>
                               <div className="flex flex-col">
-                                <p className="text-text-main dark:text-white font-bold leading-tight">
+                                <p className="text-text-main font-bold leading-tight">
                                   {meetingName}
                                 </p>
                                 <div className="flex items-center gap-2 mt-1">
@@ -163,14 +163,14 @@ export default function ProfileCommentsPage() {
                                 </div>
                               </div>
                             </div>
-                            <span className="px-3 py-1 bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-400 text-[10px] font-bold uppercase tracking-wider rounded-full">
+                            <span className="px-3 py-1 bg-blue-100 text-blue-700 text-[10px] font-bold uppercase tracking-wider rounded-full">
                               Inscrito
                             </span>
                           </div>
                           <div className="flex items-center justify-between gap-3">
                             <div className="text-xs text-text-sub">
                               Guía principal:{' '}
-                              <span className="font-bold text-text-main dark:text-white">
+                              <span className="font-bold text-text-main">
                                 {meeting?.guide?.name ? `${meeting.guide.name} ${meeting?.guide?.lastname ?? ''}`.trim() : 'Pendiente'}
                               </span>
                             </div>
@@ -194,16 +194,16 @@ export default function ProfileCommentsPage() {
                 <div className="flex items-center justify-between gap-4 px-1">
                   <div className="flex items-center gap-2">
                     <span className="material-symbols-outlined text-text-sub">history</span>
-                    <h2 className="text-text-main dark:text-white text-2xl font-bold leading-tight tracking-[-0.015em]">
+                    <h2 className="text-text-main text-2xl font-bold leading-tight tracking-[-0.015em]">
                       Historial de Encuentros
                     </h2>
                   </div>
-                  <div className="flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-white/10 rounded-lg border border-[#e3eaec] dark:border-white/20 shadow-sm">
-                    <span className="text-sm font-medium text-text-sub dark:text-gray-400">
+                  <div className="flex items-center gap-2 px-3 py-1.5 bg-white rounded-lg border border-[#e3eaec] shadow-sm">
+                    <span className="text-sm font-medium text-text-sub">
                       Ordenar por:
                     </span>
                     <select
-                      className="bg-transparent border-none text-sm font-bold text-text-main dark:text-white focus:ring-0 cursor-pointer py-0 pl-0 pr-8"
+                      className="bg-transparent border-none text-sm font-bold text-text-main focus:ring-0 cursor-pointer py-0 pl-0 pr-8"
                       onChange={({ target }) => setSortKey(target.value)}
                       value={sortKey}
                     >
@@ -213,7 +213,7 @@ export default function ProfileCommentsPage() {
                   </div>
                 </div>
                 {sortedMeetings.length === 0 ? (
-                  <div className="rounded-lg border border-[#f0f4f4] dark:border-white/10 bg-[#f6f8f8] dark:bg-white/5 px-4 py-3 text-sm text-text-sub">
+                  <div className="rounded-lg border border-[#f0f4f4] bg-[#f6f8f8] px-4 py-3 text-sm text-text-sub">
                     Aún no tienes encuentros en el historial.
                   </div>
                 ) : (
@@ -242,7 +242,7 @@ export default function ProfileCommentsPage() {
                       return (
                         <div
                           key={meeting.id}
-                          className={`bg-white dark:bg-white/5 rounded-xl border border-[#f0f4f4] dark:border-white/10 overflow-hidden shadow-sm ${cardOpacity}`}
+                          className={`bg-white rounded-xl border border-[#f0f4f4] overflow-hidden shadow-sm ${cardOpacity}`}
                         >
                           <div className="p-6">
                             <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
@@ -251,7 +251,7 @@ export default function ProfileCommentsPage() {
                                   <span className="material-symbols-outlined">event</span>
                                 </div>
                                 <div className="flex flex-col">
-                                  <p className="text-text-main dark:text-white font-bold leading-tight">
+                                  <p className="text-text-main font-bold leading-tight">
                                     {meetingName}
                                   </p>
                                   <div className="flex items-center gap-3 mt-1">
@@ -268,20 +268,20 @@ export default function ProfileCommentsPage() {
                                   </div>
                                 </div>
                               </div>
-                              <span className="px-3 py-1 bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-400 text-xs font-bold rounded-full">
+                              <span className="px-3 py-1 bg-green-100 text-green-700 text-xs font-bold rounded-full">
                                 Completado
                               </span>
                             </div>
-                            <hr className="border-[#f0f4f4] dark:border-white/10 mb-6" />
+                            <hr className="border-[#f0f4f4] mb-6" />
 
                             {publishedComment ? (
-                              <div className="bg-background-light dark:bg-white/5 p-5 rounded-lg border border-[#f0f4f4] dark:border-white/10">
+                              <div className="bg-background-light p-5 rounded-lg border border-[#f0f4f4]">
                                 <div className="flex justify-between items-start mb-4">
-                                  <h3 className="text-sm font-bold text-text-main dark:text-white">
+                                  <h3 className="text-sm font-bold text-text-main">
                                     Mi Valoración
                                   </h3>
                                   <div
-                                    className={`flex items-center gap-1.5 px-2 py-1 bg-blue-50 dark:bg-primary/10 rounded border border-primary/20 ${statusTone}`}
+                                    className={`flex items-center gap-1.5 px-2 py-1 bg-blue-50 rounded border border-primary/20 ${statusTone}`}
                                   >
                                     <span className="material-symbols-outlined text-[14px] filled">
                                       check_circle
@@ -295,7 +295,7 @@ export default function ProfileCommentsPage() {
                                   <div className="flex-1 flex flex-col gap-3">
                                     <div className="flex gap-1 items-center text-orange-400">
                                       <Stars id={`meeting-${meeting.id}`} rating={rating} max={5} />
-                                      <span className="ml-2 text-text-main dark:text-white text-sm font-bold">
+                                      <span className="ml-2 text-text-main text-sm font-bold">
                                         {rating}/5
                                       </span>
                                     </div>
@@ -308,7 +308,7 @@ export default function ProfileCommentsPage() {
                                   {coverImage ? (
                                     <div className="shrink-0">
                                       <div
-                                        className="bg-center bg-no-repeat aspect-square bg-cover rounded-lg size-24 border-2 border-white dark:border-white/10 shadow-sm"
+                                        className="bg-center bg-no-repeat aspect-square bg-cover rounded-lg size-24 border-2 border-white shadow-sm"
                                         style={{ backgroundImage: `url("${coverImage}")` }}
                                       />
                                     </div>
@@ -316,7 +316,7 @@ export default function ProfileCommentsPage() {
                                 </div>
                               </div>
                             ) : (
-                              <div className="rounded-lg border border-[#f0f4f4] dark:border-white/10 bg-[#f6f8f8] dark:bg-white/5 px-4 py-3 text-sm text-text-sub">
+                              <div className="rounded-lg border border-[#f0f4f4] bg-[#f6f8f8] px-4 py-3 text-sm text-text-sub">
                                 Aún no has dejado una valoración de este encuentro.
                               </div>
                             )}

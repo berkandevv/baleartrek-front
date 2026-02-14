@@ -4,25 +4,25 @@ export default function FAQPage() {
   return (
     <main className="flex-1 w-full max-w-[1440px] mx-auto px-4 md:px-10 lg:px-40 py-16">
       <div className="mb-12 text-center max-w-3xl mx-auto">
-        <h2 className="text-3xl md:text-5xl font-black text-[#101f22] dark:text-white mb-4 tracking-tight">
+        <h2 className="text-3xl md:text-5xl font-black text-[#101f22] mb-4 tracking-tight">
           Preguntas Frecuentes
         </h2>
-        <p className="text-lg text-[#618389] dark:text-gray-400">
+        <p className="text-lg text-[#618389]">
           Consulta toda la información relevante de forma directa y clara para disfrutar de tu próxima aventura.
         </p>
       </div>
 
       <div className="max-w-4xl mx-auto">
-        <div className="bg-gradient-to-br from-white via-[#f7fcfd] to-[#eef8fb] dark:bg-[#1a2c30] p-8 md:p-12 rounded-3xl shadow-sm border border-[#e3f3f6] dark:border-[#2a3c40]">
-          <div className="flex items-center gap-3 mb-10 pb-6 border-b border-[#d9edf2] dark:border-[#2a3c40]">
+        <div className="bg-gradient-to-br from-white via-[#f7fcfd] to-[#eef8fb] p-8 md:p-12 rounded-3xl shadow-sm border border-[#e3f3f6]">
+          <div className="flex items-center gap-3 mb-10 pb-6 border-b border-[#d9edf2]">
             <span className="material-symbols-outlined text-primary text-3xl">quiz</span>
-            <h3 className="text-2xl font-bold dark:text-white">Información General</h3>
+            <h3 className="text-2xl font-bold">Información General</h3>
           </div>
 
           <div className="space-y-6">
-            <details className="group border border-[#d8edf2] bg-white/80 dark:bg-[#1f3337] dark:border-[#2a3c40] rounded-2xl px-5 md:px-6 py-4 transition-all duration-300 hover:border-primary/40 hover:shadow-[0_12px_28px_-20px_rgba(34,193,231,0.9)]" open>
+            <details className="group border border-[#d8edf2] bg-white/80 rounded-2xl px-5 md:px-6 py-4 transition-all duration-300 hover:border-primary/40 hover:shadow-[0_12px_28px_-20px_rgba(34,193,231,0.9)]" open>
               <summary className="flex items-center justify-between cursor-pointer py-2 list-none">
-                <span className="text-xl font-bold text-[#101f22] dark:text-white flex items-center gap-2 pr-4">
+                <span className="text-xl font-bold text-[#101f22] flex items-center gap-2 pr-4">
                   <span className="material-symbols-outlined text-primary">app_registration</span>
                   Reglas de Inscripción
                 </span>
@@ -31,35 +31,35 @@ export default function FAQPage() {
                 </span>
               </summary>
               <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="flex items-start gap-4 p-5 bg-gray-50 dark:bg-[#203438] rounded-2xl border border-gray-100 dark:border-white/5">
-                  <div className="size-12 rounded-full bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 flex items-center justify-center shrink-0">
+                <div className="flex items-start gap-4 p-5 bg-gray-50 rounded-2xl border border-gray-100">
+                  <div className="size-12 rounded-full bg-green-100 text-green-600 flex items-center justify-center shrink-0">
                     <span className="material-symbols-outlined text-[28px]">event_available</span>
                   </div>
                   <div>
-                    <p className="text-base font-bold text-[#101f22] dark:text-white">Apertura de Inscripciones</p>
-                    <p className="text-sm text-[#618389] dark:text-gray-400 mt-1">
-                      Se abren <span className="text-green-600 dark:text-green-400 font-bold uppercase tracking-wide">1 mes antes</span> de la fecha de la excursión programada.
+                    <p className="text-base font-bold text-[#101f22]">Apertura de Inscripciones</p>
+                    <p className="text-sm text-[#618389] mt-1">
+                      Se abren <span className="text-green-600 font-bold uppercase tracking-wide">1 mes antes</span> de la fecha de la excursión programada.
                     </p>
                   </div>
                 </div>
 
-                <div className="flex items-start gap-4 p-5 bg-gray-50 dark:bg-[#203438] rounded-2xl border border-gray-100 dark:border-white/5">
-                  <div className="size-12 rounded-full bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 flex items-center justify-center shrink-0">
+                <div className="flex items-start gap-4 p-5 bg-gray-50 rounded-2xl border border-gray-100">
+                  <div className="size-12 rounded-full bg-red-100 text-red-600 flex items-center justify-center shrink-0">
                     <span className="material-symbols-outlined text-[28px]">event_busy</span>
                   </div>
                   <div>
-                    <p className="text-base font-bold text-[#101f22] dark:text-white">Cierre de Inscripciones</p>
-                    <p className="text-sm text-[#618389] dark:text-gray-400 mt-1">
-                      Se cierran definitivamente <span className="text-red-600 dark:text-red-400 font-bold uppercase tracking-wide">1 semana antes</span> del evento por motivos de organización.
+                    <p className="text-base font-bold text-[#101f22]">Cierre de Inscripciones</p>
+                    <p className="text-sm text-[#618389] mt-1">
+                      Se cierran definitivamente <span className="text-red-600 font-bold uppercase tracking-wide">1 semana antes</span> del evento por motivos de organización.
                     </p>
                   </div>
                 </div>
               </div>
             </details>
 
-            <details className="group border border-[#d8edf2] bg-white/80 dark:bg-[#1f3337] dark:border-[#2a3c40] rounded-2xl px-5 md:px-6 py-4 transition-all duration-300 hover:border-primary/40 hover:shadow-[0_12px_28px_-20px_rgba(34,193,231,0.9)]">
+            <details className="group border border-[#d8edf2] bg-white/80 rounded-2xl px-5 md:px-6 py-4 transition-all duration-300 hover:border-primary/40 hover:shadow-[0_12px_28px_-20px_rgba(34,193,231,0.9)]">
               <summary className="flex items-center justify-between cursor-pointer py-2 list-none">
-                <span className="text-xl font-bold text-[#101f22] dark:text-white flex items-center gap-2 pr-4">
+                <span className="text-xl font-bold text-[#101f22] flex items-center gap-2 pr-4">
                   <span className="material-symbols-outlined text-primary">health_and_safety</span>
                   Seguro de Accidentes
                 </span>
@@ -67,17 +67,17 @@ export default function FAQPage() {
                   expand_more
                 </span>
               </summary>
-              <div className="mt-4 bg-[#f6fbfd] dark:bg-[#203438] p-6 rounded-2xl border border-[#dbeef3] dark:border-white/5">
-                <p className="text-base text-[#618389] dark:text-gray-400 leading-relaxed">
+              <div className="mt-4 bg-[#f6fbfd] p-6 rounded-2xl border border-[#dbeef3]">
+                <p className="text-base text-[#618389] leading-relaxed">
                   BalearTrek no cobra cuotas de inscripción, por lo que{' '}
-                  <span className="font-semibold text-[#101f22] dark:text-white">no se incluye ningún seguro de accidentes en el precio</span>. Recomendamos participar con licencia federativa en vigor o con un seguro personal que cubra asistencia sanitaria y rescate en montaña.
+                  <span className="font-semibold text-[#101f22]">no se incluye ningún seguro de accidentes en el precio</span>. Recomendamos participar con licencia federativa en vigor o con un seguro personal que cubra asistencia sanitaria y rescate en montaña.
                 </p>
               </div>
             </details>
 
-            <details className="group border border-[#d8edf2] bg-white/80 dark:bg-[#1f3337] dark:border-[#2a3c40] rounded-2xl px-5 md:px-6 py-4 transition-all duration-300 hover:border-primary/40 hover:shadow-[0_12px_28px_-20px_rgba(34,193,231,0.9)]">
+            <details className="group border border-[#d8edf2] bg-white/80 rounded-2xl px-5 md:px-6 py-4 transition-all duration-300 hover:border-primary/40 hover:shadow-[0_12px_28px_-20px_rgba(34,193,231,0.9)]">
               <summary className="flex items-center justify-between cursor-pointer py-2 list-none">
-                <span className="text-xl font-bold text-[#101f22] dark:text-white flex items-center gap-2 pr-4">
+                <span className="text-xl font-bold text-[#101f22] flex items-center gap-2 pr-4">
                   <span className="material-symbols-outlined text-primary">cancel</span>
                   Política de Cancelación
                 </span>
@@ -85,20 +85,20 @@ export default function FAQPage() {
                   expand_more
                 </span>
               </summary>
-              <div className="mt-4 bg-[#f6fbfd] dark:bg-[#203438] p-6 rounded-2xl border border-[#dbeef3] dark:border-white/5">
-                <p className="text-base text-[#618389] dark:text-gray-400 leading-relaxed">
+              <div className="mt-4 bg-[#f6fbfd] p-6 rounded-2xl border border-[#dbeef3]">
+                <p className="text-base text-[#618389] leading-relaxed">
                   Entendemos que los planes pueden cambiar. Puedes cancelar tu plaza en cualquier momento, ya que nuestras excursiones son{' '}
-                  <span className="font-semibold text-[#101f22] dark:text-white">gratuitas</span> y no se realiza ningún cobro.
+                  <span className="font-semibold text-[#101f22]">gratuitas</span> y no se realiza ningún cobro.
                 </p>
-                <p className="text-base text-[#618389] dark:text-gray-400 mt-4 leading-relaxed">
+                <p className="text-base text-[#618389] mt-4 leading-relaxed">
                   Si no puedes asistir, te agradecemos avisar con antelación para liberar tu plaza y facilitar la organización del grupo.
                 </p>
               </div>
             </details>
 
-            <details className="group border border-[#d8edf2] bg-white/80 dark:bg-[#1f3337] dark:border-[#2a3c40] rounded-2xl px-5 md:px-6 py-4 transition-all duration-300 hover:border-primary/40 hover:shadow-[0_12px_28px_-20px_rgba(34,193,231,0.9)]">
+            <details className="group border border-[#d8edf2] bg-white/80 rounded-2xl px-5 md:px-6 py-4 transition-all duration-300 hover:border-primary/40 hover:shadow-[0_12px_28px_-20px_rgba(34,193,231,0.9)]">
               <summary className="flex items-center justify-between cursor-pointer py-2 list-none">
-                <span className="text-xl font-bold text-[#101f22] dark:text-white flex items-center gap-2 pr-4">
+                <span className="text-xl font-bold text-[#101f22] flex items-center gap-2 pr-4">
                   <span className="material-symbols-outlined text-primary">fitness_center</span>
                   Requisitos Físicos
                 </span>
@@ -106,11 +106,11 @@ export default function FAQPage() {
                   expand_more
                 </span>
               </summary>
-              <div className="mt-4 bg-[#f6fbfd] dark:bg-[#203438] p-6 rounded-2xl border border-[#dbeef3] dark:border-white/5">
-                <p className="text-base text-[#618389] dark:text-gray-400 leading-relaxed mb-4">
+              <div className="mt-4 bg-[#f6fbfd] p-6 rounded-2xl border border-[#dbeef3]">
+                <p className="text-base text-[#618389] leading-relaxed mb-4">
                   Nuestras excursiones transcurren por terrenos naturales que requieren una condición física adecuada. Recomendamos a los participantes:
                 </p>
-                <ul className="space-y-3 text-sm text-[#618389] dark:text-gray-400">
+                <ul className="space-y-3 text-sm text-[#618389]">
                   <li className="flex items-center gap-3">
                     <span className="material-symbols-outlined text-primary text-lg">check_circle</span>
                     Tener experiencia previa caminando por senderos de montaña.
@@ -137,8 +137,8 @@ export default function FAQPage() {
               <span className="material-symbols-outlined text-4xl">support_agent</span>
             </div>
             <div>
-              <p className="text-lg font-bold text-[#101f22] dark:text-white uppercase tracking-wider mb-1">¿Aún tienes dudas?</p>
-              <p className="text-base text-[#618389] dark:text-gray-300">
+              <p className="text-lg font-bold text-[#101f22] uppercase tracking-wider mb-1">¿Aún tienes dudas?</p>
+              <p className="text-base text-[#618389]">
                 Si necesitas información adicional, nuestro equipo está listo para ayudarte.
               </p>
             </div>

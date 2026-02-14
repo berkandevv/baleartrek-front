@@ -141,7 +141,7 @@ export default function ProfilePage() {
 
         <main className="flex-1 flex flex-col gap-8 max-w-4xl">
           <div className="flex flex-col gap-2">
-            <h1 className="text-text-main dark:text-white text-4xl font-black leading-tight tracking-[-0.033em]">
+            <h1 className="text-text-main text-4xl font-black leading-tight tracking-[-0.033em]">
               Mi Perfil
             </h1>
             <p className="text-text-sub text-base font-normal leading-normal">
@@ -149,31 +149,31 @@ export default function ProfilePage() {
             </p>
           </div>
 
-          <div className="bg-white dark:bg-white/5 rounded-xl border border-[#f0f4f4] dark:border-white/10 overflow-hidden shadow-sm">
+          <div className="bg-white rounded-xl border border-[#f0f4f4] overflow-hidden shadow-sm">
             <div className="p-6 sm:p-8 flex flex-col gap-8">
               <div className="flex items-center justify-between flex-wrap gap-4">
                 <div className="flex items-center gap-6">
                   <div className="flex flex-col">
-                    <p className="text-text-main dark:text-white text-xl font-bold leading-tight">
+                    <p className="text-text-main text-xl font-bold leading-tight">
                       {fullName || 'Tu perfil'}
                     </p>
                     <p className="text-text-sub text-sm font-normal">Datos personales y de contacto</p>
                   </div>
                 </div>
               </div>
-              <hr className="border-[#f0f4f4] dark:border-white/10" />
+              <hr className="border-[#f0f4f4]" />
 
               {!isAuthenticated ? (
-                <div className="rounded-lg border border-[#f0f4f4] dark:border-white/10 bg-[#f6f8f8] dark:bg-white/5 px-4 py-3 text-sm text-text-sub">
+                <div className="rounded-lg border border-[#f0f4f4] bg-[#f6f8f8] px-4 py-3 text-sm text-text-sub">
                   Inicia sesión para ver y editar tu perfil.
                 </div>
               ) : isUserLoading ? (
-                <div className="rounded-lg border border-[#f0f4f4] dark:border-white/10 bg-[#f6f8f8] dark:bg-white/5 px-4 py-3 text-sm text-text-sub">
+                <div className="rounded-lg border border-[#f0f4f4] bg-[#f6f8f8] px-4 py-3 text-sm text-text-sub">
                   Cargando datos del perfil...
                 </div>
               ) : (
                 <div>
-                  <h2 className="text-text-main dark:text-white text-lg font-bold mb-6">
+                  <h2 className="text-text-main text-lg font-bold mb-6">
                     Mis Datos Personales
                   </h2>
 
@@ -191,74 +191,74 @@ export default function ProfilePage() {
 
                   <form className="grid grid-cols-1 md:grid-cols-2 gap-6" onSubmit={handleSubmit}>
                     <div className="flex flex-col gap-2">
-                      <label className="text-sm font-bold text-text-main dark:text-white" htmlFor="name">
+                      <label className="text-sm font-bold text-text-main" htmlFor="name">
                         Nombre
                       </label>
                       <input
                         id="name"
                         name="name"
-                        className="rounded-lg border-[#f0f4f4] dark:border-white/10 bg-transparent focus:ring-primary focus:border-primary px-4 py-2.5 dark:text-white"
+                        className="rounded-lg border-[#f0f4f4] bg-transparent focus:ring-primary focus:border-primary px-4 py-2.5"
                         type="text"
                         value={form.name}
                         onChange={handleChange}
                       />
                     </div>
                     <div className="flex flex-col gap-2">
-                      <label className="text-sm font-bold text-text-main dark:text-white" htmlFor="lastname">
+                      <label className="text-sm font-bold text-text-main" htmlFor="lastname">
                         Apellidos
                       </label>
                       <input
                         id="lastname"
                         name="lastname"
-                        className="rounded-lg border-[#f0f4f4] dark:border-white/10 bg-transparent focus:ring-primary focus:border-primary px-4 py-2.5 dark:text-white"
+                        className="rounded-lg border-[#f0f4f4] bg-transparent focus:ring-primary focus:border-primary px-4 py-2.5"
                         type="text"
                         value={form.lastname}
                         onChange={handleChange}
                       />
                     </div>
                     <div className="flex flex-col gap-2">
-                      <label className="text-sm font-bold text-text-main dark:text-white" htmlFor="dni">
+                      <label className="text-sm font-bold text-text-main" htmlFor="dni">
                         DNI / NIE
                       </label>
                       <input
                         id="dni"
                         name="dni"
-                        className="rounded-lg border-[#f0f4f4] dark:border-white/10 bg-transparent focus:ring-primary focus:border-primary px-4 py-2.5 dark:text-white"
+                        className="rounded-lg border-[#f0f4f4] bg-transparent focus:ring-primary focus:border-primary px-4 py-2.5"
                         type="text"
                         value={form.dni}
                         onChange={handleChange}
                       />
                       {fieldErrors.dni ? (
-                        <span className="text-xs text-rose-600 dark:text-rose-300">{fieldErrors.dni}</span>
+                        <span className="text-xs text-rose-600">{fieldErrors.dni}</span>
                       ) : null}
                     </div>
                     <div className="flex flex-col gap-2">
-                      <label className="text-sm font-bold text-text-main dark:text-white" htmlFor="phone">
+                      <label className="text-sm font-bold text-text-main" htmlFor="phone">
                         Teléfono de Contacto
                       </label>
                       <input
                         id="phone"
                         name="phone"
-                        className="rounded-lg border-[#f0f4f4] dark:border-white/10 bg-transparent focus:ring-primary focus:border-primary px-4 py-2.5 dark:text-white"
+                        className="rounded-lg border-[#f0f4f4] bg-transparent focus:ring-primary focus:border-primary px-4 py-2.5"
                         type="tel"
                         value={form.phone}
                         onChange={handleChange}
                       />
                     </div>
                     <div className="flex flex-col gap-2 md:col-span-2">
-                      <label className="text-sm font-bold text-text-main dark:text-white" htmlFor="email">
+                      <label className="text-sm font-bold text-text-main" htmlFor="email">
                         Correo Electrónico
                       </label>
                       <input
                         id="email"
                         name="email"
-                        className="rounded-lg border-[#f0f4f4] dark:border-white/10 bg-transparent focus:ring-primary focus:border-primary px-4 py-2.5 dark:text-white"
+                        className="rounded-lg border-[#f0f4f4] bg-transparent focus:ring-primary focus:border-primary px-4 py-2.5"
                         type="email"
                         value={form.email}
                         onChange={handleChange}
                       />
                       {fieldErrors.email ? (
-                        <span className="text-xs text-rose-600 dark:text-rose-300">{fieldErrors.email}</span>
+                        <span className="text-xs text-rose-600">{fieldErrors.email}</span>
                       ) : null}
                     </div>
                     <div className="md:col-span-2 flex flex-col sm:flex-row justify-between gap-3 mt-4">
@@ -285,36 +285,36 @@ export default function ProfilePage() {
           </div>
 
           <div className="flex flex-col gap-4">
-            <h2 className="text-text-main dark:text-white text-[22px] font-bold leading-tight tracking-[-0.015em] px-1">
+            <h2 className="text-text-main text-[22px] font-bold leading-tight tracking-[-0.015em] px-1">
               Resumen de Actividad
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
-              <div className="bg-white dark:bg-white/5 p-6 rounded-xl border border-[#f0f4f4] dark:border-white/10 flex items-center gap-4">
+              <div className="bg-white p-6 rounded-xl border border-[#f0f4f4] flex items-center gap-4">
                 <div className="size-12 rounded-full bg-primary/20 flex items-center justify-center text-primary">
                   <span className="material-symbols-outlined">hiking</span>
                 </div>
                 <div className="flex flex-col">
-                  <p className="text-2xl font-black text-text-main dark:text-white">{completedMeetingsCount}</p>
+                  <p className="text-2xl font-black text-text-main">{completedMeetingsCount}</p>
                   <p className="text-sm text-text-sub font-medium">Rutas Completadas</p>
                 </div>
               </div>
-              <div className="bg-white dark:bg-white/5 p-6 rounded-xl border border-[#f0f4f4] dark:border-white/10 flex items-center gap-4">
-                <div className="size-12 rounded-full bg-orange-100 dark:bg-orange-500/20 flex items-center justify-center text-orange-500">
+              <div className="bg-white p-6 rounded-xl border border-[#f0f4f4] flex items-center gap-4">
+                <div className="size-12 rounded-full bg-orange-100 flex items-center justify-center text-orange-500">
                   <span className="material-symbols-outlined">star</span>
                 </div>
                 <div className="flex flex-col">
-                  <p className="text-2xl font-black text-[#111718] dark:text-white">
+                  <p className="text-2xl font-black text-[#111718]">
                     {commentedMeetingsCount}
                   </p>
                   <p className="text-sm text-[#618389] font-medium">Valoraciones</p>
                 </div>
               </div>
-              <div className="bg-white dark:bg-white/5 p-6 rounded-xl border border-[#f0f4f4] dark:border-white/10 flex items-center gap-4">
-                <div className="size-12 rounded-full bg-emerald-100 dark:bg-emerald-500/20 flex items-center justify-center text-emerald-600 dark:text-emerald-300">
+              <div className="bg-white p-6 rounded-xl border border-[#f0f4f4] flex items-center gap-4">
+                <div className="size-12 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600">
                   <span className="material-symbols-outlined">event_available</span>
                 </div>
                 <div className="flex flex-col">
-                  <p className="text-2xl font-black text-text-main dark:text-white">0</p>
+                  <p className="text-2xl font-black text-text-main">0</p>
                   <p className="text-sm text-text-sub font-medium">Próximos Encuentros</p>
                 </div>
               </div>

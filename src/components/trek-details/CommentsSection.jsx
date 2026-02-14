@@ -9,7 +9,7 @@ export default function CommentsSection({
 }) {
   return (
     <section className="max-w-7xl mx-auto px-4 md:px-10 lg:px-20">
-      <div className="bg-background-light dark:bg-[#1a2c30] rounded-[2.5rem] p-10 md:p-14 editorial-shadow relative overflow-hidden">
+      <div className="bg-background-light rounded-[2.5rem] p-10 md:p-14 editorial-shadow relative overflow-hidden">
         <div className="absolute top-0 right-0 p-8 text-primary/15">
           <span className="material-symbols-outlined text-[9rem] leading-none">forum</span>
         </div>
@@ -18,7 +18,7 @@ export default function CommentsSection({
             <span className="h-px w-12 bg-primary" />
             <span className="text-xs font-black uppercase tracking-[0.2em]">Testimonios</span>
           </div>
-          <h3 className="text-3xl md:text-4xl font-black mb-10 dark:text-white tracking-tighter">
+          <h3 className="text-3xl md:text-4xl font-black mb-10 tracking-tighter">
             Comentarios de la Comunidad
           </h3>
           {comments.length ? (
@@ -40,7 +40,7 @@ export default function CommentsSection({
                         {Array.from({ length: 5 }).map((_, index) => (
                           <span
                             className={`material-symbols-outlined ${
-                              index < rating ? 'star-rating text-orange-400' : 'text-slate-300 dark:text-slate-600'
+                              index < rating ? 'star-rating text-orange-400' : 'text-slate-300'
                             }`}
                             key={`${comment.id}-star-${index}`}
                           >
@@ -49,7 +49,7 @@ export default function CommentsSection({
                         ))}
                       </div>
                     </div>
-                    <p className="text-base text-text-muted dark:text-gray-300 font-light italic leading-relaxed">
+                    <p className="text-base text-text-muted font-light italic leading-relaxed">
                       "{comment.comment}"
                     </p>
                   </div>
@@ -57,14 +57,14 @@ export default function CommentsSection({
               })}
             </div>
           ) : (
-            <p className="text-base text-text-muted dark:text-gray-300">
+            <p className="text-base text-text-muted">
               Todavía no hay comentarios publicados para esta ruta.
             </p>
           )}
           {hasMoreComments ? (
             <div className="mt-12 flex justify-center">
               <button
-                className="px-8 py-3 bg-white/80 dark:bg-[#203438] border-2 border-primary rounded-xl font-black text-primary uppercase tracking-[0.2em] text-xs hover:bg-primary/10 transition-all shadow-xl"
+                className="px-8 py-3 bg-white/80 border-2 border-primary rounded-xl font-black text-primary uppercase tracking-[0.2em] text-xs hover:bg-primary/10 transition-all shadow-xl"
                 onClick={() =>
                   setVisibleComments((prev) =>
                     prev >= comments.length ? 4 : Math.min(prev + 4, comments.length),

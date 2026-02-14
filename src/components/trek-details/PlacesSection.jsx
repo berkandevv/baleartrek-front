@@ -42,11 +42,11 @@ export default function PlacesSection({
           <span className="h-px w-12 bg-primary" />
           <span className="text-xs font-black uppercase tracking-[0.2em]">Hitos en el Camino</span>
         </div>
-        <h2 className="text-3xl md:text-4xl font-black dark:text-white mb-6 leading-tight">Lugares de Interés</h2>
+        <h2 className="text-3xl md:text-4xl font-black mb-6 leading-tight">Lugares de Interés</h2>
         <p className="text-base md:text-lg text-text-muted leading-relaxed mb-8 font-medium">
           Explora los puntos estratégicos que definen la esencia de la ruta, desde cumbres míticas hasta calas escondidas.
         </p>
-        <div className="relative w-full aspect-[4/3] rounded-[1.75rem] bg-gray-100 dark:bg-[#1a2c30] overflow-hidden shadow-xl border-2 border-white dark:border-[#2a3c40]">
+        <div className="relative w-full aspect-[4/3] rounded-[1.75rem] bg-gray-100 overflow-hidden shadow-xl border-2 border-white">
           <MapContainer
             center={mapCenter}
             zoom={12}
@@ -82,7 +82,7 @@ export default function PlacesSection({
       <div className="lg:col-span-7 space-y-7">
         {mapMarkers.map((place) => (
           <button
-            className="group flex gap-6 p-6 bg-white dark:bg-[#1a2c30] rounded-[2rem] editorial-shadow border border-transparent hover:border-primary/20 transition-all text-left w-full"
+            className="group flex gap-6 p-6 bg-white rounded-[2rem] editorial-shadow border border-transparent hover:border-primary/20 transition-all text-left w-full"
             key={place.id}
             type="button"
             onClick={() => focusPlaceOnMap(place)}
@@ -93,15 +93,15 @@ export default function PlacesSection({
             </div>
             <div className="flex-1">
               <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
-                <h4 className="text-xl font-black dark:text-white">{place.name}</h4>
+                <h4 className="text-xl font-black">{place.name}</h4>
                 <span className="px-3 py-1 bg-primary/10 text-primary text-[10px] font-black rounded-lg uppercase tracking-[0.2em]">
                   {place.place_type.name}
                 </span>
               </div>
-              <p className="text-base text-text-muted dark:text-gray-400 mb-6 leading-relaxed">
+              <p className="text-base text-text-muted mb-6 leading-relaxed">
                 {place.place_type.name} destacado en la ruta, ideal para disfrutar del entorno y descansar.
               </p>
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-background-light dark:bg-[#203438] rounded-lg text-xs font-mono text-primary font-bold">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-background-light rounded-lg text-xs font-mono text-primary font-bold">
                 <span className="material-symbols-outlined text-sm">location_on</span>
                 {place.gps}
               </div>
