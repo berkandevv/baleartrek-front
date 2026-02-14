@@ -83,15 +83,20 @@ export default function TrekDetailsPage() {
     )
   }
 
-  const averageScore = trek.score?.average ?? 0
-  const scoreCount = trek.score?.count ?? 0
+  const averageScore = Number(trek?.score?.average)
+  const scoreCount = Number(trek?.score?.count) || 0
   const averageScoreLabel = Number.isFinite(averageScore) ? averageScore.toFixed(2) : '0.00'
-  const imageSrc = resolveImageUrl(trek.imageUrl)
-  const locationLabel = `${trek.municipality.name}, ${trek.municipality.island.name}`
+  const municipalityName = trek?.municipality?.name ?? 'Municipio pendiente'
+  const islandName = trek?.municipality?.island?.name ?? 'Isla pendiente'
+  const zoneName = trek?.municipality?.zone?.name ?? 'zona no especificada'
+  const trekName = trek?.name ?? 'Ruta sin nombre'
+  const trekDescription = trek?.description ?? 'Descripción no disponible.'
+  const imageSrc = resolveImageUrl(trek?.imageUrl)
+  const locationLabel = `${municipalityName}, ${islandName}`
 
   const aboutParagraphs = [
-    trek.description,
-    `La ruta transcurre por ${trek.municipality.name}, zona ${trek.municipality.zone.name}, en la isla de ${trek.municipality.island.name}.`,
+    trekDescription,
+    `La ruta transcurre por ${municipalityName}, ${zoneName}, en la isla de ${islandName}.`,
   ]
 
   const now = getBrowserNow()
@@ -189,10 +194,10 @@ export default function TrekDetailsPage() {
               </div>
             </div>
             <h1 className="text-white text-4xl md:text-6xl font-black leading-[0.95] tracking-tighter mb-6 max-w-4xl drop-shadow-2xl">
-              {trek.name}
+              {trekName}
             </h1>
             <p className="text-white/80 text-lg md:text-2xl max-w-2xl font-light leading-relaxed italic border-l-4 border-primary pl-5">
-              {trek.description}
+              {trekDescription}
             </p>
           </div>
         </div>

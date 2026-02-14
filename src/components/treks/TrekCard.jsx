@@ -21,11 +21,14 @@ function getNextMeetingLabel(meetings) {
 export default function TrekCard({ trek }) {
   const average = Number(trek?.score?.average)
   const averageLabel = Number.isFinite(average) ? average.toFixed(1) : '0.0'
-  const island = trek.municipality.island.name
-  const municipality = trek.municipality.name
-  const meetingInfo = getNextMeetingLabel(trek.meetings)
-  const imageSrc = resolveImageUrl(trek.imageUrl)
-  const detailsHref = `/treks/${trek.regNumber}`
+  const scoreCount = Number(trek?.score?.count) || 0
+  const island = trek?.municipality?.island?.name ?? 'Isla desconocida'
+  const municipality = trek?.municipality?.name ?? 'Municipio pendiente'
+  const trekName = trek?.name ?? 'Ruta sin nombre'
+  const trekDescription = trek?.description ?? 'Descripción no disponible.'
+  const meetingInfo = getNextMeetingLabel(trek?.meetings)
+  const imageSrc = resolveImageUrl(trek?.imageUrl)
+  const detailsHref = trek?.regNumber ? `/treks/${trek.regNumber}` : '/catalogo'
 
   return (
     <article className="group relative bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col">
@@ -35,12 +38,12 @@ export default function TrekCard({ trek }) {
           style={{ backgroundImage: `url('${imageSrc}')` }}
         />
         <div className="absolute top-3 right-3 bg-white/95 backdrop-blur-sm px-2.5 py-1 rounded-md text-sm font-bold text-text-main shadow-md flex items-center gap-1.5 border border-gray-100">
-          <span className="material-symbols-outlined text-yellow-500 text-[16px] fill-current">star</span>
-          {averageLabel}
-          <span className="text-[10px] font-semibold text-text-muted">
-            ({trek.score.count})
-          </span>
-        </div>
+            <span className="material-symbols-outlined text-yellow-500 text-[16px] fill-current">star</span>
+            {averageLabel}
+            <span className="text-[10px] font-semibold text-text-muted">
+            ({scoreCount})
+            </span>
+          </div>
       </div>
       <div className="p-4 flex flex-col gap-3 flex-1">
         <div>
@@ -50,10 +53,10 @@ export default function TrekCard({ trek }) {
             </p>
           </div>
           <h3 className="text-base font-bold text-text-main leading-tight group-hover:text-primary transition-colors">
-            {trek.name}
+            {trekName}
           </h3>
           <p className="text-xs text-text-muted mt-2">
-            {trek.description}
+            {trekDescription}
           </p>
           <p className="text-xs md:text-sm text-text-muted mt-2">
             Municipio: <span className="font-semibold text-text-main">{municipality}</span>

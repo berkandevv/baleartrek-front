@@ -7,6 +7,9 @@ import { fetchTreks } from '../utils/treks'
 // Valor centinela para representar "sin filtro de municipio"
 const ALL_MUNICIPALITIES = 'all'
 const PAGE_SIZE = 6
+const getIslandName = (trek) => trek?.municipality?.island?.name ?? ''
+const getMunicipalityName = (trek) => trek?.municipality?.name ?? ''
+const getTrekName = (trek) => trek?.name ?? ''
 
 const uniqueStrings = (items) => {
   const unique = []
@@ -39,7 +42,7 @@ export default function CatalogPage() {
       try {
         setError('')
         const apiTreks = await fetchTreks()
-        const apiIslandNames = apiTreks.map((trek) => trek.municipality.island.name)
+        const apiIslandNames = apiTreks.map(getIslandName).filter(Boolean)
         const apiIslands = uniqueStrings(apiIslandNames)
 
         setTreks(apiTreks)
@@ -58,7 +61,7 @@ export default function CatalogPage() {
   const activeTreks = treks.filter((trek) => trek.status === 'y')
 
   // Lista total de islas disponibles
-  const islandNames = activeTreks.map((trek) => trek.municipality.island.name)
+  const islandNames = activeTreks.map(getIslandName).filter(Boolean)
   const islands = uniqueStrings(islandNames)
 
   // Set para validación rápida de islas activas
@@ -66,15 +69,16 @@ export default function CatalogPage() {
 
   // Municipios disponibles según las islas activas (sin duplicados)
   const municipalityNames = activeTreks
-    .filter((trek) => islandSet.has(trek.municipality.island.name))
-    .map((trek) => trek.municipality.name)
+    .filter((trek) => islandSet.has(getIslandName(trek)))
+    .map(getMunicipalityName)
+    .filter(Boolean)
   const municipalities = uniqueStrings(municipalityNames)
 
   // Catálogo de escursiones final tras aplicar filtros de isla, municipio y búsqueda
   const filteredTreks = activeTreks.filter((trek) => {
-    const island = trek.municipality.island.name
-    const municipality = trek.municipality.name
-    const name = trek.name
+    const island = getIslandName(trek)
+    const municipality = getMunicipalityName(trek)
+    const name = getTrekName(trek)
 
     // 1) Filtro por isla
     if (!islandSet.has(island)) return false
@@ -94,9 +98,9 @@ export default function CatalogPage() {
 
   // Orden configurable: por puntuación o por nombre (locale ES)
   if (sortBy === 'score-desc') {
-    sortedTreks.sort((a, b) => b.score.average - a.score.average)
+    sortedTreks.sort((a, b) => (Number(b?.score?.average) || 0) - (Number(a?.score?.average) || 0))
   } else {
-    sortedTreks.sort((a, b) => a.name.localeCompare(b.name, 'es'))
+    sortedTreks.sort((a, b) => getTrekName(a).localeCompare(getTrekName(b), 'es'))
   }
 
   const fullPages = Math.floor(sortedTreks.length / PAGE_SIZE)
