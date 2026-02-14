@@ -1,8 +1,8 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { Icon } from 'leaflet'
 import { MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet'
-import { useAuth } from '../auth/AuthContext'
+import { useAuth } from '../auth/useAuth'
 import { buildApiUrl } from '../utils/api'
 import {
   formatFullName,
@@ -93,7 +93,7 @@ export default function TrekDetailsPage() {
   const hasMoreComments = comments.length > 4
   const shownComments = comments.slice(0, visibleComments)
 
-  const fetchTrek = async () => {
+  const fetchTrek = useCallback(async () => {
     setIsLoading(true)
     try {
       setError('')
@@ -119,11 +119,11 @@ export default function TrekDetailsPage() {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [regNumber])
 
   useEffect(() => {
     fetchTrek()
-  }, [regNumber])
+  }, [fetchTrek])
 
   if (isLoading) {
     return (
@@ -426,7 +426,7 @@ export default function TrekDetailsPage() {
                 onPointerLeave={handlePointerUp}
                 onPointerCancel={handlePointerUp}
               >
-                {sortedMeetings.map((meeting, index) => {
+                {sortedMeetings.map((meeting) => {
                   const { day, monthYear, time } = formatMeetingDateParts(meeting)
                   const isActive = isMeetingActive(meeting, now)
                   const isClosed = !isActive

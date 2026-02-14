@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useAuth } from '../auth/AuthContext'
+import { useAuth } from '../auth/useAuth'
 import ProfileSidebar from '../components/ProfileSidebar'
 import Stars from '../components/Stars'
 import { buildApiUrl } from '../utils/api'

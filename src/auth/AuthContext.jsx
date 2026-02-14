@@ -1,5 +1,6 @@
-import { createContext, useContext, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { buildApiUrl } from '../utils/api'
+import { AuthContext } from './authContext'
 const STORAGE_KEY = 'auth_token'
 
 const getToken = () => {
@@ -17,9 +18,6 @@ const clearToken = () => {
   if (typeof window === 'undefined') return
   window.sessionStorage.removeItem(STORAGE_KEY)
 }
-
-// Contexto de autenticación compartido en la app
-const AuthContext = createContext(null)
 
 // Proveedor que gestiona token y estado de carga
 export function AuthProvider({ children }) {
@@ -188,11 +186,4 @@ export function AuthProvider({ children }) {
 
   // Proveedor del contexto que envuelve la app
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
-}
-
-// Hook para consumir el contexto de auth
-export function useAuth() {
-  const context = useContext(AuthContext)
-  if (!context) throw new Error('useAuth debe usarse dentro de AuthProvider')
-  return context
 }
