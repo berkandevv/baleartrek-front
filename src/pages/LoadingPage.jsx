@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../auth/useAuth'
 import AuthSecurityNotice from '../components/auth/AuthSecurityNotice'
 import AuthShell from '../components/auth/AuthShell'
@@ -72,11 +72,6 @@ export default function LoadingPage() {
             onChange={(event) => setPassword(event.target.value)}
             required
           />
-        </div>
-        <div className="flex items-center justify-end">
-          <Link className="text-sm font-medium text-primary hover:underline" to="/contacto">
-            ¿Has olvidado tu contraseña?
-          </Link>
         </div>
         {successMessage ? (
           <div className="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
