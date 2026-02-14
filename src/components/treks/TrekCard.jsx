@@ -10,12 +10,12 @@ function getNextMeetingLabel(meetings) {
     .sort((a, b) => a - b)
 
   if (upcomingDates.length === 0) {
-    return { label: 'Fechas por confirmar', isConfirmed: false }
+    return { label: 'Fechas por confirmar', isConfirmed: false, dateLabel: '', timeLabel: '' }
   }
   const nextDate = upcomingDates[0]
-  const formattedDate = nextDate.toLocaleDateString('es-ES', { dateStyle: 'medium' })
-  const formattedTime = nextDate.toLocaleTimeString('es-ES', { timeStyle: 'short' })
-  return { label: `${formattedDate} · ${formattedTime}`, isConfirmed: true }
+  const dateLabel = nextDate.toLocaleDateString('es-ES', { dateStyle: 'medium' })
+  const timeLabel = nextDate.toLocaleTimeString('es-ES', { timeStyle: 'short' })
+  return { label: `${dateLabel} ${timeLabel}`, isConfirmed: true, dateLabel, timeLabel }
 }
 
 export default function TrekCard({ trek }) {
@@ -62,20 +62,30 @@ export default function TrekCard({ trek }) {
             Municipio: <span className="font-semibold text-text-main">{municipality}</span>
           </p>
         </div>
-        <div className="mt-auto flex flex-col gap-3">
-          <Link className="self-end text-sm text-primary font-semibold hover:underline" to={detailsHref}>
+        <div className="mt-auto border-t border-gray-100 pt-3 flex items-center justify-between gap-3">
+          {meetingInfo ? (
+            <div className="min-w-0">
+              {meetingInfo.isConfirmed ? (
+                <span className="block text-[10px] uppercase font-bold text-text-muted tracking-wider">Próximo encuentro</span>
+              ) : null}
+              {meetingInfo.isConfirmed ? (
+                <span className="text-xs md:text-sm text-text-muted">
+                  <span>{meetingInfo.dateLabel}</span>
+                  <span className="whitespace-nowrap">
+                    <span className="mx-1">·</span>
+                    <span>{meetingInfo.timeLabel}</span>
+                  </span>
+                </span>
+              ) : (
+                <span className="text-xs md:text-sm text-text-muted">{meetingInfo.label}</span>
+              )}
+            </div>
+          ) : (
+            <span />
+          )}
+          <Link className="shrink-0 pl-3 border-l border-gray-200 text-sm text-primary font-semibold hover:underline whitespace-nowrap" to={detailsHref}>
             Detalles
           </Link>
-          {meetingInfo ? (
-            <div className="border-t border-gray-100 pt-3 text-center text-xs text-text-muted">
-              {meetingInfo.isConfirmed ? (
-                <span className="block text-[10px] uppercase font-bold text-text-muted tracking-wider">Próxima salida</span>
-              ) : null}
-              <span className="text-xs md:text-sm text-text-muted">
-                {meetingInfo.label}
-              </span>
-            </div>
-          ) : null}
         </div>
       </div>
     </article>
