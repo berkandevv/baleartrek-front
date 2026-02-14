@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import { formatApplicationDate, formatFullName, formatMeetingDateParts, isApplicationOpenToday, isMeetingActive } from '../../utils/trekDetailsViewUtils'
 
 export default function MeetingsSection({
@@ -15,6 +16,7 @@ export default function MeetingsSection({
   isCurrentUserGuide,
   activeMeetingId,
   handleToggleSubscription,
+  regNumber,
 }) {
   return (
     <section
@@ -97,9 +99,7 @@ export default function MeetingsSection({
               const closingDate = formatApplicationDate(meeting.appDateEnd)
               return (
                 <div
-                  className={`flex-none ${isFeatured ? 'w-80' : 'w-72'} snap-center ${
-                    isActive ? '' : 'opacity-60 grayscale'
-                  }`}
+                  className={`flex-none ${isFeatured ? 'w-80' : 'w-72'} snap-center`}
                   key={meeting.id}
                 >
                   <div
@@ -172,6 +172,16 @@ export default function MeetingsSection({
                               ? 'CANCELAR ASISTENCIA'
                               : 'UNIRSE AHORA'}
                     </button>
+                    <Link
+                      className={`mt-3 inline-flex w-full items-center justify-center rounded-xl py-3 text-xs font-black transition-all ${
+                        isClosed
+                          ? 'border-2 border-corporate-blue bg-corporate-blue text-white hover:bg-blue-700'
+                          : 'border-2 border-primary text-primary hover:bg-primary/10'
+                      }`}
+                      to={`/treks/${encodeURIComponent(regNumber)}/encuentros/${meeting.id}`}
+                    >
+                      DETALLES
+                    </Link>
                   </div>
                 </div>
               )

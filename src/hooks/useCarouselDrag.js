@@ -14,7 +14,7 @@ export function useCarouselDrag(carouselRef) {
   const handlePointerDown = (event) => {
     const container = carouselRef.current
     if (!container) return
-    if (event.target.closest('button')) return
+    if (event.target.closest('button, a, input, select, textarea, label')) return
     container.setPointerCapture(event.pointerId)
     container.classList.add('carousel-dragging')
     dragState.current.isDragging = true

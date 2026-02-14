@@ -9,6 +9,7 @@ import ContactPage from './pages/ContactPage'
 import LoadingPage from './pages/LoadingPage'
 import RegisterPage from './pages/RegisterPage'
 import TrekDetailsPage from './pages/TrekDetailsPage'
+import MeetingDetailsPage from './pages/MeetingDetailsPage'
 import ProfilePage from './pages/ProfilePage'
 import ProfileCommentsPage from './pages/ProfileCommentsPage'
 import { AuthProvider } from './auth/AuthContext.jsx'
@@ -27,6 +28,7 @@ function AppContent() {
         <Route path="/login" element={<LoadingPage />} />
         <Route path="/registro" element={<RegisterPage />} />
         <Route path="/treks/:regNumber" element={<TrekDetailsPage />} />
+        <Route path="/treks/:regNumber/encuentros/:meetingId" element={<MeetingDetailsPage />} />
         <Route
           path="/perfil"
           element={

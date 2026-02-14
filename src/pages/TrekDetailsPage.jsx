@@ -1,14 +1,14 @@
 import { useRef, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { Icon } from 'leaflet'
 import { useAuth } from '../auth/useAuth'
-import { buildApiUrl } from '../utils/api'
 import { getBrowserNow } from '../utils/trekDetailsViewUtils'
 import { resolveImageUrl } from '../utils/urls'
 import MeetingsSection from '../components/trek-details/MeetingsSection'
 import PlacesSection from '../components/trek-details/PlacesSection'
 import CommentsSection from '../components/trek-details/CommentsSection'
 import { useTrekDetailsData } from '../hooks/useTrekDetailsData'
+import { useMeetingSubscription } from '../hooks/useMeetingSubscription'
 import { useCarouselDrag } from '../hooks/useCarouselDrag'
 import {
   buildMapMarkers,
@@ -26,11 +26,8 @@ import markerShadow from 'leaflet/dist/images/marker-shadow.png'
 
 export default function TrekDetailsPage() {
   const { regNumber } = useParams()
-  const navigate = useNavigate()
   const { token, isAuthenticated, user } = useAuth()
   const { trek, isLoading, error, fetchTrek } = useTrekDetailsData(regNumber)
-  const [subscribeError, setSubscribeError] = useState('')
-  const [activeMeetingId, setActiveMeetingId] = useState(null)
   const [visibleComments, setVisibleComments] = useState(4)
   const carouselRef = useRef(null)
   const mapRef = useRef(null)
@@ -41,6 +38,11 @@ export default function TrekDetailsPage() {
     handlePointerMove,
     handlePointerUp,
   } = useCarouselDrag(carouselRef)
+  const { subscribeError, activeMeetingId, handleToggleSubscription } = useMeetingSubscription({
+    isAuthenticated,
+    token,
+    onSuccess: fetchTrek,
+  })
 
   const meetings = trek?.meetings ?? []
   const places = trek?.interesting_places ?? []
@@ -126,42 +128,6 @@ export default function TrekDetailsPage() {
   const currentUserId = user?.id ?? user?.user_id
   const totalAttendees = getTotalAttendees(meetings)
   const isMeetingGuide = (meeting) => isCurrentUserGuide(meeting, currentUserId)
-
-  const handleToggleSubscription = async (meetingId, isSubscribed, isGuide) => {
-    if (!isAuthenticated || !token) {
-      navigate('/login')
-      return
-    }
-    if (isGuide) {
-      window.alert('Como guía de este encuentro no puedes inscribirte.')
-      return
-    }
-    if (isSubscribed) {
-      const confirmed = window.confirm('¿Estás seguro de cancelar tu asistencia?')
-      if (!confirmed) return
-    }
-    setSubscribeError('')
-    setActiveMeetingId(meetingId)
-    try {
-      const response = await fetch(buildApiUrl(`/api/meetings/${meetingId}/subscribe`), {
-        method: isSubscribed ? 'DELETE' : 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          Accept: 'application/json',
-        },
-      })
-      const payload = await response.json().catch(() => ({}))
-      if (!response.ok) {
-        throw new Error(payload?.message || 'No se pudo actualizar la suscripción')
-      }
-      await fetchTrek()
-    } catch (subscribeError) {
-      console.error('Error al actualizar suscripción:', subscribeError)
-      setSubscribeError(subscribeError?.message || 'No se pudo actualizar la suscripción')
-    } finally {
-      setActiveMeetingId(null)
-    }
-  }
 
   return (
     <main className="flex-1 w-full">
@@ -273,6 +239,7 @@ export default function TrekDetailsPage() {
           isCurrentUserGuide={isMeetingGuide}
           activeMeetingId={activeMeetingId}
           handleToggleSubscription={handleToggleSubscription}
+          regNumber={regNumber}
         />
 
         <PlacesSection
