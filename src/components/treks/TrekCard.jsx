@@ -18,7 +18,8 @@ function getNextMeetingLabel(meetings) {
 }
 
 export default function TrekCard({ trek }) {
-  const average = trek.score.average
+  const average = Number(trek?.score?.average)
+  const averageLabel = Number.isFinite(average) ? average.toFixed(1) : '0.0'
   const island = trek.municipality.island.name
   const municipality = trek.municipality.name
   const meetingInfo = getNextMeetingLabel(trek.meetings)
@@ -34,7 +35,7 @@ export default function TrekCard({ trek }) {
         />
         <div className="absolute top-3 right-3 bg-white/95 dark:bg-black/90 backdrop-blur-sm px-2.5 py-1 rounded-md text-sm font-bold text-text-main dark:text-white shadow-md flex items-center gap-1.5 border border-gray-100 dark:border-gray-700">
           <span className="material-symbols-outlined text-yellow-500 text-[16px] fill-current">star</span>
-          {average.toFixed(1)}
+          {averageLabel}
           <span className="text-[10px] font-semibold text-text-muted dark:text-gray-400">
             ({trek.score.count})
           </span>

@@ -191,16 +191,16 @@ export default function RegisterPage() {
                 {isLoading ? 'Registrando...' : 'Registrarme ahora'}
               </button>
             </form>
-            <p className="text-center text-xs text-text-muted dark:text-gray-500 mt-6">
-              Al registrarte, aceptas nuestros{' '}
-              <a className="text-primary hover:underline" href="#">
-                Términos de Servicio
-              </a>{' '}
-              y{' '}
-              <a className="text-primary hover:underline" href="#">
-                Política de Privacidad
-              </a>.
-            </p>
+              <p className="text-center text-xs text-text-muted dark:text-gray-500 mt-6">
+                Al registrarte, aceptas nuestros{' '}
+                <Link className="text-primary hover:underline" to="/faq">
+                  Términos de Servicio
+                </Link>{' '}
+                y{' '}
+                <Link className="text-primary hover:underline" to="/faq">
+                  Política de Privacidad
+                </Link>.
+              </p>
           </div>
         </div>
         <div className="mt-8 flex items-center justify-center gap-2 text-text-muted dark:text-gray-400">

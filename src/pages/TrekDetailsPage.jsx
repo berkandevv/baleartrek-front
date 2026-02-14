@@ -61,13 +61,19 @@ export default function TrekDetailsPage() {
 
   const meetings = trek?.meetings ?? []
   const places = trek?.interesting_places ?? []
+  const parseGpsCoordinates = (gps) => {
+    if (typeof gps !== 'string' || !gps.includes(',')) return null
+    const [latRaw, lngRaw] = gps.split(',').map((value) => value.trim())
+    const lat = Number(latRaw)
+    const lng = Number(lngRaw)
+    if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null
+    return { lat, lng }
+  }
   const mapMarkers = places
     .map((place) => {
-      const [latRaw, lngRaw] = place.gps.split(',').map((value) => value.trim())
-      const lat = Number(latRaw)
-      const lng = Number(lngRaw)
-      if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null
-      return { ...place, lat, lng }
+      const coordinates = parseGpsCoordinates(place?.gps)
+      if (!coordinates) return null
+      return { ...place, ...coordinates }
     })
     .filter(Boolean)
   const mapCenter = mapMarkers.length
