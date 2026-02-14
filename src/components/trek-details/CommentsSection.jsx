@@ -1,4 +1,47 @@
 import { formatFullName } from '../../utils/trekDetailsViewUtils'
+import { resolveImageUrl } from '../../utils/urls'
+
+const extractCommentImageUrls = (comment) => {
+  const fromArray = Array.isArray(comment?.images) ? comment.images : []
+  const fromSingle = comment?.image ? [comment.image] : []
+  const rawItems = [...fromArray, ...fromSingle]
+
+  const urls = rawItems
+    .map((item) => {
+      if (typeof item === 'string') return item
+      return item?.url ?? item?.imageUrl ?? item?.path ?? item?.src ?? ''
+    })
+    .concat([comment?.imageUrl ?? ''])
+    .map((url) => resolveImageUrl(url))
+    .filter(Boolean)
+
+  return [...new Set(urls)]
+}
+
+const formatCommentDate = (comment) => {
+  const rawValue =
+    comment?.commentDate ||
+    comment?.comment_date ||
+    comment?.validated_at ||
+    comment?.published_at ||
+    comment?.created_at ||
+    comment?.updated_at ||
+    comment?.createdAt ||
+    comment?.updatedAt ||
+    (comment?.meetingDay ? `${comment.meetingDay}T${comment?.meetingHour || '00:00:00'}` : '')
+
+  if (!rawValue) return 'Fecha no disponible'
+  const date = new Date(rawValue)
+  if (Number.isNaN(date.getTime())) return 'Fecha no disponible'
+
+  return new Intl.DateTimeFormat('es-ES', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  }).format(date)
+}
 
 export default function CommentsSection({
   comments,
@@ -25,6 +68,7 @@ export default function CommentsSection({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10">
               {shownComments.map((comment) => {
                 const rating = Math.max(0, Math.min(5, Math.floor(Number(comment?.score) || 0)))
+                const imageUrls = extractCommentImageUrls(comment)
                 return (
                   <div className="relative pl-8 border-l-4 border-primary/20" key={comment.id}>
                     <div className="flex items-center justify-between mb-6">
@@ -34,6 +78,9 @@ export default function CommentsSection({
                         </span>
                         <span className="text-xs text-corporate-blue uppercase font-black tracking-widest">
                           Comentario verificado
+                        </span>
+                        <span className="mt-1 block text-xs text-text-muted">
+                          {formatCommentDate(comment)}
                         </span>
                       </div>
                       <div className="flex">
@@ -52,6 +99,27 @@ export default function CommentsSection({
                     <p className="text-base text-text-muted font-light italic leading-relaxed">
                       "{comment.comment}"
                     </p>
+                    {imageUrls.length ? (
+                      <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3">
+                        {imageUrls.map((url, index) => (
+                          <a
+                            key={`${comment.id}-img-${index}`}
+                            href={url}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="block overflow-hidden rounded-lg border border-[#dbe4e6] bg-white"
+                            aria-label={`Abrir imagen ${index + 1} del comentario`}
+                          >
+                            <img
+                              src={url}
+                              alt={`Imagen del comentario ${index + 1}`}
+                              className="h-24 w-full object-cover"
+                              loading="lazy"
+                            />
+                          </a>
+                        ))}
+                      </div>
+                    ) : null}
                   </div>
                 )
               })}
