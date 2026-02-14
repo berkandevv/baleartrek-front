@@ -11,7 +11,7 @@ import RegisterPage from './pages/RegisterPage'
 import TrekDetailsPage from './pages/TrekDetailsPage'
 import ProfilePage from './pages/ProfilePage'
 import ProfileCommentsPage from './pages/ProfileCommentsPage'
-import { AuthProvider } from './auth/AuthContext'
+import { AuthProvider } from './auth/AuthContext.jsx'
 import ProtectedRoute from './auth/ProtectedRoute'
 
 function AppContent() {
