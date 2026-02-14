@@ -1,48 +1,20 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { Icon } from 'leaflet'
-import { MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet'
 import { useAuth } from '../auth/useAuth'
 import { buildApiUrl } from '../utils/api'
 import {
-  formatFullName,
-  formatApplicationDate,
-  formatMeetingDateParts,
   getBrowserNow,
-  isApplicationOpenToday,
-  isMeetingActive,
 } from '../utils/trekDetailsViewUtils'
 import { resolveImageUrl } from '../utils/urls'
+import MeetingsSection from '../components/trek-details/MeetingsSection'
+import PlacesSection from '../components/trek-details/PlacesSection'
+import CommentsSection from '../components/trek-details/CommentsSection'
 import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png'
 import markerIcon from 'leaflet/dist/images/marker-icon.png'
 import markerShadow from 'leaflet/dist/images/marker-shadow.png'
 
 const buildTrekEndpoint = (regNumber) => buildApiUrl(`/api/treks/${encodeURIComponent(regNumber)}`)
-
-const FitMapToMarkers = ({ markers, onReady }) => {
-  const map = useMap()
-
-  useEffect(() => {
-    if (onReady) {
-      onReady(map)
-    }
-    if (!markers.length) return
-    const bounds = markers.map((marker) => [marker.lat, marker.lng])
-    map.fitBounds(bounds, { padding: [32, 32] })
-  }, [map, markers, onReady])
-
-  useEffect(() => {
-    const handleResize = () => map.invalidateSize()
-    const timer = setTimeout(() => map.invalidateSize(), 0)
-    window.addEventListener('resize', handleResize)
-    return () => {
-      clearTimeout(timer)
-      window.removeEventListener('resize', handleResize)
-    }
-  }, [map])
-
-  return null
-}
 
 export default function TrekDetailsPage() {
   const { regNumber } = useParams()
@@ -372,314 +344,40 @@ export default function TrekDetailsPage() {
           </div>
         </article>
 
-        <section
-          className="w-full bg-[#f9fafb] dark:bg-[#132226] py-12 overflow-hidden"
-          id="proximos-encuentros"
-        >
-          <div className="max-w-7xl mx-auto px-4 md:px-10 lg:px-20 mb-12">
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-              <div>
-                <div className="flex items-center gap-3 text-primary mb-4">
-                  <span className="h-px w-12 bg-primary" />
-                  <span className="text-xs font-black uppercase tracking-[0.2em]">Agenda de la Comunidad</span>
-                </div>
-                <h2 className="text-3xl md:text-4xl font-black dark:text-white leading-tight">Próximos Encuentros</h2>
-              </div>
-              <div className="flex items-center gap-6">
-                <div className="flex items-center gap-2">
-                  <span className="text-3xl font-black text-primary">{sortedMeetings.length}</span>
-                  <span className="text-[10px] font-bold text-text-muted uppercase leading-tight">
-                    Fechas
-                    <br />
-                    Registradas
-                  </span>
-                </div>
-                <div className="hidden md:flex gap-3">
-                  <button
-                    className="size-11 rounded-full border-2 border-primary text-primary flex items-center justify-center hover:bg-primary/10 transition-all shadow-lg active:scale-90"
-                    onClick={() => scrollCarouselBy(-360)}
-                    type="button"
-                    aria-label="Desplazar encuentros a la izquierda"
-                  >
-                    <span className="material-symbols-outlined font-bold">arrow_back</span>
-                  </button>
-                  <button
-                    className="size-11 rounded-full bg-primary text-[#0f2a33] flex items-center justify-center hover:bg-[#0fb6d8] transition-all shadow-lg active:scale-90"
-                    onClick={() => scrollCarouselBy(360)}
-                    type="button"
-                    aria-label="Desplazar encuentros a la derecha"
-                  >
-                    <span className="material-symbols-outlined font-bold">arrow_forward</span>
-                  </button>
-                </div>
-              </div>
-            </div>
-            {subscribeError ? (
-              <div className="mt-4 rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
-                {subscribeError}
-              </div>
-            ) : null}
-          </div>
-          <div className="max-w-7xl mx-auto px-4 md:px-10 lg:px-20">
-            <div className="relative group overflow-hidden">
-              <div className="pointer-events-none absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-[#f9fafb]/90 to-transparent dark:from-[#132226]/90" />
-              <div
-                className="no-scrollbar flex overflow-x-auto gap-5 py-6 snap-x snap-mandatory cursor-grab active:cursor-grabbing"
-                ref={carouselRef}
-                onPointerDown={handlePointerDown}
-                onPointerMove={handlePointerMove}
-                onPointerUp={handlePointerUp}
-                onPointerLeave={handlePointerUp}
-                onPointerCancel={handlePointerUp}
-              >
-                {sortedMeetings.map((meeting) => {
-                  const { day, monthYear, time } = formatMeetingDateParts(meeting)
-                  const isActive = isMeetingActive(meeting, now)
-                  const isClosed = !isActive
-                  const isApplicationOpen = isApplicationOpenToday(meeting, now)
-                  const isFeatured = isApplicationOpen
-                  const isGuide = isCurrentUserGuide(meeting)
-                  const isSubscribed =
-                    Boolean(currentUserId) &&
-                    !isGuide &&
-                    (meeting.attendees ?? []).some(
-                      (attendee) => String(getAttendeeId(attendee)) === String(currentUserId),
-                    )
-                  const isPending = activeMeetingId === meeting.id
-                  const isDisabled = isPending || isGuide || isClosed || !isApplicationOpen
-                  const openingDate = formatApplicationDate(meeting.appDateIni)
-                  const closingDate = formatApplicationDate(meeting.appDateEnd)
-                  return (
-                    <div
-                      className={`flex-none ${isFeatured ? 'w-80' : 'w-72'} snap-center ${
-                        isActive ? '' : 'opacity-60 grayscale'
-                      }`}
-                      key={meeting.id}
-                    >
-                      <div
-                        className={`bg-white dark:bg-[#1a2c30] ${
-                          isFeatured ? 'p-7 rounded-[2rem] border-4 border-corporate-blue' : 'p-6 rounded-[1.5rem] border border-gray-100 dark:border-[#2a3c40]'
-                        } editorial-shadow h-full`}
-                      >
-                        <div className={`${isFeatured ? 'text-corporate-blue' : 'text-primary'} mb-6 flex justify-between items-start`}>
-                          <div>
-                            <span className={`${isFeatured ? 'text-4xl' : 'text-3xl'} font-black leading-none`}>{day}</span>
-                            <span className={`block text-xs font-bold uppercase tracking-widest ${isFeatured ? 'mt-2' : 'mt-1'}`}>
-                              {monthYear}
-                            </span>
-                          </div>
-                          <span className="px-3 py-1 bg-primary/10 text-corporate-blue text-[10px] font-black rounded-full uppercase">
-                            {getAttendeeCount(meeting)} participantes
-                          </span>
-                        </div>
-                        <div className={`${isFeatured ? 'space-y-4 mb-8' : 'space-y-3 mb-6'}`}>
-                          <div className="flex items-center gap-3">
-                            <span className={`material-symbols-outlined ${isFeatured ? 'text-xl text-corporate-blue' : 'text-base text-text-muted'}`}>
-                              schedule
-                            </span>
-                            <span className={`${isFeatured ? 'text-base font-black tracking-tight' : 'text-xs font-bold'}`}>
-                              {time}
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-3">
-                            <span className={`material-symbols-outlined ${isFeatured ? 'text-xl text-corporate-blue' : 'text-base text-text-muted'}`}>
-                              person_pin
-                            </span>
-                            <span className="text-xs text-text-muted">
-                              Guía: <span className="font-black text-text-main dark:text-white uppercase">{formatFullName(meeting.guide)}</span>
-                            </span>
-                          </div>
-                        </div>
-                        <div className="flex flex-col gap-2 py-4 border-y-2 border-corporate-blue/10">
-                          <div className="flex items-center gap-3 text-xs font-bold text-corporate-blue/80 uppercase">
-                            <span className="material-symbols-outlined text-lg text-green-500">calendar_today</span>
-                            Apertura: {openingDate}
-                          </div>
-                          <div className="flex items-center gap-3 text-xs font-bold text-corporate-blue/80 uppercase">
-                            <span className="material-symbols-outlined text-lg text-red-500">event_busy</span>
-                            Cierre: {closingDate}
-                          </div>
-                        </div>
-                        <button
-                          className={`w-full mt-4 ${
-                            isClosed
-                              ? 'py-3 bg-slate-200 text-slate-700 font-black rounded-xl text-xs'
-                              : isSubscribed
-                              ? 'py-3 bg-rose-600 text-white font-black rounded-xl text-xs hover:bg-rose-700'
-                              : isFeatured
-                                ? 'py-4 bg-primary text-[#0f2a33] font-black rounded-xl text-sm hover:bg-[#0fb6d8]'
-                                : 'py-3 bg-white/80 dark:bg-[#203438] border-2 border-primary text-primary font-black rounded-xl text-xs hover:bg-primary/10'
-                          } transition-all disabled:opacity-60 disabled:cursor-not-allowed`}
-                          type="button"
-                          onClick={() => handleToggleSubscription(meeting.id, isSubscribed, isGuide)}
-                          disabled={isDisabled}
-                        >
-                          {isGuide
-                            ? 'ERES EL GUÍA'
-                            : isPending
-                              ? 'PROCESANDO...'
-                              : isClosed
-                                ? 'ENCUENTRO FINALIZADO'
-                                : isSubscribed
-                                  ? 'CANCELAR ASISTENCIA'
-                                  : isFeatured
-                                    ? 'UNIRSE AHORA'
-                                    : 'UNIRSE AHORA'}
-                        </button>
-                      </div>
-                    </div>
-                  )
-                })}
-              </div>
-            </div>
-          </div>
-        </section>
+        <MeetingsSection
+          sortedMeetings={sortedMeetings}
+          subscribeError={subscribeError}
+          scrollCarouselBy={scrollCarouselBy}
+          carouselRef={carouselRef}
+          handlePointerDown={handlePointerDown}
+          handlePointerMove={handlePointerMove}
+          handlePointerUp={handlePointerUp}
+          now={now}
+          currentUserId={currentUserId}
+          getAttendeeId={getAttendeeId}
+          getAttendeeCount={getAttendeeCount}
+          isCurrentUserGuide={isCurrentUserGuide}
+          activeMeetingId={activeMeetingId}
+          handleToggleSubscription={handleToggleSubscription}
+        />
 
-        <section className="max-w-7xl mx-auto px-4 md:px-10 lg:px-20 grid grid-cols-1 lg:grid-cols-12 gap-14 items-start">
-          <div className="lg:col-span-5 lg:sticky lg:top-32">
-            <div className="flex items-center gap-3 text-primary mb-6">
-              <span className="h-px w-12 bg-primary" />
-              <span className="text-xs font-black uppercase tracking-[0.2em]">Hitos en el Camino</span>
-            </div>
-            <h2 className="text-3xl md:text-4xl font-black dark:text-white mb-6 leading-tight">Lugares de Interés</h2>
-            <p className="text-base md:text-lg text-text-muted leading-relaxed mb-8 font-medium">
-              Explora los puntos estratégicos que definen la esencia de la ruta, desde cumbres míticas hasta calas escondidas.
-            </p>
-            <div className="relative w-full aspect-[4/3] rounded-[1.75rem] bg-gray-100 dark:bg-[#1a2c30] overflow-hidden shadow-xl border-2 border-white dark:border-[#2a3c40]">
-              <MapContainer
-                center={mapCenter}
-                zoom={12}
-                scrollWheelZoom={false}
-                className="absolute inset-0 h-full w-full"
-                ref={mapRef}
-              >
-                <FitMapToMarkers markers={mapMarkers} onReady={handleMapReady} />
-                <TileLayer
-                  attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                />
-                {mapMarkers.map((place) => (
-                  <Marker
-                    key={place.id}
-                    position={[place.lat, place.lng]}
-                    icon={defaultIcon}
-                    ref={(marker) => {
-                      if (marker) {
-                        markerRefs.current[place.id] = marker
-                      }
-                    }}
-                  >
-                    <Popup autoPan={false}>
-                      <div className="text-sm font-semibold">{place.name}</div>
-                      <div className="text-xs text-gray-500">{place.place_type.name}</div>
-                    </Popup>
-                  </Marker>
-                ))}
-              </MapContainer>
-            </div>
-          </div>
-          <div className="lg:col-span-7 space-y-7">
-            {mapMarkers.map((place) => (
-              <button
-                className="group flex gap-6 p-6 bg-white dark:bg-[#1a2c30] rounded-[2rem] editorial-shadow border border-transparent hover:border-primary/20 transition-all text-left w-full"
-                key={place.id}
-                type="button"
-                onClick={() => focusPlaceOnMap(place)}
-                aria-label={`Enfocar ${place.name} en el mapa`}
-              >
-                <div className="flex-none size-14 rounded-2xl bg-[#101f22] text-white flex items-center justify-center font-black text-xl group-hover:bg-primary group-hover:text-corporate-blue transition-colors">
-                  {String(place.order).padStart(2, '0')}
-                </div>
-                <div className="flex-1">
-                  <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
-                    <h4 className="text-xl font-black dark:text-white">{place.name}</h4>
-                    <span className="px-3 py-1 bg-primary/10 text-primary text-[10px] font-black rounded-lg uppercase tracking-[0.2em]">
-                      {place.place_type.name}
-                    </span>
-                  </div>
-                  <p className="text-base text-text-muted dark:text-gray-400 mb-6 leading-relaxed">
-                    {place.place_type.name} destacado en la ruta, ideal para disfrutar del entorno y descansar.
-                  </p>
-                  <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-background-light dark:bg-[#203438] rounded-lg text-xs font-mono text-primary font-bold">
-                    <span className="material-symbols-outlined text-sm">location_on</span>
-                    {place.gps}
-                  </div>
-                </div>
-              </button>
-            ))}
-          </div>
-        </section>
+        <PlacesSection
+          mapCenter={mapCenter}
+          mapMarkers={mapMarkers}
+          mapRef={mapRef}
+          handleMapReady={handleMapReady}
+          defaultIcon={defaultIcon}
+          markerRefs={markerRefs}
+          focusPlaceOnMap={focusPlaceOnMap}
+        />
 
-        <section className="max-w-7xl mx-auto px-4 md:px-10 lg:px-20">
-          <div className="bg-background-light dark:bg-[#1a2c30] rounded-[2.5rem] p-10 md:p-14 editorial-shadow relative overflow-hidden">
-            <div className="absolute top-0 right-0 p-8 text-primary/15">
-              <span className="material-symbols-outlined text-[9rem] leading-none">forum</span>
-            </div>
-            <div className="relative z-10">
-              <div className="flex items-center gap-3 text-primary mb-6">
-                <span className="h-px w-12 bg-primary" />
-                <span className="text-xs font-black uppercase tracking-[0.2em]">Testimonios</span>
-              </div>
-              <h3 className="text-3xl md:text-4xl font-black mb-10 dark:text-white tracking-tighter">
-                Comentarios de la Comunidad
-              </h3>
-              {comments.length ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10">
-                  {shownComments.map((comment) => {
-                    const rating = Math.max(0, Math.min(5, Math.floor(Number(comment?.score) || 0)))
-                    return (
-                      <div className="relative pl-8 border-l-4 border-primary/20" key={comment.id}>
-                        <div className="flex items-center justify-between mb-6">
-                          <div>
-                            <span className="block font-black text-base tracking-tight">
-                              {formatFullName(comment.user)}
-                            </span>
-                            <span className="text-xs text-corporate-blue uppercase font-black tracking-widest">
-                              Comentario verificado
-                            </span>
-                          </div>
-                          <div className="flex">
-                            {Array.from({ length: 5 }).map((_, index) => (
-                              <span
-                                className={`material-symbols-outlined ${
-                                  index < rating ? 'star-rating text-orange-400' : 'text-slate-300 dark:text-slate-600'
-                                }`}
-                                key={`${comment.id}-star-${index}`}
-                              >
-                                star
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-                        <p className="text-base text-text-muted dark:text-gray-300 font-light italic leading-relaxed">
-                          "{comment.comment}"
-                        </p>
-                      </div>
-                    )
-                  })}
-                </div>
-              ) : (
-                <p className="text-base text-text-muted dark:text-gray-300">
-                  Todavía no hay comentarios publicados para esta ruta.
-                </p>
-              )}
-              {hasMoreComments ? (
-                <div className="mt-12 flex justify-center">
-                  <button
-                    className="px-8 py-3 bg-white/80 dark:bg-[#203438] border-2 border-primary rounded-xl font-black text-primary uppercase tracking-[0.2em] text-xs hover:bg-primary/10 transition-all shadow-xl"
-                    onClick={() =>
-                      setVisibleComments((prev) =>
-                        prev >= comments.length ? 4 : Math.min(prev + 4, comments.length),
-                      )
-                    }
-                  >
-                    {visibleComments >= comments.length ? 'Mostrar menos comentarios' : 'Mostrar más comentarios'}
-                  </button>
-                </div>
-              ) : null}
-            </div>
-          </div>
-        </section>
+        <CommentsSection
+          comments={comments}
+          shownComments={shownComments}
+          hasMoreComments={hasMoreComments}
+          visibleComments={visibleComments}
+          setVisibleComments={setVisibleComments}
+        />
       </div>
 
       <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-[60] w-full max-w-xs px-6">
