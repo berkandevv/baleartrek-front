@@ -4,17 +4,20 @@ import { AuthContext } from './authContext'
 import { fetchCurrentUser } from './authApi'
 const STORAGE_KEY = 'auth_token'
 
+// Lee el token persistido en sessionStorage (solo en navegador)
 const getToken = () => {
   if (typeof window === 'undefined') return null
   return window.sessionStorage.getItem(STORAGE_KEY)
 }
 
+// Guarda el token de sesión cuando existe un valor válido
 const setToken = (token) => {
   if (typeof window === 'undefined') return
   if (!token) return
   window.sessionStorage.setItem(STORAGE_KEY, token)
 }
 
+// Elimina el token de sesión almacenado localmente
 const clearToken = () => {
   if (typeof window === 'undefined') return
   window.sessionStorage.removeItem(STORAGE_KEY)
@@ -40,6 +43,7 @@ export function AuthProvider({ children }) {
       return null
     }
 
+    // Actualiza el perfil autenticado para mantener el estado sincronizado
     setIsUserLoading(true)
     try {
       const nextUser = await fetchCurrentUser(tokenToUse)
@@ -51,6 +55,15 @@ export function AuthProvider({ children }) {
       setUser(nextUser)
       return nextUser
     } catch (error) {
+      const message = String(error?.message ?? '').toLowerCase()
+      const isUnauthorized =
+        error?.status === 401 ||
+        error?.status === 403 ||
+        message.includes('unauthenticated') ||
+        message.includes('unauthorized')
+      if (isUnauthorized) {
+        setSessionToken(null)
+      }
       setUser(null)
       throw error
     } finally {
@@ -66,7 +79,7 @@ export function AuthProvider({ children }) {
     }
 
     refreshUser(token).catch((error) => {
-      if (error?.message !== 'Cuenta eliminada') {
+      if (error?.message !== 'Cuenta eliminada' && error?.status !== 401 && error?.status !== 403) {
         console.error('Error al cargar usuario:', error)
       }
     })
