@@ -1,15 +1,10 @@
-import { formatSpanishShortDate, normalizeDateInput } from './date'
+import { formatSpanishShortDate, normalizeDateInput, parseLocalDateTime } from './date'
 
 // Obtiene la fecha y hora actual del navegador (zona local del usuario)
 export const getBrowserNow = () => new Date()
 
 const getMeetingDate = (meeting) => {
-  const day = normalizeDateInput(meeting?.day)
-  const hour = String(meeting?.hour ?? '').trim()
-  if (!day) return null
-  const timeValue = hour || '00:00:00'
-  const date = new Date(`${day}T${timeValue}`)
-  return Number.isNaN(date.getTime()) ? null : date
+  return parseLocalDateTime(meeting?.day, meeting?.hour)
 }
 
 // Comprueba si el encuentro esta activo segun la hora local del navegador

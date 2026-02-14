@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { Icon } from 'leaflet'
 import { useAuth } from '../auth/useAuth'
 import { buildApiUrl } from '../utils/api'
+import { getLocalDateTimeValue } from '../utils/date'
 import {
   getBrowserNow,
 } from '../utils/trekDetailsViewUtils'
@@ -55,8 +56,8 @@ export default function TrekDetailsPage() {
       ]
     : [39.6, 2.9]
   const sortedMeetings = [...meetings].sort((a, b) => {
-    const dateA = new Date(`${a.day}T${a.hour}`).getTime()
-    const dateB = new Date(`${b.day}T${b.hour}`).getTime()
+    const dateA = getLocalDateTimeValue(a?.day, a?.hour)
+    const dateB = getLocalDateTimeValue(b?.day, b?.hour)
     return dateB - dateA
   })
   const comments = meetings

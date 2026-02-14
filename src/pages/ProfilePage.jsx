@@ -3,6 +3,7 @@ import { useAuth } from '../auth/useAuth'
 import { deactivateCurrentUser, updateCurrentUser } from '../auth/authApi'
 import { useUser } from '../auth/useUser'
 import ProfileSidebar from '../components/ProfileSidebar'
+import { getMeetingDateValue } from '../utils/profileCommentsUtils'
 import { formatMemberSince, getFullName } from '../utils/profileUtils'
 import { isValidDniNie, isValidEmail, normalizeDniNie, normalizeEmail } from '../utils/validation'
 
@@ -31,6 +32,11 @@ export default function ProfilePage() {
   const fullName = getFullName(user)
   const completedMeetingsCount = user?.meetings?.length ?? 0
   const meetings = user?.meetings ?? []
+  const nowValue = Date.now()
+  const upcomingMeetingsCount = meetings.filter((meeting) => {
+    const dateValue = getMeetingDateValue(meeting)
+    return !dateValue || dateValue >= nowValue
+  }).length
   const commentedMeetingsCount = meetings.filter((meeting) => (meeting?.comments ?? []).length > 0)
     .length
 
@@ -314,7 +320,7 @@ export default function ProfilePage() {
                   <span className="material-symbols-outlined">event_available</span>
                 </div>
                 <div className="flex flex-col">
-                  <p className="text-2xl font-black text-text-main">0</p>
+                  <p className="text-2xl font-black text-text-main">{upcomingMeetingsCount}</p>
                   <p className="text-sm text-text-sub font-medium">Próximos Encuentros</p>
                 </div>
               </div>

@@ -1,9 +1,11 @@
 import { Link } from 'react-router-dom'
+import { parseLocalDateTime } from '../../utils/date'
 import { resolveImageUrl } from '../../utils/urls'
 
 function getNextMeetingLabel(meetings) {
   const now = new Date()
-  const upcomingDates = (meetings?.map?.((meeting) => new Date(`${meeting.day}T${meeting.hour}`)) ?? [])
+  const upcomingDates = (meetings?.map?.((meeting) => parseLocalDateTime(meeting?.day, meeting?.hour)) ?? [])
+    .filter(Boolean)
     .filter((date) => date >= now)
     .sort((a, b) => a - b)
 

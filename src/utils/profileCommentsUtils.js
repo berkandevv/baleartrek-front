@@ -1,4 +1,4 @@
-import { formatSpanishShortDate, normalizeDateInput } from './date'
+import { formatSpanishShortDate, getLocalDateTimeValue, normalizeDateInput } from './date'
 
 // Numero maximo de estrellas para valorar
 const STAR_COUNT = 5
@@ -29,11 +29,7 @@ export const clampRating = (score) =>
 export const getMeetingDateValue = (meeting) => {
   const rawDay = meeting?.day || meeting?.appDateIni || meeting?.appDateEnd
   if (!rawDay) return 0
-  const safeDay = normalizeDateInput(rawDay)
-  const safeHour = meeting?.hour
-  const date = new Date(`${safeDay}T${safeHour || '00:00:00'}`)
-  const value = date.getTime()
-  return Number.isNaN(value) ? 0 : value
+  return getLocalDateTimeValue(rawDay, meeting?.hour)
 }
 
 // Obtiene la puntuacion del encuentro para ordenar por mejores valorados

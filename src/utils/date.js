@@ -25,3 +25,16 @@ export const formatSpanishShortDate = (value) => {
   })
   return formatted.replace('.', '')
 }
+
+export const parseLocalDateTime = (day, hour = '00:00:00') => {
+  const safeDay = normalizeDateInput(day)
+  if (!safeDay) return null
+  const rawHour = String(hour ?? '').trim() || '00:00:00'
+  const date = new Date(`${safeDay}T${rawHour}`)
+  return Number.isNaN(date.getTime()) ? null : date
+}
+
+export const getLocalDateTimeValue = (day, hour = '00:00:00') => {
+  const date = parseLocalDateTime(day, hour)
+  return date ? date.getTime() : 0
+}
