@@ -11,7 +11,7 @@ import {
   getMeetingDateValue,
   sortMeetings,
 } from '../utils/profileCommentsUtils'
-import { getMadridNow } from '../utils/trekDetailsViewUtils'
+import { getBrowserNow } from '../utils/trekDetailsViewUtils'
 
 const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/+$/, '')
 const buildUrl = (path) => (API_BASE_URL ? `${API_BASE_URL}${path}` : path)
@@ -121,7 +121,7 @@ export default function ProfileCommentsPage() {
   const fullName = getFullName(user)
 
   const meetings = user?.meetings ?? []
-  const nowValue = getMadridNow().getTime()
+  const nowValue = getBrowserNow().getTime()
 
   const upcomingMeetings = []
   const pastMeetings = []

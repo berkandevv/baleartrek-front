@@ -1,27 +1,11 @@
-// Obtiene la fecha y hora actual en la zona de Madrid
-export const getMadridNow = () => {
-  const formatter = new Intl.DateTimeFormat('es-ES', {
-    timeZone: 'Europe/Madrid',
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-    hour12: false,
-  })
-  const parts = formatter.formatToParts(new Date())
-  const get = (type) => parts.find((part) => part.type === type)?.value ?? ''
-  return new Date(
-    `${get('year')}-${get('month')}-${get('day')}T${get('hour')}:${get('minute')}:${get('second')}`,
-  )
-}
+// Obtiene la fecha y hora actual del navegador (zona local del usuario)
+export const getBrowserNow = () => new Date()
 
-// Comprueba si el encuentro esta activo segun la hora de Madrid
-export const isMeetingActive = (meeting, nowMadrid = getMadridNow()) => {
+// Comprueba si el encuentro esta activo segun la hora local del navegador
+export const isMeetingActive = (meeting, now = getBrowserNow()) => {
   const meetingStart = new Date(`${meeting.day}T${meeting.hour}`)
   const meetingEnd = new Date(meetingStart.getTime() + 2 * 60 * 60 * 1000)
-  return nowMadrid <= meetingEnd
+  return now <= meetingEnd
 }
 
 // Genera partes de fecha y hora para mostrar en la tarjeta
@@ -54,17 +38,11 @@ export const formatApplicationDate = (value) => {
   return formatted.replace('.', '')
 }
 
-export const isApplicationOpenToday = (meeting, nowMadrid = getMadridNow()) => {
+export const isApplicationOpenToday = (meeting, now = getBrowserNow()) => {
   const start = normalizeDateInput(meeting?.appDateIni) ?? normalizeDateInput(meeting?.day)
   const end = normalizeDateInput(meeting?.appDateEnd) ?? start
   if (!start) return false
-  const today = new Intl.DateTimeFormat('en-CA', {
-    timeZone: 'Europe/Madrid',
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-  }).format(nowMadrid)
-  const todayDate = new Date(`${today}T00:00:00`)
+  const todayDate = new Date(now.getFullYear(), now.getMonth(), now.getDate())
   const startDate = new Date(`${start}T00:00:00`)
   const endDate = new Date(`${end}T00:00:00`)
   if ([todayDate, startDate, endDate].some((date) => Number.isNaN(date.getTime()))) return false

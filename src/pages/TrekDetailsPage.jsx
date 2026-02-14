@@ -7,7 +7,7 @@ import {
   formatFullName,
   formatApplicationDate,
   formatMeetingDateParts,
-  getMadridNow,
+  getBrowserNow,
   isApplicationOpenToday,
   isMeetingActive,
 } from '../utils/trekDetailsViewUtils'
@@ -155,7 +155,7 @@ export default function TrekDetailsPage() {
     `La ruta transcurre por ${trek.municipality.name}, zona ${trek.municipality.zone.name}, en la isla de ${trek.municipality.island.name}.`,
   ]
 
-  const nowMadrid = getMadridNow()
+  const now = getBrowserNow()
   const defaultIcon = new Icon({
     iconUrl: markerIcon,
     iconRetinaUrl: markerIcon2x,
@@ -415,9 +415,9 @@ export default function TrekDetailsPage() {
               >
                 {sortedMeetings.map((meeting, index) => {
                   const { day, monthYear, time } = formatMeetingDateParts(meeting)
-                  const isActive = isMeetingActive(meeting, nowMadrid)
+                  const isActive = isMeetingActive(meeting, now)
                   const isClosed = !isActive
-                  const isApplicationOpen = isApplicationOpenToday(meeting, nowMadrid)
+                  const isApplicationOpen = isApplicationOpenToday(meeting, now)
                   const isFeatured = isApplicationOpen
                   const isGuide = isCurrentUserGuide(meeting)
                   const isSubscribed =
