@@ -12,6 +12,7 @@ import {
   sortMeetings,
 } from '../utils/profileCommentsUtils'
 import { getBrowserNow } from '../utils/trekDetailsViewUtils'
+import { resolveImageUrl } from '../utils/urls'
 
 const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/+$/, '')
 const buildUrl = (path) => (API_BASE_URL ? `${API_BASE_URL}${path}` : path)
@@ -290,7 +291,7 @@ export default function ProfileCommentsPage() {
                       const cardOpacity = publishedComment ? '' : 'opacity-80'
                       const ratingValue =
                         publishedComment?.score ?? meeting?.score?.average ?? meeting?.score?.total ?? 0
-                      const coverImage = publishedComment?.image?.url
+                      const coverImage = resolveImageUrl(publishedComment?.image?.url)
                       const rating = clampRating(ratingValue)
 
                       const meetingName =
