@@ -47,9 +47,7 @@ export default function RegisterPage() {
         dni: trimmedDni,
         phone,
       })
-      navigate('/login', {
-        state: { successMessage: 'Registro completado. Ahora inicia sesión para entrar.' },
-      })
+      navigate('/', { replace: true })
     } catch (err) {
       setError(err?.message || 'No se pudo completar el registro.')
     }

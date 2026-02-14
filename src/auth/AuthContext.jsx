@@ -3,6 +3,7 @@ import { buildApiUrl } from '../utils/api'
 import { AuthContext } from './authContext'
 import { fetchCurrentUser } from './authApi'
 const STORAGE_KEY = 'auth_token'
+const toJson = async (response) => response.json().catch(() => ({}))
 
 // Lee el token persistido en sessionStorage (solo en navegador)
 const getToken = () => {
@@ -94,7 +95,7 @@ export function AuthProvider({ children }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(credentials),
       })
-      const data = await response.json()
+      const data = await toJson(response)
       if (!response.ok) throw new Error('Error de credenciales')
       const nextToken = data?.token || null
       if (nextToken) {
@@ -133,7 +134,7 @@ export function AuthProvider({ children }) {
           phone: payload.phone,
         }),
       })
-      const data = await response.json()
+      const data = await toJson(response)
       if (!response.ok) {
         const emailError =
           data?.errors?.email?.[0] ||
