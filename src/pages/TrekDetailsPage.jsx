@@ -100,17 +100,24 @@ export default function TrekDetailsPage() {
     try {
       setError('')
       const response = await fetch(buildTrekEndpoint(regNumber))
-      const payload = await response.json()
+      const payload = await response.json().catch(() => ({}))
+      if (!response.ok) {
+        throw new Error(
+          response.status === 404
+            ? 'No se encontró el trek solicitado.'
+            : 'No se pudo cargar este trek. Intenta de nuevo más tarde.',
+        )
+      }
       const trekData = payload?.data
       if (trekData?.status === 'y') {
         setTrek(trekData)
       } else {
         setTrek(null)
-        setError('')
+        setError('No se encontró el trek solicitado.')
       }
     } catch (error) {
       console.error('Error al cargar el trek:', error)
-      setError('No se pudo cargar este trek. Intenta de nuevo más tarde.')
+      setError(error?.message || 'No se pudo cargar este trek. Intenta de nuevo más tarde.')
     } finally {
       setIsLoading(false)
     }
@@ -140,8 +147,16 @@ export default function TrekDetailsPage() {
     )
   }
 
-  if (!trek || trek.status !== 'y') {
-    return null
+  if (!trek) {
+    return (
+      <main className="flex-grow w-full max-w-[1280px] mx-auto px-4 sm:px-10 py-10">
+        <div className="bg-amber-50 dark:bg-amber-900/20 rounded-xl border border-amber-200 dark:border-amber-900/40 p-8 text-center">
+          <p className="text-sm text-amber-800 dark:text-amber-200">
+            No se encontró el trek solicitado.
+          </p>
+        </div>
+      </main>
+    )
   }
 
   const averageScore = trek.score?.average ?? 0
