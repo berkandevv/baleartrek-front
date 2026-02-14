@@ -3,11 +3,13 @@ import { useSearchParams } from 'react-router-dom'
 import CatalogFilters from '../components/catalog/CatalogFilters'
 import CatalogToolbar from '../components/catalog/CatalogToolbar'
 import CatalogGrid from '../components/catalog/CatalogGrid'
-import { fetchTreks } from '../utils/treks'
+import { fetchTrekByRegNumber, fetchTreks } from '../utils/treks'
 // Valor centinela para representar "sin filtro de municipio"
 const ALL_MUNICIPALITIES = 'all'
+const ALL_ZONES = 'all'
 const PAGE_SIZE = 6
 const getIslandName = (trek) => trek?.municipality?.island?.name ?? ''
+const getZoneName = (trek) => trek?.municipality?.zone?.name ?? ''
 const getMunicipalityName = (trek) => trek?.municipality?.name ?? ''
 const getTrekName = (trek) => trek?.name ?? ''
 
@@ -21,6 +23,39 @@ const uniqueStrings = (items) => {
   return unique
 }
 
+const enrichTreksWithZones = async (treks = []) => {
+  const treksMissingZone = treks.filter((trek) => !getZoneName(trek) && trek?.regNumber)
+  if (treksMissingZone.length === 0) return treks
+
+  const detailResults = await Promise.all(
+    treksMissingZone.map(async (trek) => {
+      try {
+        const detail = await fetchTrekByRegNumber(trek.regNumber)
+        return [trek.regNumber, detail]
+      } catch (error) {
+        console.warn(`No se pudo enriquecer zona para ${trek.regNumber}:`, error)
+        return [trek.regNumber, null]
+      }
+    }),
+  )
+  const detailsByRegNumber = new Map(detailResults)
+
+  return treks.map((trek) => {
+    if (getZoneName(trek)) return trek
+    const detail = detailsByRegNumber.get(trek?.regNumber)
+    const zone = detail?.municipality?.zone
+    if (!zone?.name) return trek
+
+    return {
+      ...trek,
+      municipality: {
+        ...(trek?.municipality ?? {}),
+        zone,
+      },
+    }
+  })
+}
+
 export default function CatalogPage() {
   // Datos base y estados de la UI
   const [treks, setTreks] = useState([])
@@ -28,6 +63,7 @@ export default function CatalogPage() {
   const [error, setError] = useState('')
   // Filtros activos de isla y municipio
   const [selectedIslands, setSelectedIslands] = useState([])
+  const [selectedZone, setSelectedZone] = useState(ALL_ZONES)
   const [selectedMunicipality, setSelectedMunicipality] = useState(ALL_MUNICIPALITIES)
   // Criterio de orden actual
   const [sortBy, setSortBy] = useState('name-asc')
@@ -42,10 +78,11 @@ export default function CatalogPage() {
       try {
         setError('')
         const apiTreks = await fetchTreks()
-        const apiIslandNames = apiTreks.map(getIslandName).filter(Boolean)
+        const normalizedTreks = await enrichTreksWithZones(apiTreks)
+        const apiIslandNames = normalizedTreks.map(getIslandName).filter(Boolean)
         const apiIslands = uniqueStrings(apiIslandNames)
 
-        setTreks(apiTreks)
+        setTreks(normalizedTreks)
         setSelectedIslands(apiIslands)
       } catch (error) {
         console.error('Error al cargar excursiones:', error)
@@ -67,30 +104,42 @@ export default function CatalogPage() {
   // Set para validación rápida de islas activas
   const islandSet = new Set(selectedIslands)
 
-  // Municipios disponibles según las islas activas (sin duplicados)
+  // Zonas disponibles según las islas activas (sin duplicados)
+  const zoneNames = activeTreks
+    .filter((trek) => islandSet.has(getIslandName(trek)))
+    .map(getZoneName)
+    .filter(Boolean)
+  const zones = uniqueStrings(zoneNames)
+
+  // Municipios disponibles según islas y zona activa (sin duplicados)
   const municipalityNames = activeTreks
     .filter((trek) => islandSet.has(getIslandName(trek)))
+    .filter((trek) => selectedZone === ALL_ZONES || getZoneName(trek) === selectedZone)
     .map(getMunicipalityName)
     .filter(Boolean)
   const municipalities = uniqueStrings(municipalityNames)
 
-  // Catálogo de escursiones final tras aplicar filtros de isla, municipio y búsqueda
+  // Catálogo de excursiones final tras aplicar filtros de isla, zona, municipio y búsqueda
   const filteredTreks = activeTreks.filter((trek) => {
     const island = getIslandName(trek)
+    const zone = getZoneName(trek)
     const municipality = getMunicipalityName(trek)
     const name = getTrekName(trek)
 
     // 1) Filtro por isla
     if (!islandSet.has(island)) return false
-    // 2) Filtro por municipio (si no está en "all")
+    // 2) Filtro por zona (si no está en "all")
+    if (selectedZone !== ALL_ZONES && zone !== selectedZone) return false
+    // 3) Filtro por municipio (si no está en "all")
     if (selectedMunicipality !== ALL_MUNICIPALITIES && municipality !== selectedMunicipality) return false
-    // 3) Si no hay texto, pasa directamente
+    // 4) Si no hay texto, pasa directamente
     if (!search) return true
 
-    // 4) Búsqueda por nombre de excursión o nombre de municipio
+    // 5) Búsqueda por nombre de excursión, municipio o zona
     const byName = name.toLowerCase().includes(search)
     const byMunicipality = municipality.toLowerCase().includes(search)
-    return byName || byMunicipality
+    const byZone = zone.toLowerCase().includes(search)
+    return byName || byMunicipality || byZone
   })
 
   // Copia para ordenar sin mutar el array filtrado original
@@ -116,20 +165,26 @@ export default function CatalogPage() {
 
   useEffect(() => {
     setCurrentPage(1)
-  }, [selectedIslands, selectedMunicipality, search, sortBy])
+  }, [selectedIslands, selectedZone, selectedMunicipality, search, sortBy])
 
   useEffect(() => {
     setCurrentPage((prevPage) => Math.min(prevPage, totalPages))
   }, [totalPages])
 
   const handleToggleIsland = (island) => {
-    // Al cambiar islas, se reinicia municipio para evitar filtros incompatibles
+    // Al cambiar islas, se reinician zona y municipio para evitar filtros incompatibles
+    setSelectedZone(ALL_ZONES)
     setSelectedMunicipality(ALL_MUNICIPALITIES)
     setSelectedIslands((prev) =>
       prev.includes(island)
         ? prev.filter((item) => item !== island)
         : [...prev, island],
     )
+  }
+
+  const handleZoneChange = (zone) => {
+    setSelectedZone(zone)
+    setSelectedMunicipality(ALL_MUNICIPALITIES)
   }
 
   return (
@@ -139,7 +194,7 @@ export default function CatalogPage() {
           Encuentra tu próxima aventura en Baleares
         </h1>
         <p className="text-text-sub text-base max-w-2xl">
-          Filtra por isla y municipio y descubre las excursiones mejor valoradas
+          Filtra por isla, zona y municipio y descubre las excursiones mejor valoradas
         </p>
       </div>
 
@@ -148,9 +203,12 @@ export default function CatalogPage() {
         <CatalogFilters
           islands={islands}
           selectedIslands={selectedIslands}
+          zones={zones}
+          selectedZone={selectedZone}
           municipalities={municipalities}
           selectedMunicipality={selectedMunicipality}
           onToggleIsland={handleToggleIsland}
+          onZoneChange={handleZoneChange}
           onMunicipalityChange={setSelectedMunicipality}
         />
 

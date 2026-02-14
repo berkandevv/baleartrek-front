@@ -1,9 +1,12 @@
 export default function CatalogFilters({
   islands,
   selectedIslands,
+  zones,
+  selectedZone,
   municipalities,
   selectedMunicipality,
   onToggleIsland,
+  onZoneChange,
   onMunicipalityChange,
 }) {
   return (
@@ -32,7 +35,7 @@ export default function CatalogFilters({
         </div>
       </div>
 
-      {/* Filtro único por municipio según las islas activas */}
+      {/* Filtro único por municipio según islas y zona activas */}
       <div className="flex flex-col gap-3">
         <h3 className="text-sm font-bold uppercase tracking-wider text-text-sub">Municipio</h3>
         <select
@@ -48,6 +51,25 @@ export default function CatalogFilters({
           ))}
         </select>
       </div>
+
+      {/* Filtro único por zona según las islas activas; solo visible si hay zonas */}
+      {zones.length > 0 ? (
+        <div className="flex flex-col gap-3">
+          <h3 className="text-sm font-bold uppercase tracking-wider text-text-sub">Zona</h3>
+          <select
+            value={selectedZone}
+            onChange={(event) => onZoneChange(event.target.value)}
+            className="w-full rounded-lg bg-white border border-[#dbe4e6] text-text-main py-3 px-4 focus:border-primary focus:ring-0"
+          >
+            <option value="all">Todas las zonas</option>
+            {zones.map((zone) => (
+              <option key={zone} value={zone}>
+                {zone}
+              </option>
+            ))}
+          </select>
+        </div>
+      ) : null}
     </aside>
   )
 }
