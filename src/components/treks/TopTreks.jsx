@@ -28,7 +28,7 @@ export default function TopTreks({ treks, isLoading, error }) {
           </div>
         )}
 
-        {!isLoading && (
+        {!isLoading && !error && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
             {treks.map((trek) => (
               <TrekCard key={trek.id} trek={trek} />
