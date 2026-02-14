@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from '../auth/useAuth'
+import { cancelMeetingSubscription } from '../auth/authApi'
+import { useUser } from '../auth/useUser'
 import ProfileSidebar from '../components/ProfileSidebar'
 import Stars from '../components/Stars'
-import { buildApiUrl } from '../utils/api'
 import { formatMemberSince, getFullName } from '../utils/profileUtils'
 import {
   clampRating,
@@ -18,76 +19,23 @@ import { resolveImageUrl } from '../utils/urls'
 
 export default function ProfileCommentsPage() {
   const { token } = useAuth()
-  const [isLoading, setIsLoading] = useState(true)
+  const { user, refreshUser, isUserLoading } = useUser()
   const [error, setError] = useState('')
   const [cancelError, setCancelError] = useState('')
   const [cancelingMeetingId, setCancelingMeetingId] = useState(null)
-  const [user, setUser] = useState(null)
   const [sortKey, setSortKey] = useState('recent')
 
   useEffect(() => {
     if (!token) {
-      setIsLoading(false)
       return
     }
 
-    let isActive = true
-    const fetchMeetings = async () => {
-      setIsLoading(true)
-      setError('')
-      try {
-        const response = await fetch(buildApiUrl('/api/user'), {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            Accept: 'application/json',
-          },
-        })
-        const payload = await response.json()
-        if (!response.ok) {
-          throw new Error(payload?.message || 'No se pudo cargar el historial')
-        }
-        if (isActive) {
-          setUser(payload?.data ?? null)
-        }
-      } catch (fetchError) {
-        console.error('Error al cargar encuentros:', fetchError)
-        if (isActive) {
-          setError(fetchError?.message || 'No se pudo cargar el historial')
-        }
-      } finally {
-        if (isActive) {
-          setIsLoading(false)
-        }
-      }
-    }
-
-    fetchMeetings()
-
-    return () => {
-      isActive = false
-    }
-  }, [token])
-
-  const refreshMeetings = async () => {
-    if (!token) return
     setError('')
-    try {
-      const response = await fetch(buildApiUrl('/api/user'), {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          Accept: 'application/json',
-        },
-      })
-      const payload = await response.json()
-      if (!response.ok) {
-        throw new Error(payload?.message || 'No se pudo cargar el historial')
-      }
-      setUser(payload?.data ?? null)
-    } catch (fetchError) {
+    refreshUser().catch((fetchError) => {
       console.error('Error al cargar encuentros:', fetchError)
       setError(fetchError?.message || 'No se pudo cargar el historial')
-    }
-  }
+    })
+  }, [token, refreshUser])
 
   const handleCancelMeeting = async (meetingId) => {
     if (!token) return
@@ -96,18 +44,8 @@ export default function ProfileCommentsPage() {
     setCancelError('')
     setCancelingMeetingId(meetingId)
     try {
-      const response = await fetch(buildApiUrl(`/api/meetings/${meetingId}/subscribe`), {
-        method: 'DELETE',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          Accept: 'application/json',
-        },
-      })
-      const payload = await response.json().catch(() => ({}))
-      if (!response.ok) {
-        throw new Error(payload?.message || 'No se pudo cancelar la asistencia')
-      }
-      await refreshMeetings()
+      await cancelMeetingSubscription(token, meetingId)
+      await refreshUser()
     } catch (cancelError) {
       console.error('Error al cancelar asistencia:', cancelError)
       setCancelError(cancelError?.message || 'No se pudo cancelar la asistencia')
@@ -157,7 +95,7 @@ export default function ProfileCommentsPage() {
             </p>
           </div>
 
-          {isLoading ? (
+          {isUserLoading ? (
             <div className="rounded-lg border border-[#f0f4f4] dark:border-white/10 bg-[#f6f8f8] dark:bg-white/5 px-4 py-3 text-sm text-text-sub">
               Cargando encuentros...
             </div>

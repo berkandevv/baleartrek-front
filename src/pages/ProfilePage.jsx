@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from '../auth/useAuth'
+import { deactivateCurrentUser, updateCurrentUser } from '../auth/authApi'
+import { useUser } from '../auth/useUser'
 import ProfileSidebar from '../components/ProfileSidebar'
-import { buildApiUrl } from '../utils/api'
 import { formatMemberSince, getFullName } from '../utils/profileUtils'
 
 // Estado inicial del formulario de perfil
@@ -16,10 +17,9 @@ const emptyForm = {
 export default function ProfilePage() {
   // Datos de autenticacion para proteger el acceso al perfil
   const { token, isAuthenticated, logout } = useAuth()
+  const { user, isUserLoading } = useUser()
   // Estado local del formulario y mensajes de la UI
   const [form, setForm] = useState(emptyForm)
-  const [user, setUser] = useState(null)
-  const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
   const [error, setError] = useState('')
@@ -33,48 +33,21 @@ export default function ProfilePage() {
   const commentedMeetingsCount = meetings.filter((meeting) => (meeting?.comments ?? []).length > 0)
     .length
 
-  // Carga los datos del perfil al montar la pagina
+  // Rellena el formulario con el usuario actual cuando se carga o cambia.
   useEffect(() => {
-    if (!token) {
-      setIsLoading(false)
+    if (!user) {
+      setForm(emptyForm)
       return
     }
 
-    const fetchProfile = async () => {
-      setIsLoading(true)
-      setError('')
-      setSuccess('')
-
-      try {
-        const response = await fetch(buildApiUrl('/api/user'), {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            Accept: 'application/json',
-          },
-        })
-        const payload = await response.json()
-        if (!response.ok) {
-          throw new Error(payload?.message || 'No se pudo cargar el perfil')
-        }
-        const data = payload?.data ?? null
-        setUser(data)
-        setForm({
-          name: data?.name ?? '',
-          lastname: data?.lastname ?? '',
-          dni: data?.dni ?? '',
-          email: data?.email ?? '',
-          phone: data?.phone ?? '',
-        })
-      } catch (fetchError) {
-        console.error('Error al cargar perfil:', fetchError)
-        setError(fetchError?.message || 'No se pudo cargar el perfil')
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    fetchProfile()
-  }, [token])
+    setForm({
+      name: user?.name ?? '',
+      lastname: user?.lastname ?? '',
+      dni: user?.dni ?? '',
+      email: user?.email ?? '',
+      phone: user?.phone ?? '',
+    })
+  }, [user])
 
   // Actualiza el estado del formulario y limpia errores de campo
   const handleChange = (event) => {
@@ -114,28 +87,14 @@ export default function ProfilePage() {
     }
 
     try {
-      const response = await fetch(buildApiUrl('/api/user'), {
-        method: 'PUT',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
-        },
-        body: JSON.stringify({
-          name: form.name,
-          lastname: form.lastname,
-          dni: trimmedDni,
-          email: trimmedEmail,
-          phone: form.phone,
-        }),
+      const data = await updateCurrentUser(token, {
+        name: form.name,
+        lastname: form.lastname,
+        dni: trimmedDni,
+        email: trimmedEmail,
+        phone: form.phone,
       })
-      const payload = await response.json()
-      if (!response.ok) {
-        throw new Error(payload?.message || 'No se pudo guardar el perfil')
-      }
-      const data = payload?.data ?? null
       if (data) {
-        setUser(data)
         setForm({
           name: data?.name ?? '',
           lastname: data?.lastname ?? '',
@@ -166,19 +125,7 @@ export default function ProfilePage() {
     setError('')
     setSuccess('')
     try {
-      const response = await fetch(buildApiUrl('/api/user'), {
-        method: 'PUT',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
-        },
-        body: JSON.stringify({ status: 'n' }),
-      })
-      const payload = await response.json()
-      if (!response.ok) {
-        throw new Error(payload?.message || 'No se pudo eliminar la cuenta')
-      }
+      await deactivateCurrentUser(token)
       await logout()
     } catch (deleteError) {
       console.error('Error al eliminar cuenta:', deleteError)
@@ -221,7 +168,7 @@ export default function ProfilePage() {
                 <div className="rounded-lg border border-[#f0f4f4] dark:border-white/10 bg-[#f6f8f8] dark:bg-white/5 px-4 py-3 text-sm text-text-sub">
                   Inicia sesión para ver y editar tu perfil.
                 </div>
-              ) : isLoading ? (
+              ) : isUserLoading ? (
                 <div className="rounded-lg border border-[#f0f4f4] dark:border-white/10 bg-[#f6f8f8] dark:bg-white/5 px-4 py-3 text-sm text-text-sub">
                   Cargando datos del perfil...
                 </div>

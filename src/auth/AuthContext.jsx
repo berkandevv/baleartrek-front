@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { buildApiUrl } from '../utils/api'
 import { AuthContext } from './authContext'
+import { fetchCurrentUser } from './authApi'
 const STORAGE_KEY = 'auth_token'
 
 const getToken = () => {
@@ -23,14 +24,39 @@ const clearToken = () => {
 export function AuthProvider({ children }) {
   const [token, setTokenState] = useState(() => getToken())
   const [isLoading, setIsLoading] = useState(false)
+  const [isUserLoading, setIsUserLoading] = useState(false)
   const [user, setUser] = useState(null)
 
   // Sincroniza token en memoria y sessionStorage
-  const setSessionToken = (nextToken) => {
+  const setSessionToken = useCallback((nextToken) => {
     if (nextToken) setToken(nextToken)
     else clearToken()
     setTokenState(nextToken ?? null)
-  }
+  }, [])
+
+  const refreshUser = useCallback(async (tokenToUse = token) => {
+    if (!tokenToUse) {
+      setUser(null)
+      return null
+    }
+
+    setIsUserLoading(true)
+    try {
+      const nextUser = await fetchCurrentUser(tokenToUse)
+      if (nextUser?.status === 'n') {
+        setSessionToken(null)
+        setUser(null)
+        throw new Error('Cuenta eliminada')
+      }
+      setUser(nextUser)
+      return nextUser
+    } catch (error) {
+      setUser(null)
+      throw error
+    } finally {
+      setIsUserLoading(false)
+    }
+  }, [token, setSessionToken])
 
   // Carga datos del usuario cuando hay token disponible
   useEffect(() => {
@@ -39,40 +65,12 @@ export function AuthProvider({ children }) {
       return
     }
 
-    let isActive = true
-    const fetchUser = async () => {
-      try {
-        const response = await fetch(buildApiUrl('/api/user'), {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            Accept: 'application/json',
-          },
-        })
-        const payload = await response.json()
-        if (!response.ok) throw new Error('No se pudo cargar el usuario')
-        if (isActive) {
-          const nextUser = payload?.data ?? null
-          if (nextUser?.status === 'n') {
-            setSessionToken(null)
-            setUser(null)
-          } else {
-            setUser(nextUser)
-          }
-        }
-      } catch (error) {
+    refreshUser(token).catch((error) => {
+      if (error?.message !== 'Cuenta eliminada') {
         console.error('Error al cargar usuario:', error)
-        if (isActive) {
-          setUser(null)
-        }
       }
-    }
-
-    fetchUser()
-
-    return () => {
-      isActive = false
-    }
-  }, [token])
+    })
+  }, [token, refreshUser])
 
   // Ejecuta login y guarda token
   const login = async (credentials) => {
@@ -89,25 +87,11 @@ export function AuthProvider({ children }) {
       if (nextToken) {
         setSessionToken(nextToken)
         try {
-          const userResponse = await fetch(buildApiUrl('/api/user'), {
-            headers: {
-              Authorization: `Bearer ${nextToken}`,
-              Accept: 'application/json',
-            },
-          })
-          const userPayload = await userResponse.json()
-          const nextUser = userPayload?.data ?? null
-          if (!userResponse.ok) throw new Error('No se pudo cargar el usuario')
-          if (nextUser?.status === 'n') {
-            setSessionToken(null)
-            setUser(null)
-            throw new Error('Cuenta eliminada')
-          }
-          setUser(nextUser)
+          await refreshUser(nextToken)
         } catch (error) {
-        if (error?.message === 'Cuenta eliminada') {
-          throw error
-        }
+          if (error?.message === 'Cuenta eliminada') {
+            throw error
+          }
         }
       }
       return data
@@ -178,10 +162,12 @@ export function AuthProvider({ children }) {
     token,
     isAuthenticated: Boolean(token),
     user,
+    isUserLoading,
     isLoading,
     login,
     register,
     logout,
+    refreshUser,
   }
 
   // Proveedor del contexto que envuelve la app
