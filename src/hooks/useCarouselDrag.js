@@ -34,7 +34,9 @@ export function useCarouselDrag(carouselRef) {
   const handlePointerUp = (event) => {
     const container = carouselRef.current
     if (!container) return
-    container.releasePointerCapture(event.pointerId)
+    if (container.hasPointerCapture(event.pointerId)) {
+      container.releasePointerCapture(event.pointerId)
+    }
     container.classList.remove('carousel-dragging')
     dragState.current.isDragging = false
   }

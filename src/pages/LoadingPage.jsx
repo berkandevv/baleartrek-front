@@ -25,7 +25,7 @@ export default function LoadingPage() {
         return
       }
       if (err?.message === 'Failed to fetch' || err?.name === 'TypeError') {
-        setError('Error de credenciales')
+        setError('No se pudo conectar con el servidor. Inténtalo de nuevo en unos minutos.')
         return
       }
       setError(err?.message || 'Error de credenciales')
