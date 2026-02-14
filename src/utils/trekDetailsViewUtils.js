@@ -35,4 +35,5 @@ export const isApplicationOpenToday = (meeting, now = getBrowserNow()) => {
 }
 
 // Forma el nombre completo con nombre y apellidos
-export const formatFullName = (person) => `${person.name} ${person.lastname}`.trim()
+export const formatFullName = (person) =>
+  `${person?.name ?? ''} ${person?.lastname ?? ''}`.trim()

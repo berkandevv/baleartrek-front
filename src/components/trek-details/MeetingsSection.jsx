@@ -79,6 +79,7 @@ export default function MeetingsSection({
           >
             {sortedMeetings.map((meeting) => {
               const { day, monthYear, time } = formatMeetingDateParts(meeting)
+              const guideLabel = formatFullName(meeting?.guide) || 'Pendiente'
               const isActive = isMeetingActive(meeting, now)
               const isClosed = !isActive
               const isApplicationOpen = isApplicationOpenToday(meeting, now)
@@ -133,7 +134,7 @@ export default function MeetingsSection({
                           person_pin
                         </span>
                         <span className="text-xs text-text-muted">
-                          Guía: <span className="font-black text-text-main dark:text-white uppercase">{formatFullName(meeting.guide)}</span>
+                          Guía: <span className="font-black text-text-main dark:text-white uppercase">{guideLabel}</span>
                         </span>
                       </div>
                     </div>

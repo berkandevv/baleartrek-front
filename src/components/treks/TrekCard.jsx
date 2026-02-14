@@ -3,8 +3,7 @@ import { resolveImageUrl } from '../../utils/urls'
 
 function getNextMeetingLabel(meetings) {
   const now = new Date()
-  const upcomingDates = meetings
-    .map((meeting) => new Date(`${meeting.day}T${meeting.hour}`))
+  const upcomingDates = (meetings?.map?.((meeting) => new Date(`${meeting.day}T${meeting.hour}`)) ?? [])
     .filter((date) => date >= now)
     .sort((a, b) => a - b)
 
