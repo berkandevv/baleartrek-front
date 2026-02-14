@@ -1,108 +1,55 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { Icon } from 'leaflet'
 import { useAuth } from '../auth/useAuth'
 import { buildApiUrl } from '../utils/api'
-import { getLocalDateTimeValue } from '../utils/date'
-import {
-  getBrowserNow,
-} from '../utils/trekDetailsViewUtils'
+import { getBrowserNow } from '../utils/trekDetailsViewUtils'
 import { resolveImageUrl } from '../utils/urls'
 import MeetingsSection from '../components/trek-details/MeetingsSection'
 import PlacesSection from '../components/trek-details/PlacesSection'
 import CommentsSection from '../components/trek-details/CommentsSection'
+import { useTrekDetailsData } from '../hooks/useTrekDetailsData'
+import { useCarouselDrag } from '../hooks/useCarouselDrag'
+import {
+  buildMapMarkers,
+  getAttendeeCount,
+  getAttendeeId,
+  getPublishedComments,
+  getTotalAttendees,
+  getMapCenter,
+  isCurrentUserGuide,
+  sortMeetingsByDateDesc,
+} from '../utils/trekDetailsPageUtils'
 import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png'
 import markerIcon from 'leaflet/dist/images/marker-icon.png'
 import markerShadow from 'leaflet/dist/images/marker-shadow.png'
-
-const buildTrekEndpoint = (regNumber) => buildApiUrl(`/api/treks/${encodeURIComponent(regNumber)}`)
 
 export default function TrekDetailsPage() {
   const { regNumber } = useParams()
   const navigate = useNavigate()
   const { token, isAuthenticated, user } = useAuth()
-  const [trek, setTrek] = useState(null)
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState('')
+  const { trek, isLoading, error, fetchTrek } = useTrekDetailsData(regNumber)
   const [subscribeError, setSubscribeError] = useState('')
   const [activeMeetingId, setActiveMeetingId] = useState(null)
   const [visibleComments, setVisibleComments] = useState(4)
   const carouselRef = useRef(null)
-  const dragState = useRef({ isDragging: false, startX: 0, scrollLeft: 0 })
   const mapRef = useRef(null)
   const markerRefs = useRef({})
+  const {
+    scrollCarouselBy,
+    handlePointerDown,
+    handlePointerMove,
+    handlePointerUp,
+  } = useCarouselDrag(carouselRef)
 
   const meetings = trek?.meetings ?? []
   const places = trek?.interesting_places ?? []
-  const parseGpsCoordinates = (gps) => {
-    if (typeof gps !== 'string' || !gps.includes(',')) return null
-    const [latRaw, lngRaw] = gps.split(',').map((value) => value.trim())
-    const lat = Number(latRaw)
-    const lng = Number(lngRaw)
-    if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null
-    return { lat, lng }
-  }
-  const mapMarkers = places
-    .map((place) => {
-      const coordinates = parseGpsCoordinates(place?.gps)
-      if (!coordinates) return null
-      return { ...place, ...coordinates }
-    })
-    .filter(Boolean)
-  const mapCenter = mapMarkers.length
-    ? [
-        mapMarkers.reduce((sum, place) => sum + place.lat, 0) / mapMarkers.length,
-        mapMarkers.reduce((sum, place) => sum + place.lng, 0) / mapMarkers.length,
-      ]
-    : [39.6, 2.9]
-  const sortedMeetings = [...meetings].sort((a, b) => {
-    const dateA = getLocalDateTimeValue(a?.day, a?.hour)
-    const dateB = getLocalDateTimeValue(b?.day, b?.hour)
-    return dateB - dateA
-  })
-  const comments = meetings
-    .flatMap((meeting) =>
-      (meeting.comments ?? [])
-        .filter((comment) => String(comment?.status ?? '').toLowerCase() === 'y')
-        .map((comment) => ({
-          ...comment,
-          meetingDay: meeting.day,
-        })),
-    )
+  const mapMarkers = buildMapMarkers(places)
+  const mapCenter = getMapCenter(mapMarkers)
+  const sortedMeetings = sortMeetingsByDateDesc(meetings)
+  const comments = getPublishedComments(meetings)
   const hasMoreComments = comments.length > 4
   const shownComments = comments.slice(0, visibleComments)
-
-  const fetchTrek = useCallback(async () => {
-    setIsLoading(true)
-    try {
-      setError('')
-      const response = await fetch(buildTrekEndpoint(regNumber))
-      const payload = await response.json().catch(() => ({}))
-      if (!response.ok) {
-        throw new Error(
-          response.status === 404
-            ? 'No se encontró el trek solicitado.'
-            : 'No se pudo cargar este trek. Intenta de nuevo más tarde.',
-        )
-      }
-      const trekData = payload?.data
-      if (trekData?.status === 'y') {
-        setTrek(trekData)
-      } else {
-        setTrek(null)
-        setError('No se encontró el trek solicitado.')
-      }
-    } catch (error) {
-      console.error('Error al cargar el trek:', error)
-      setError(error?.message || 'No se pudo cargar este trek. Intenta de nuevo más tarde.')
-    } finally {
-      setIsLoading(false)
-    }
-  }, [regNumber])
-
-  useEffect(() => {
-    fetchTrek()
-  }, [fetchTrek])
 
   if (isLoading) {
     return (
@@ -157,36 +104,6 @@ export default function TrekDetailsPage() {
     popupAnchor: [1, -34],
     shadowSize: [41, 41],
   })
-  const scrollCarouselBy = (offset) => {
-    if (!carouselRef.current) return
-    carouselRef.current.scrollBy({ left: offset, behavior: 'smooth' })
-  }
-
-  const handlePointerDown = (event) => {
-    const container = carouselRef.current
-    if (!container) return
-    if (event.target.closest('button')) return
-    container.setPointerCapture(event.pointerId)
-    container.classList.add('carousel-dragging')
-    dragState.current.isDragging = true
-    dragState.current.startX = event.clientX
-    dragState.current.scrollLeft = container.scrollLeft
-  }
-
-  const handlePointerMove = (event) => {
-    const container = carouselRef.current
-    if (!container || !dragState.current.isDragging) return
-    const deltaX = event.clientX - dragState.current.startX
-    container.scrollLeft = dragState.current.scrollLeft - deltaX
-  }
-
-  const handlePointerUp = (event) => {
-    const container = carouselRef.current
-    if (!container) return
-    container.releasePointerCapture(event.pointerId)
-    container.classList.remove('carousel-dragging')
-    dragState.current.isDragging = false
-  }
 
   const focusPlaceOnMap = (place) => {
     if (!mapRef.current) return
@@ -201,18 +118,9 @@ export default function TrekDetailsPage() {
     mapRef.current = mapInstance
   }
 
-  const getAttendeeId = (attendee) => attendee?.id ?? attendee?.user_id ?? attendee?.pivot?.user_id
   const currentUserId = user?.id ?? user?.user_id
-  const getGuideId = (meeting) => meeting?.guide?.id ?? meeting?.guide?.user_id
-  const isCurrentUserGuide = (meeting) =>
-    Boolean(currentUserId) && String(getGuideId(meeting)) === String(currentUserId)
-  const getAttendeeCount = (meeting) => {
-    const guideId = getGuideId(meeting)
-    const attendees = meeting?.attendees ?? []
-    if (!guideId) return attendees.length
-    return attendees.filter((attendee) => String(getAttendeeId(attendee)) !== String(guideId)).length
-  }
-  const totalAttendees = meetings.reduce((total, meeting) => total + getAttendeeCount(meeting), 0)
+  const totalAttendees = getTotalAttendees(meetings)
+  const isMeetingGuide = (meeting) => isCurrentUserGuide(meeting, currentUserId)
 
   const handleToggleSubscription = async (meetingId, isSubscribed, isGuide) => {
     if (!isAuthenticated || !token) {
@@ -357,7 +265,7 @@ export default function TrekDetailsPage() {
           currentUserId={currentUserId}
           getAttendeeId={getAttendeeId}
           getAttendeeCount={getAttendeeCount}
-          isCurrentUserGuide={isCurrentUserGuide}
+          isCurrentUserGuide={isMeetingGuide}
           activeMeetingId={activeMeetingId}
           handleToggleSubscription={handleToggleSubscription}
         />
