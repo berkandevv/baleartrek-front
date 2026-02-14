@@ -283,7 +283,7 @@ export default function ProfileCommentsPage() {
                                   <div
                                     className={`flex items-center gap-1.5 px-2 py-1 bg-blue-50 rounded border border-primary/20 ${statusTone}`}
                                   >
-                                    <span className="material-symbols-outlined text-[14px] filled">
+                                    <span className="material-symbols-outlined text-[14px]">
                                       check_circle
                                     </span>
                                     <span className="text-[10px] font-bold uppercase tracking-wider">

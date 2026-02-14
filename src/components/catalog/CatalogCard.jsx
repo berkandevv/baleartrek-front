@@ -31,7 +31,7 @@ export default function CatalogCard({ trek }) {
           </div>
 
           <div className="flex items-center gap-1 bg-amber-100 px-2 py-1 rounded border border-amber-200 shrink-0">
-            <span className="material-symbols-outlined text-[18px] text-amber-500 fill-1">star</span>
+            <span className="material-symbols-outlined text-[18px] text-amber-500">star</span>
             <span className="text-base font-black text-amber-800">
               {Number.isFinite(average) ? average.toFixed(1) : '0.0'}
             </span>

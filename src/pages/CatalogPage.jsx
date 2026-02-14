@@ -3,10 +3,7 @@ import { useSearchParams } from 'react-router-dom'
 import CatalogFilters from '../components/catalog/CatalogFilters'
 import CatalogToolbar from '../components/catalog/CatalogToolbar'
 import CatalogGrid from '../components/catalog/CatalogGrid'
-import { buildApiUrl } from '../utils/api'
-
-// Endpoint del backend para recuperar el catálogo completo de excursiones
-const TREKS_ENDPOINT = buildApiUrl('/api/treks')
+import { fetchTreks } from '../utils/treks'
 // Valor centinela para representar "sin filtro de municipio"
 const ALL_MUNICIPALITIES = 'all'
 const PAGE_SIZE = 6
@@ -38,12 +35,10 @@ export default function CatalogPage() {
 
   useEffect(() => {
     // Carga inicial de excursiones al montar la página
-    const fetchTreks = async () => {
+    const loadTreks = async () => {
       try {
         setError('')
-        const response = await fetch(TREKS_ENDPOINT)
-        const payload = await response.json()
-        const apiTreks = payload.data
+        const apiTreks = await fetchTreks()
         const apiIslandNames = apiTreks.map((trek) => trek.municipality.island.name)
         const apiIslands = uniqueStrings(apiIslandNames)
 
@@ -57,7 +52,7 @@ export default function CatalogPage() {
       }
     }
 
-    fetchTreks()
+    loadTreks()
   }, [])
 
   const activeTreks = treks.filter((trek) => trek.status === 'y')

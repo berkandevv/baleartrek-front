@@ -1,9 +1,7 @@
 import { useEffect, useState } from 'react'
 import Hero from '../components/Hero'
 import TopTreks from '../components/treks/TopTreks'
-import { buildApiUrl } from '../utils/api'
-
-const TREKS_ENDPOINT = buildApiUrl('/api/treks')
+import { fetchTreks, getTopTreksByScore } from '../utils/treks'
 
 export default function HomePage() {
   // Top de excursiones mostrado en la home
@@ -12,16 +10,11 @@ export default function HomePage() {
   const [error, setError] = useState('')
 
   useEffect(() => {
-    const fetchTreks = async () => {
+    const loadTreks = async () => {
       try {
         setError('')
-        const response = await fetch(TREKS_ENDPOINT)
-        const payload = await response.json()
-        const sorted = [...payload.data]
-          .sort((a, b) => b.score.average - a.score.average)
-          .slice(0, 5)
-
-        setTreks(sorted)
+        const allTreks = await fetchTreks()
+        setTreks(getTopTreksByScore(allTreks, 5))
       } catch (error) {
         console.error('Error al cargar excursiones:', error)
         setError('No se pudieron cargar las excursiones destacadas.')
@@ -30,7 +23,7 @@ export default function HomePage() {
       }
     }
 
-    fetchTreks()
+    loadTreks()
   }, [])
 
   return (
