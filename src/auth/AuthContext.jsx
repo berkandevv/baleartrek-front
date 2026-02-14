@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState } from 'react'
+import { buildApiUrl } from '../utils/api'
 const STORAGE_KEY = 'auth_token'
 
 const getToken = () => {
@@ -19,10 +20,6 @@ const clearToken = () => {
 
 // Contexto de autenticación compartido en la app
 const AuthContext = createContext(null)
-
-const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/+$/, '')
-
-const buildUrl = (path) => (API_BASE_URL ? `${API_BASE_URL}${path}` : path)
 
 // Proveedor que gestiona token y estado de carga
 export function AuthProvider({ children }) {
@@ -47,7 +44,7 @@ export function AuthProvider({ children }) {
     let isActive = true
     const fetchUser = async () => {
       try {
-        const response = await fetch(buildUrl('/api/user'), {
+        const response = await fetch(buildApiUrl('/api/user'), {
           headers: {
             Authorization: `Bearer ${token}`,
             Accept: 'application/json',
@@ -83,7 +80,7 @@ export function AuthProvider({ children }) {
   const login = async (credentials) => {
     setIsLoading(true)
     try {
-      const response = await fetch(buildUrl('/api/login'), {
+      const response = await fetch(buildApiUrl('/api/login'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(credentials),
@@ -94,7 +91,7 @@ export function AuthProvider({ children }) {
       if (nextToken) {
         setSessionToken(nextToken)
         try {
-          const userResponse = await fetch(buildUrl('/api/user'), {
+          const userResponse = await fetch(buildApiUrl('/api/user'), {
             headers: {
               Authorization: `Bearer ${nextToken}`,
               Accept: 'application/json',
@@ -125,7 +122,7 @@ export function AuthProvider({ children }) {
   const register = async (payload) => {
     setIsLoading(true)
     try {
-      const response = await fetch(buildUrl('/api/register'), {
+      const response = await fetch(buildApiUrl('/api/register'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -164,7 +161,7 @@ export function AuthProvider({ children }) {
     setIsLoading(true)
     try {
       const token = getToken()
-      await fetch(buildUrl('/api/logout'), {
+      await fetch(buildApiUrl('/api/logout'), {
         method: 'POST',
         headers: token ? { Authorization: `Bearer ${token}` } : undefined,
       })

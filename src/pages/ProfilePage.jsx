@@ -1,10 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from '../auth/AuthContext'
 import ProfileSidebar from '../components/ProfileSidebar'
+import { buildApiUrl } from '../utils/api'
 import { formatMemberSince, getFullName } from '../utils/profileUtils'
-
-const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/+$/, '')
-const buildUrl = (path) => (API_BASE_URL ? `${API_BASE_URL}${path}` : path)
 
 // Estado inicial del formulario de perfil
 const emptyForm = {
@@ -48,7 +46,7 @@ export default function ProfilePage() {
       setSuccess('')
 
       try {
-        const response = await fetch(buildUrl('/api/user'), {
+        const response = await fetch(buildApiUrl('/api/user'), {
           headers: {
             Authorization: `Bearer ${token}`,
             Accept: 'application/json',
@@ -116,7 +114,7 @@ export default function ProfilePage() {
     }
 
     try {
-      const response = await fetch(buildUrl('/api/user'), {
+      const response = await fetch(buildApiUrl('/api/user'), {
         method: 'PUT',
         headers: {
           Authorization: `Bearer ${token}`,
@@ -168,7 +166,7 @@ export default function ProfilePage() {
     setError('')
     setSuccess('')
     try {
-      const response = await fetch(buildUrl('/api/user'), {
+      const response = await fetch(buildApiUrl('/api/user'), {
         method: 'PUT',
         headers: {
           Authorization: `Bearer ${token}`,

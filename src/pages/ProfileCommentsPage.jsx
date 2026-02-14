@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useAuth } from '../auth/AuthContext'
 import ProfileSidebar from '../components/ProfileSidebar'
 import Stars from '../components/Stars'
+import { buildApiUrl } from '../utils/api'
 import { formatMemberSince, getFullName } from '../utils/profileUtils'
 import {
   clampRating,
@@ -13,9 +14,6 @@ import {
 } from '../utils/profileCommentsUtils'
 import { getBrowserNow } from '../utils/trekDetailsViewUtils'
 import { resolveImageUrl } from '../utils/urls'
-
-const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/+$/, '')
-const buildUrl = (path) => (API_BASE_URL ? `${API_BASE_URL}${path}` : path)
 
 
 export default function ProfileCommentsPage() {
@@ -38,7 +36,7 @@ export default function ProfileCommentsPage() {
       setIsLoading(true)
       setError('')
       try {
-        const response = await fetch(buildUrl('/api/user'), {
+        const response = await fetch(buildApiUrl('/api/user'), {
           headers: {
             Authorization: `Bearer ${token}`,
             Accept: 'application/json',
@@ -74,7 +72,7 @@ export default function ProfileCommentsPage() {
     if (!token) return
     setError('')
     try {
-      const response = await fetch(buildUrl('/api/user'), {
+      const response = await fetch(buildApiUrl('/api/user'), {
         headers: {
           Authorization: `Bearer ${token}`,
           Accept: 'application/json',
@@ -98,7 +96,7 @@ export default function ProfileCommentsPage() {
     setCancelError('')
     setCancelingMeetingId(meetingId)
     try {
-      const response = await fetch(buildUrl(`/api/meetings/${meetingId}/subscribe`), {
+      const response = await fetch(buildApiUrl(`/api/meetings/${meetingId}/subscribe`), {
         method: 'DELETE',
         headers: {
           Authorization: `Bearer ${token}`,

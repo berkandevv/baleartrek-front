@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
 import Hero from '../components/Hero'
 import TopTreks from '../components/treks/TopTreks'
+import { buildApiUrl } from '../utils/api'
 
-const TREKS_ENDPOINT = `${import.meta.env.VITE_API_BASE_URL}/api/treks`
+const TREKS_ENDPOINT = buildApiUrl('/api/treks')
 
 export default function HomePage() {
   // Top de excursiones mostrado en la home

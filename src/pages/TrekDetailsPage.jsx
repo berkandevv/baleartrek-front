@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { Icon } from 'leaflet'
 import { MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet'
 import { useAuth } from '../auth/AuthContext'
+import { buildApiUrl } from '../utils/api'
 import {
   formatFullName,
   formatApplicationDate,
@@ -16,10 +17,7 @@ import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png'
 import markerIcon from 'leaflet/dist/images/marker-icon.png'
 import markerShadow from 'leaflet/dist/images/marker-shadow.png'
 
-const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/+$/, '')
-const buildUrl = (path) => (API_BASE_URL ? `${API_BASE_URL}${path}` : path)
-
-const buildTrekEndpoint = (regNumber) => buildUrl(`/api/treks/${encodeURIComponent(regNumber)}`)
+const buildTrekEndpoint = (regNumber) => buildApiUrl(`/api/treks/${encodeURIComponent(regNumber)}`)
 
 const FitMapToMarkers = ({ markers, onReady }) => {
   const map = useMap()
@@ -253,7 +251,7 @@ export default function TrekDetailsPage() {
     setSubscribeError('')
     setActiveMeetingId(meetingId)
     try {
-      const response = await fetch(buildUrl(`/api/meetings/${meetingId}/subscribe`), {
+      const response = await fetch(buildApiUrl(`/api/meetings/${meetingId}/subscribe`), {
         method: isSubscribed ? 'DELETE' : 'POST',
         headers: {
           Authorization: `Bearer ${token}`,

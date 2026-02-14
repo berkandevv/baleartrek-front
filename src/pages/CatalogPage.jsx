@@ -3,9 +3,10 @@ import { useSearchParams } from 'react-router-dom'
 import CatalogFilters from '../components/catalog/CatalogFilters'
 import CatalogToolbar from '../components/catalog/CatalogToolbar'
 import CatalogGrid from '../components/catalog/CatalogGrid'
+import { buildApiUrl } from '../utils/api'
 
 // Endpoint del backend para recuperar el catálogo completo de excursiones
-const TREKS_ENDPOINT = `${import.meta.env.VITE_API_BASE_URL}/api/treks`
+const TREKS_ENDPOINT = buildApiUrl('/api/treks')
 // Valor centinela para representar "sin filtro de municipio"
 const ALL_MUNICIPALITIES = 'all'
 const PAGE_SIZE = 6
