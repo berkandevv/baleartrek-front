@@ -8,6 +8,10 @@ import { fetchTrekByRegNumber, fetchTreks } from '../utils/treks'
 const ALL_MUNICIPALITIES = 'all'
 const ALL_ZONES = 'all'
 const PAGE_SIZE = 6
+const parsePageParam = (value) => {
+  const parsed = Number.parseInt(value ?? '', 10)
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : 1
+}
 const getIslandName = (trek) => trek?.municipality?.island?.name ?? ''
 const getZoneName = (trek) => trek?.municipality?.zone?.name ?? ''
 const getMunicipalityName = (trek) => trek?.municipality?.name ?? ''
@@ -67,8 +71,8 @@ export default function CatalogPage() {
   const [selectedMunicipality, setSelectedMunicipality] = useState(ALL_MUNICIPALITIES)
   // Criterio de orden actual
   const [sortBy, setSortBy] = useState('name-asc')
-  const [currentPage, setCurrentPage] = useState(1)
-  const [searchParams] = useSearchParams()
+  const [searchParams, setSearchParams] = useSearchParams()
+  const pageFromQuery = parsePageParam(searchParams.get('page'))
   // Búsqueda compartida por query param `?q=...` desde la URL
   const search = (searchParams.get('q') ?? '').trim().toLowerCase()
 
@@ -156,6 +160,7 @@ export default function CatalogPage() {
   const hasRemainder = sortedTreks.length % PAGE_SIZE !== 0
   const calculatedPages = hasRemainder ? fullPages + 1 : fullPages
   const totalPages = calculatedPages > 0 ? calculatedPages : 1
+  const currentPage = Math.min(pageFromQuery, totalPages)
   const pageStart = (currentPage - 1) * PAGE_SIZE
   const paginatedTreks = sortedTreks.slice(pageStart, pageStart + PAGE_SIZE)
   const pageNumbers = []
@@ -164,12 +169,31 @@ export default function CatalogPage() {
   }
 
   useEffect(() => {
-    setCurrentPage(1)
-  }, [selectedIslands, selectedZone, selectedMunicipality, search, sortBy])
+    if (isLoading) return
+    if (pageFromQuery === currentPage) return
+    const nextParams = new URLSearchParams(searchParams)
+    if (currentPage <= 1) {
+      nextParams.delete('page')
+    } else {
+      nextParams.set('page', String(currentPage))
+    }
+    if (nextParams.toString() !== searchParams.toString()) {
+      setSearchParams(nextParams, { replace: true })
+    }
+  }, [isLoading, pageFromQuery, currentPage, searchParams, setSearchParams])
 
-  useEffect(() => {
-    setCurrentPage((prevPage) => Math.min(prevPage, totalPages))
-  }, [totalPages])
+  const goToPage = (nextPage) => {
+    const safePage = Math.max(1, Math.min(nextPage, totalPages))
+    const nextParams = new URLSearchParams(searchParams)
+    if (safePage <= 1) {
+      nextParams.delete('page')
+    } else {
+      nextParams.set('page', String(safePage))
+    }
+    if (nextParams.toString() !== searchParams.toString()) {
+      setSearchParams(nextParams, { replace: true })
+    }
+  }
 
   const handleToggleIsland = (island) => {
     // Al cambiar islas, se reinician zona y municipio para evitar filtros incompatibles
@@ -221,7 +245,7 @@ export default function CatalogPage() {
               <div className="flex items-center gap-2">
                 <button
                   type="button"
-                  onClick={() => setCurrentPage((prevPage) => Math.max(prevPage - 1, 1))}
+                  onClick={() => goToPage(currentPage - 1)}
                   disabled={currentPage === 1}
                   aria-label="Página anterior"
                   className={`flex items-center justify-center size-10 rounded-lg border border-[#dbe4e6] bg-white text-text-main hover:bg-[#f0f4f4] ${
@@ -235,7 +259,7 @@ export default function CatalogPage() {
                   <button
                     key={pageNumber}
                     type="button"
-                    onClick={() => setCurrentPage(pageNumber)}
+                    onClick={() => goToPage(pageNumber)}
                     aria-label={`Ir a la página ${pageNumber}`}
                     aria-current={currentPage === pageNumber ? 'page' : undefined}
                     className={`flex items-center justify-center size-10 rounded-lg ${
@@ -250,7 +274,7 @@ export default function CatalogPage() {
 
                 <button
                   type="button"
-                  onClick={() => setCurrentPage((prevPage) => Math.min(prevPage + 1, totalPages))}
+                  onClick={() => goToPage(currentPage + 1)}
                   disabled={currentPage === totalPages}
                   aria-label="Página siguiente"
                   className={`flex items-center justify-center size-10 rounded-lg border border-[#dbe4e6] bg-white text-text-main hover:bg-[#f0f4f4] ${
