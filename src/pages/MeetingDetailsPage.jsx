@@ -269,9 +269,12 @@ export default function MeetingDetailsPage() {
                           ? 'Cancelar asistencia'
                           : 'Inscribirse ahora'}
                 </button>
-                <p className="text-[11px] text-[#618389] text-center mt-6 px-4 leading-relaxed font-medium">
+                <Link
+                  className="mt-6 block px-4 text-center text-[11px] font-medium leading-relaxed text-[#618389] underline decoration-[#bcdde4] underline-offset-2 transition hover:text-corporate-blue"
+                  to="/faq"
+                >
                   Al inscribirte aceptas los términos de participación y la normativa de seguridad de BalearTrek.
-                </p>
+                </Link>
               </div>
 
               <Link
