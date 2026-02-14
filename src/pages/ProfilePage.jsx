@@ -4,6 +4,7 @@ import { deactivateCurrentUser, updateCurrentUser } from '../auth/authApi'
 import { useUser } from '../auth/useUser'
 import ProfileSidebar from '../components/ProfileSidebar'
 import { formatMemberSince, getFullName } from '../utils/profileUtils'
+import { isValidDniNie, isValidEmail, normalizeDniNie, normalizeEmail } from '../utils/validation'
 
 // Estado inicial del formulario de perfil
 const emptyForm = {
@@ -68,16 +69,14 @@ export default function ProfilePage() {
     setSuccess('')
     setFieldErrors({ email: '', dni: '' })
 
-    const trimmedEmail = form.email.trim()
-    const trimmedDni = form.dni.trim().toUpperCase()
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    const dniNieRegex = /^(\d{8}[A-Z]|[XYZ]\d{7}[A-Z])$/
+    const trimmedEmail = normalizeEmail(form.email)
+    const trimmedDni = normalizeDniNie(form.dni)
 
     const nextFieldErrors = { email: '', dni: '' }
-    if (!emailRegex.test(trimmedEmail)) {
+    if (!isValidEmail(trimmedEmail)) {
       nextFieldErrors.email = 'Introduce un correo electrónico válido'
     }
-    if (!dniNieRegex.test(trimmedDni)) {
+    if (!isValidDniNie(trimmedDni)) {
       nextFieldErrors.dni = 'Introduce un DNI o NIE válido'
     }
     if (nextFieldErrors.email || nextFieldErrors.dni) {

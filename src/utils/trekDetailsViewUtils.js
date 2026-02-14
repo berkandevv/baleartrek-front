@@ -1,3 +1,5 @@
+import { formatSpanishShortDate, normalizeDateInput } from './date'
+
 // Obtiene la fecha y hora actual del navegador (zona local del usuario)
 export const getBrowserNow = () => new Date()
 
@@ -17,25 +19,8 @@ export const formatMeetingDateParts = (meeting) => {
   return { day, monthYear, time }
 }
 
-const normalizeDateInput = (value) => {
-  if (!value) return null
-  if (typeof value === 'string') {
-    return value.split(' ')[0]
-  }
-  return value
-}
-
 export const formatApplicationDate = (value) => {
-  const safeDay = normalizeDateInput(value)
-  if (!safeDay) return 'Fecha pendiente'
-  const date = new Date(`${safeDay}T00:00:00`)
-  if (Number.isNaN(date.getTime())) return value
-  const formatted = date.toLocaleDateString('es-ES', {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric',
-  })
-  return formatted.replace('.', '')
+  return formatSpanishShortDate(value)
 }
 
 export const isApplicationOpenToday = (meeting, now = getBrowserNow()) => {

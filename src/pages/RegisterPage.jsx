@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../auth/useAuth'
+import { isValidDniNie, isValidEmail, normalizeDniNie, normalizeEmail } from '../utils/validation'
 
 export default function RegisterPage() {
   const navigate = useNavigate()
@@ -19,17 +20,15 @@ export default function RegisterPage() {
     event.preventDefault()
     setError('')
     setFieldErrors({ email: '', dni: '' })
-    const trimmedEmail = email.trim()
-    const trimmedDni = dni.trim().toUpperCase()
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    const dniNieRegex = /^(\d{8}[A-Z]|[XYZ]\d{7}[A-Z])$/
+    const trimmedEmail = normalizeEmail(email)
+    const trimmedDni = normalizeDniNie(dni)
 
     const nextFieldErrors = { email: '', dni: '' }
-    if (!emailRegex.test(trimmedEmail)) {
+    if (!isValidEmail(trimmedEmail)) {
       nextFieldErrors.email = 'Introduce un correo electrónico válido'
     }
 
-    if (!dniNieRegex.test(trimmedDni)) {
+    if (!isValidDniNie(trimmedDni)) {
       nextFieldErrors.dni = 'Introduce un DNI o NIE válido'
     }
 

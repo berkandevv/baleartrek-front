@@ -1,28 +1,10 @@
+import { formatSpanishShortDate, normalizeDateInput } from './date'
+
 // Numero maximo de estrellas para valorar
 const STAR_COUNT = 5
 
-// Normaliza fechas tipo "YYYY-MM-DD HH:mm:ss" a "YYYY-MM-DD"
-export const normalizeDateInput = (value) => {
-  if (!value) return null
-  if (typeof value === 'string') {
-    return value.split(' ')[0]
-  }
-  return value
-}
-
 // Formatea una fecha del encuentro al formato corto en español
-export const formatMeetingDate = (day) => {
-  const safeDay = normalizeDateInput(day)
-  if (!safeDay) return 'Fecha pendiente'
-  const date = new Date(`${safeDay}T00:00:00`)
-  if (Number.isNaN(date.getTime())) return day
-  const formatted = date.toLocaleDateString('es-ES', {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric',
-  })
-  return formatted.replace('.', '')
-}
+export const formatMeetingDate = (day) => formatSpanishShortDate(day)
 
 // Devuelve la fecha inicial formateada (no hay rangos en el modelo actual)
 export const formatMeetingRange = (start) => {
