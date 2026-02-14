@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useAuth } from '../auth/useAuth'
 import { cancelMeetingSubscription } from '../auth/authApi'
 import { useUser } from '../auth/useUser'
@@ -20,22 +20,9 @@ import { resolveImageUrl } from '../utils/urls'
 export default function ProfileCommentsPage() {
   const { token } = useAuth()
   const { user, refreshUser, isUserLoading } = useUser()
-  const [error, setError] = useState('')
   const [cancelError, setCancelError] = useState('')
   const [cancelingMeetingId, setCancelingMeetingId] = useState(null)
   const [sortKey, setSortKey] = useState('recent')
-
-  useEffect(() => {
-    if (!token) {
-      return
-    }
-
-    setError('')
-    refreshUser().catch((fetchError) => {
-      console.error('Error al cargar encuentros:', fetchError)
-      setError(fetchError?.message || 'No se pudo cargar el historial')
-    })
-  }, [token, refreshUser])
 
   const handleCancelMeeting = async (meetingId) => {
     if (!token) return
@@ -98,10 +85,6 @@ export default function ProfileCommentsPage() {
           {isUserLoading ? (
             <div className="rounded-lg border border-[#f0f4f4] bg-[#f6f8f8] px-4 py-3 text-sm text-text-sub">
               Cargando encuentros...
-            </div>
-          ) : error ? (
-            <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-              {error}
             </div>
           ) : meetings.length === 0 ? (
             <div className="rounded-lg border border-[#f0f4f4] bg-[#f6f8f8] px-4 py-3 text-sm text-text-sub">

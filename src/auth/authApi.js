@@ -45,6 +45,20 @@ export async function updateCurrentUser(token, userData) {
   return payload?.data ?? null
 }
 
+// Cambia la contraseña del usuario autenticado
+export async function updateCurrentUserPassword(token, passwordData) {
+  const response = await fetch(buildApiUrl('/api/user/password'), {
+    method: 'PUT',
+    headers: buildAuthHeaders(token, true),
+    body: JSON.stringify(passwordData),
+  })
+  const payload = await toJson(response)
+  if (!response.ok) {
+    throw buildApiError(response, payload, 'No se pudo actualizar la contraseña')
+  }
+  return payload
+}
+
 // Marca la cuenta actual como desactivada
 export async function deactivateCurrentUser(token) {
   const response = await fetch(buildApiUrl('/api/user'), {

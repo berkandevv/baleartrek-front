@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from '../auth/useAuth'
-import { deactivateCurrentUser, updateCurrentUser } from '../auth/authApi'
+import { deactivateCurrentUser, updateCurrentUser, updateCurrentUserPassword } from '../auth/authApi'
 import { useUser } from '../auth/useUser'
 import ProfileSidebar from '../components/ProfileSidebar'
 import { getMeetingDateValue } from '../utils/profileCommentsUtils'
@@ -15,6 +15,11 @@ const emptyForm = {
   email: '',
   phone: '',
 }
+const emptyPasswordForm = {
+  currentPassword: '',
+  password: '',
+  passwordConfirmation: '',
+}
 
 export default function ProfilePage() {
   // Datos de autenticacion para proteger el acceso al perfil
@@ -27,6 +32,11 @@ export default function ProfilePage() {
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
   const [fieldErrors, setFieldErrors] = useState({ email: '', dni: '' })
+  const [passwordForm, setPasswordForm] = useState(emptyPasswordForm)
+  const [isChangingPassword, setIsChangingPassword] = useState(false)
+  const [passwordError, setPasswordError] = useState('')
+  const [passwordSuccess, setPasswordSuccess] = useState('')
+  const [isPasswordSectionOpen, setIsPasswordSectionOpen] = useState(false)
 
   const memberSince = formatMemberSince(user?.created_at)
   const fullName = getFullName(user)
@@ -140,6 +150,40 @@ export default function ProfilePage() {
     }
   }
 
+  const handlePasswordChange = (event) => {
+    const { name, value } = event.target
+    setPasswordForm((prev) => ({ ...prev, [name]: value }))
+  }
+
+  const handlePasswordSubmit = async (event) => {
+    event.preventDefault()
+    if (!token) return
+
+    setPasswordError('')
+    setPasswordSuccess('')
+
+    if (passwordForm.password !== passwordForm.passwordConfirmation) {
+      setPasswordError('La nueva contraseña y su confirmación no coinciden')
+      return
+    }
+
+    setIsChangingPassword(true)
+    try {
+      await updateCurrentUserPassword(token, {
+        current_password: passwordForm.currentPassword,
+        password: passwordForm.password,
+        password_confirmation: passwordForm.passwordConfirmation,
+      })
+      setPasswordForm(emptyPasswordForm)
+      setPasswordSuccess('Contraseña actualizada correctamente')
+    } catch (changePasswordError) {
+      console.error('Error al cambiar contraseña:', changePasswordError)
+      setPasswordError(changePasswordError?.message || 'No se pudo actualizar la contraseña')
+    } finally {
+      setIsChangingPassword(false)
+    }
+  }
+
   return (
     <div className="flex-1 w-full max-w-[1280px] mx-auto px-4 sm:px-10 py-8">
       <div className="flex flex-col lg:flex-row gap-8">
@@ -203,7 +247,7 @@ export default function ProfilePage() {
                       <input
                         id="name"
                         name="name"
-                        className="rounded-lg border-[#f0f4f4] bg-transparent focus:ring-primary focus:border-primary px-4 py-2.5"
+                        className="rounded-lg border-[#cfe1de] bg-white text-text-main placeholder:text-text-sub focus:ring-primary focus:border-primary px-4 py-2.5"
                         type="text"
                         value={form.name}
                         onChange={handleChange}
@@ -216,7 +260,7 @@ export default function ProfilePage() {
                       <input
                         id="lastname"
                         name="lastname"
-                        className="rounded-lg border-[#f0f4f4] bg-transparent focus:ring-primary focus:border-primary px-4 py-2.5"
+                        className="rounded-lg border-[#cfe1de] bg-white text-text-main placeholder:text-text-sub focus:ring-primary focus:border-primary px-4 py-2.5"
                         type="text"
                         value={form.lastname}
                         onChange={handleChange}
@@ -229,7 +273,7 @@ export default function ProfilePage() {
                       <input
                         id="dni"
                         name="dni"
-                        className="rounded-lg border-[#f0f4f4] bg-transparent focus:ring-primary focus:border-primary px-4 py-2.5"
+                        className="rounded-lg border-[#cfe1de] bg-white text-text-main placeholder:text-text-sub focus:ring-primary focus:border-primary px-4 py-2.5"
                         type="text"
                         value={form.dni}
                         onChange={handleChange}
@@ -245,7 +289,7 @@ export default function ProfilePage() {
                       <input
                         id="phone"
                         name="phone"
-                        className="rounded-lg border-[#f0f4f4] bg-transparent focus:ring-primary focus:border-primary px-4 py-2.5"
+                        className="rounded-lg border-[#cfe1de] bg-white text-text-main placeholder:text-text-sub focus:ring-primary focus:border-primary px-4 py-2.5"
                         type="tel"
                         value={form.phone}
                         onChange={handleChange}
@@ -258,7 +302,7 @@ export default function ProfilePage() {
                       <input
                         id="email"
                         name="email"
-                        className="rounded-lg border-[#f0f4f4] bg-transparent focus:ring-primary focus:border-primary px-4 py-2.5"
+                        className="rounded-lg border-[#cfe1de] bg-white text-text-main placeholder:text-text-sub focus:ring-primary focus:border-primary px-4 py-2.5"
                         type="email"
                         value={form.email}
                         onChange={handleChange}
@@ -285,6 +329,95 @@ export default function ProfilePage() {
                       </button>
                     </div>
                   </form>
+
+                  <hr className="my-8 border-[#f0f4f4]" />
+
+                  <div className="rounded-xl border border-[#d7e7e4] bg-[#f3f9f8]">
+                    <button
+                      className="w-full flex items-center justify-between px-4 py-3 text-left bg-[#e6f3f1] hover:bg-[#d7ece8] transition-colors rounded-t-xl"
+                      type="button"
+                      onClick={() => setIsPasswordSectionOpen((prev) => !prev)}
+                      aria-expanded={isPasswordSectionOpen}
+                      aria-controls="password-section"
+                    >
+                      <span className="text-[#0c3d38] text-lg font-bold">Cambiar contraseña</span>
+                      <span className="material-symbols-outlined text-[#0c3d38]">
+                        {isPasswordSectionOpen ? 'expand_less' : 'expand_more'}
+                      </span>
+                    </button>
+
+                    {isPasswordSectionOpen ? (
+                      <div id="password-section" className="border-t border-[#f0f4f4] p-4 sm:p-6">
+                        {passwordError ? (
+                          <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                            {passwordError}
+                          </div>
+                        ) : null}
+
+                        {passwordSuccess ? (
+                          <div className="mb-4 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+                            {passwordSuccess}
+                          </div>
+                        ) : null}
+
+                        <form className="grid grid-cols-1 md:grid-cols-2 gap-6" onSubmit={handlePasswordSubmit}>
+                          <div className="flex flex-col gap-2 md:col-span-2">
+                            <label className="text-sm font-bold text-text-main" htmlFor="currentPassword">
+                              Contraseña actual
+                            </label>
+                            <input
+                              id="currentPassword"
+                              name="currentPassword"
+                              className="rounded-lg border-[#cfe1de] bg-white text-text-main placeholder:text-text-sub focus:ring-primary focus:border-primary px-4 py-2.5"
+                              type="password"
+                              value={passwordForm.currentPassword}
+                              onChange={handlePasswordChange}
+                              required
+                            />
+                          </div>
+                          <div className="flex flex-col gap-2">
+                            <label className="text-sm font-bold text-text-main" htmlFor="password">
+                              Nueva contraseña
+                            </label>
+                            <input
+                              id="password"
+                              name="password"
+                              className="rounded-lg border-[#cfe1de] bg-white text-text-main placeholder:text-text-sub focus:ring-primary focus:border-primary px-4 py-2.5"
+                              type="password"
+                              value={passwordForm.password}
+                              onChange={handlePasswordChange}
+                              minLength={8}
+                              required
+                            />
+                          </div>
+                          <div className="flex flex-col gap-2">
+                            <label className="text-sm font-bold text-text-main" htmlFor="passwordConfirmation">
+                              Confirmar nueva contraseña
+                            </label>
+                            <input
+                              id="passwordConfirmation"
+                              name="passwordConfirmation"
+                              className="rounded-lg border-[#cfe1de] bg-white text-text-main placeholder:text-text-sub focus:ring-primary focus:border-primary px-4 py-2.5"
+                              type="password"
+                              value={passwordForm.passwordConfirmation}
+                              onChange={handlePasswordChange}
+                              minLength={8}
+                              required
+                            />
+                          </div>
+                          <div className="md:col-span-2 flex justify-end">
+                            <button
+                              className="bg-primary hover:bg-primary/90 text-white px-8 py-3 rounded-lg font-bold text-sm shadow-md transition-all active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed"
+                              type="submit"
+                              disabled={isChangingPassword}
+                            >
+                              {isChangingPassword ? 'Actualizando...' : 'Actualizar Contraseña'}
+                            </button>
+                          </div>
+                        </form>
+                      </div>
+                    ) : null}
+                  </div>
                 </div>
               )}
             </div>

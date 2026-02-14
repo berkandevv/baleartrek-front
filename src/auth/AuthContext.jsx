@@ -4,6 +4,7 @@ import { AuthContext } from './authContext'
 import { fetchCurrentUser } from './authApi'
 const STORAGE_KEY = 'auth_token'
 const toJson = async (response) => response.json().catch(() => ({}))
+const isInvalidCredentialsResponse = (status) => status === 401 || status === 422
 
 // Lee el token persistido en sessionStorage (solo en navegador)
 const getToken = () => {
@@ -96,7 +97,16 @@ export function AuthProvider({ children }) {
         body: JSON.stringify(credentials),
       })
       const data = await toJson(response)
-      if (!response.ok) throw new Error('Error de credenciales')
+      if (!response.ok) {
+        const error = new Error(
+          isInvalidCredentialsResponse(response.status)
+            ? 'Correo o contraseña incorrectos'
+            : (data?.message || 'No se pudo iniciar sesión'),
+        )
+        error.status = response.status
+        error.payload = data
+        throw error
+      }
       const nextToken = data?.token || null
       if (nextToken) {
         setSessionToken(nextToken)

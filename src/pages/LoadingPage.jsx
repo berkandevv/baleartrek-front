@@ -24,11 +24,21 @@ export default function LoadingPage() {
         setError('Cuenta eliminada')
         return
       }
-      if (err?.message === 'Failed to fetch' || err?.name === 'TypeError') {
-        setError('No se pudo conectar con el servidor. Inténtalo de nuevo en unos minutos.')
+      const message = String(err?.message || '')
+      const isNetworkError =
+        message === 'Failed to fetch' ||
+        message.includes('NetworkError') ||
+        (err?.name === 'TypeError' && !err?.status)
+      if (isNetworkError) {
+        const isOffline = typeof navigator !== 'undefined' && navigator.onLine === false
+        setError(
+          isOffline
+            ? 'No se pudo conectar con el servidor. Revisa tu conexión e inténtalo de nuevo.'
+            : 'Correo o contraseña incorrectos.',
+        )
         return
       }
-      setError(err?.message || 'Error de credenciales')
+      setError(message || 'Error de credenciales')
     }
   }
 
