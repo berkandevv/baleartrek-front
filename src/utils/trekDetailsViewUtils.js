@@ -3,16 +3,29 @@ import { formatSpanishShortDate, normalizeDateInput } from './date'
 // Obtiene la fecha y hora actual del navegador (zona local del usuario)
 export const getBrowserNow = () => new Date()
 
+const getMeetingDate = (meeting) => {
+  const day = normalizeDateInput(meeting?.day)
+  const hour = String(meeting?.hour ?? '').trim()
+  if (!day) return null
+  const timeValue = hour || '00:00:00'
+  const date = new Date(`${day}T${timeValue}`)
+  return Number.isNaN(date.getTime()) ? null : date
+}
+
 // Comprueba si el encuentro esta activo segun la hora local del navegador
 export const isMeetingActive = (meeting, now = getBrowserNow()) => {
-  const meetingStart = new Date(`${meeting.day}T${meeting.hour}`)
+  const meetingStart = getMeetingDate(meeting)
+  if (!meetingStart) return false
   const meetingEnd = new Date(meetingStart.getTime() + 2 * 60 * 60 * 1000)
   return now <= meetingEnd
 }
 
 // Genera partes de fecha y hora para mostrar en la tarjeta
 export const formatMeetingDateParts = (meeting) => {
-  const meetingDate = new Date(`${meeting.day}T${meeting.hour}`)
+  const meetingDate = getMeetingDate(meeting)
+  if (!meetingDate) {
+    return { day: '--', monthYear: 'fecha pendiente', time: 'Hora pendiente' }
+  }
   const day = new Intl.DateTimeFormat('es-ES', { day: '2-digit' }).format(meetingDate)
   const monthYear = new Intl.DateTimeFormat('es-ES', { month: 'short', year: 'numeric' }).format(meetingDate)
   const time = new Intl.DateTimeFormat('es-ES', { hour: '2-digit', minute: '2-digit' }).format(meetingDate)
