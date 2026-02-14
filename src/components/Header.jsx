@@ -134,9 +134,6 @@ export default function Header() {
             )}
           </div>
 
-          <button className="md:hidden p-2 text-text-main dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg" type="button">
-            <span className="material-symbols-outlined">menu</span>
-          </button>
         </div>
       </div>
     </header>
