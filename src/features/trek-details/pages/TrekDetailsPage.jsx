@@ -10,14 +10,10 @@ import CommentsSection from '../components/CommentsSection'
 import { useTrekDetailsData } from '../hooks/useTrekDetailsData'
 import { useMeetingSubscription } from '../hooks/useMeetingSubscription'
 import { useCarouselDrag } from '../hooks/useCarouselDrag'
-import {
-  buildMapMarkers,
-  getAttendeeCount,
-  getPublishedComments,
-  getTotalAttendees,
-  getMapCenter,
-  sortMeetingsByDateDesc,
-} from '../utils/trekDetailsPageUtils'
+import { buildMapMarkers, getMapCenter } from '../utils/mapUtils'
+import { getPublishedComments } from '../utils/commentsUtils'
+import { getAttendeeCount, getTotalAttendees } from '../utils/attendanceUtils'
+import { sortMeetingsByDateDesc } from '../utils/meetingsUtils'
 import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png'
 import markerIcon from 'leaflet/dist/images/marker-icon.png'
 import markerShadow from 'leaflet/dist/images/marker-shadow.png'

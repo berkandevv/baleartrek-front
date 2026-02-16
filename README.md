@@ -198,11 +198,14 @@ npm run dev
 - `/perfil/comentarios`: mis encuentros e historial (protegida).
 
 ## Estructura del proyecto
-- `src/pages`: páginas de negocio.
-- `src/components`: componentes reutilizables de UI.
-- `src/hooks`: lógica reutilizable (suscripciones, carga de datos, interacciones).
-- `src/auth`: contexto de autenticación, APIs de usuario y protección de rutas.
-- `src/utils`: utilidades de formato, validación y acceso API.
+- `src/features`: módulos por dominio (`auth`, `catalog`, `content`, `home`, `profile`, `trek-details`).
+- `src/features/*/pages`: pantallas de cada dominio.
+- `src/features/*/components`: componentes específicos de cada dominio.
+- `src/features/*/hooks`: lógica reutilizable de cada dominio.
+- `src/features/*/utils`: utilidades de dominio (por ejemplo, en `trek-details`: `attendance`, `comments`, `map`, `meetings`, `view`).
+- `src/components`: componentes UI globales compartidos.
+- `src/utils`: utilidades transversales (API, fechas, validaciones, HTTP, URLs).
+- `src/assets`: recursos estáticos.
 
 ## Notas técnicas
 - Las imágenes se normalizan con `resolveImageUrl` para soportar rutas relativas de backend.

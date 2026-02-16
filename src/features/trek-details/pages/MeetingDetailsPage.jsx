@@ -3,7 +3,7 @@ import { useAuth } from '../../auth/useAuth'
 import { useMeetingSubscription } from '../hooks/useMeetingSubscription'
 import { useTrekDetailsData } from '../hooks/useTrekDetailsData'
 import Stars from '../../../components/Stars'
-import { getAttendeeCount } from '../utils/trekDetailsPageUtils'
+import { getAttendeeCount } from '../utils/attendanceUtils'
 import { formatApplicationDate, formatFullName, formatMeetingDateParts } from '../utils/trekDetailsViewUtils'
 import { getMeetingSubscriptionState } from '../utils/meetingSubscriptionState'
 

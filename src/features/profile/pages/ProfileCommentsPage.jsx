@@ -15,7 +15,7 @@ import {
 } from '../utils/profileCommentsUtils'
 import { getBrowserNow } from '../../trek-details/utils/trekDetailsViewUtils'
 import { resolveImageUrl } from '../../../utils/urls'
-import { isPublishedStatus } from '../../trek-details/utils/trekDetailsPageUtils'
+import { isPublishedStatus } from '../../trek-details/utils/commentsUtils'
 
 
 export default function ProfileCommentsPage() {

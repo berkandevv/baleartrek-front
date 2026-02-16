@@ -1,4 +1,4 @@
-import { getAttendeeId, isCurrentUserGuide } from './trekDetailsPageUtils'
+import { getAttendeeId, isCurrentUserGuide } from './attendanceUtils'
 import { isApplicationOpenToday, isMeetingActive } from './trekDetailsViewUtils'
 
 export const isUserSubscribedToMeeting = (meeting, currentUserId) =>
