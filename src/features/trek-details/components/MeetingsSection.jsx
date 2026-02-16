@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { getMeetingViewModel } from '../utils/meetingViewModel'
 
+// Renderiza el carrusel de próximos encuentros con acciones de inscripción
 export default function MeetingsSection({
   sortedMeetings,
   subscribeError,

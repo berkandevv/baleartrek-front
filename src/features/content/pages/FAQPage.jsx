@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import Stars from '../../../components/Stars'
 
+// Renderiza la fila de estrellas visuales para cada nivel de valoración en la FAQ
 const renderRatingStars = (rating) => (
   <Stars
     id={`faq-stars-${rating}`}
@@ -12,6 +13,7 @@ const renderRatingStars = (rating) => (
   />
 )
 
+// Muestra preguntas frecuentes sobre normas, valoración y participación en BalearTrek
 export default function FAQPage() {
   return (
     <main className="flex-1 w-full max-w-[1440px] mx-auto px-4 md:px-10 lg:px-40 py-16">

@@ -22,6 +22,7 @@ const emptyPasswordForm = {
   passwordConfirmation: '',
 }
 
+// Gestiona edición de perfil, cambio de contraseña y baja de cuenta del usuario autenticado
 export default function ProfilePage() {
   // Datos de autenticacion para proteger el acceso al perfil
   const { token, isAuthenticated, logout } = useAuth()
@@ -51,7 +52,7 @@ export default function ProfilePage() {
   const commentedMeetingsCount = meetings.filter((meeting) => (meeting?.comments ?? []).length > 0)
     .length
 
-  // Rellena el formulario con el usuario actual cuando se carga o cambia.
+  // Rellena el formulario con el usuario actual cuando se carga o cambia
   useEffect(() => {
     if (!user) {
       setForm(emptyForm)
@@ -127,6 +128,7 @@ export default function ProfilePage() {
     }
   }
 
+  // Solicita confirmación y desactiva la cuenta del usuario antes de cerrar sesión
   const handleDelete = async () => {
     if (!token) return
     const confirmed = window.confirm('¿Estás seguro de eliminar tu cuenta? Esta acción no se puede deshacer.')
@@ -145,11 +147,13 @@ export default function ProfilePage() {
     }
   }
 
+  // Actualiza el formulario de contraseñas sin mezclarlo con el formulario de perfil
   const handlePasswordChange = (event) => {
     const { name, value } = event.target
     setPasswordForm((prev) => ({ ...prev, [name]: value }))
   }
 
+  // Envía el cambio de contraseña validando coincidencia entre nueva clave y confirmación
   const handlePasswordSubmit = async (event) => {
     event.preventDefault()
     if (!token) return

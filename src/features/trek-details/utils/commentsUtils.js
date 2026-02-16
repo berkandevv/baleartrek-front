@@ -1,5 +1,6 @@
 import { getLocalDateTimeValue } from '../../../utils/date'
 
+// Convierte un valor de fecha en timestamp seguro, devolviendo 0 si es inválido
 const toTimestamp = (value) => {
   if (!value) return 0
   const date = new Date(value)
@@ -7,6 +8,7 @@ const toTimestamp = (value) => {
   return Number.isFinite(time) ? time : 0
 }
 
+// Obtiene la marca temporal más fiable para ordenar comentarios por recencia
 const getCommentTimestamp = (comment, meeting) => {
   const fromComment =
     toTimestamp(comment?.commentDate) ||
@@ -21,6 +23,7 @@ const getCommentTimestamp = (comment, meeting) => {
   return getLocalDateTimeValue(meeting?.day, meeting?.hour)
 }
 
+// Verifica si el comentario está aprobado/publicado según el flag de estado
 export const isPublishedStatus = (status) => String(status ?? '').toLowerCase() === 'y'
 
 // Extrae comentarios publicados y garantiza orden reciente -> antiguo

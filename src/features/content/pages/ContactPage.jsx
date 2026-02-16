@@ -1,6 +1,8 @@
 const CONTACT_EMAIL = import.meta.env.VITE_CONTACT_EMAIL || 'berkanraimov@gmail.com'
 
+// Muestra el formulario de contacto y prepara un correo con los datos introducidos
 export default function ContactPage() {
+  // Construye un enlace `mailto:` con asunto y cuerpo preformateado desde el formulario
   const handleSubmit = (event) => {
     event.preventDefault()
 

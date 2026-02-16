@@ -3,6 +3,7 @@ import Hero from '../components/Hero'
 import TopTreks from '../components/treks/TopTreks'
 import { fetchTreks, getTopTreksByScore } from '../../../utils/treks'
 
+// Carga y muestra en portada las excursiones mejor valoradas por la comunidad
 export default function HomePage() {
   // Top de excursiones mostrado en la home
   const [treks, setTreks] = useState([])
@@ -10,6 +11,7 @@ export default function HomePage() {
   const [error, setError] = useState('')
 
   useEffect(() => {
+    // Recupera excursiones y reduce el listado al top 5 para la home
     const loadTreks = async () => {
       try {
         setError('')

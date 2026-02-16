@@ -43,6 +43,7 @@ export const getMeetingRatingValue = (meeting) => {
   return Number(value) || 0
 }
 
+// Indica si el encuentro tiene al menos un comentario con valoración
 export const hasMeetingRating = (meeting) => (meeting?.comments ?? []).length > 0
 
 // Ordena los encuentros por fecha o por puntuacion

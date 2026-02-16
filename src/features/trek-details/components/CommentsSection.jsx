@@ -2,6 +2,7 @@ import { formatFullName } from '../utils/trekDetailsViewUtils'
 import { resolveImageUrl } from '../../../utils/urls'
 import Stars from '../../../components/Stars'
 
+// Extrae y normaliza todas las URLs de imágenes asociadas a un comentario sin duplicados
 const extractCommentImageUrls = (comment) => {
   const fromArray = Array.isArray(comment?.images) ? comment.images : []
   const fromSingle = comment?.image ? [comment.image] : []
@@ -19,6 +20,7 @@ const extractCommentImageUrls = (comment) => {
   return [...new Set(urls)]
 }
 
+// Genera una fecha legible del comentario buscando en varios campos posibles del backend
 const formatCommentDate = (comment) => {
   const rawValue =
     comment?.commentDate ||
@@ -44,6 +46,7 @@ const formatCommentDate = (comment) => {
   }).format(date)
 }
 
+// Renderiza el bloque de comentarios publicados con paginación progresiva
 export default function CommentsSection({
   comments,
   shownComments,

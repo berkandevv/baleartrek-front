@@ -1,3 +1,4 @@
+// Renderiza el pie global con el año actual de copyright
 export default function Footer() {
   const year = new Date().getFullYear()
 

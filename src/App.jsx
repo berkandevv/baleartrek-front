@@ -15,6 +15,7 @@ import ProfileCommentsPage from './features/profile/pages/ProfileCommentsPage'
 import { AuthProvider } from './features/auth/auth-provider.jsx'
 import ProtectedRoute from './features/auth/ProtectedRoute'
 
+// Define el árbol principal de rutas públicas y protegidas de la aplicación
 function AppContent() {
   return (
     <div className="font-display bg-background-light text-text-main antialiased flex flex-col min-h-screen">
@@ -52,6 +53,7 @@ function AppContent() {
   )
 }
 
+// Envuelve la app con autenticación y enrutador de navegador
 export default function App() {
   return (
     <AuthProvider>

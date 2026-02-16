@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet'
 
+// Ajusta automáticamente el mapa a los marcadores disponibles y mantiene su tamaño al redimensionar
 const FitMapToMarkers = ({ markers, onReady }) => {
   const map = useMap()
 
@@ -14,6 +15,7 @@ const FitMapToMarkers = ({ markers, onReady }) => {
   }, [map, markers, onReady])
 
   useEffect(() => {
+    // Recalcula dimensiones del mapa al cambiar tamaño de ventana para evitar tiles cortados
     const handleResize = () => map.invalidateSize()
     const timer = setTimeout(() => map.invalidateSize(), 0)
     window.addEventListener('resize', handleResize)
@@ -26,8 +28,10 @@ const FitMapToMarkers = ({ markers, onReady }) => {
   return null
 }
 
+// Devuelve una etiqueta segura para el tipo de lugar cuando faltan datos
 const getPlaceTypeName = (place) => place?.place_type?.name ?? 'Tipo no especificado'
 
+// Muestra el mapa y la lista de puntos de interés interactivos de la ruta
 export default function PlacesSection({
   mapCenter,
   mapMarkers,

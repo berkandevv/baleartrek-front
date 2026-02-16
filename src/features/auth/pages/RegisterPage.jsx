@@ -6,6 +6,7 @@ import AuthShell from '../components/AuthShell'
 import { normalizeDniNie, normalizeEmail } from '../../../utils/validation'
 import { hasIdentityFieldErrors, validateIdentityFields } from '../../../utils/identityValidation'
 
+// Gestiona el alta de usuario validando identidad antes de enviar el registro
 export default function RegisterPage() {
   const navigate = useNavigate()
   const { register, isLoading } = useAuth()
@@ -19,6 +20,7 @@ export default function RegisterPage() {
   const [error, setError] = useState('')
   const [fieldErrors, setFieldErrors] = useState({ email: '', dni: '' })
 
+  // Envía el formulario de registro y navega a inicio si el alta fue correcta
   const handleSubmit = async (event) => {
     event.preventDefault()
     setError('')

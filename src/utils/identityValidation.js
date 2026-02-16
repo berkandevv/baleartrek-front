@@ -1,5 +1,6 @@
 import { isValidDniNie, isValidEmail } from './validation'
 
+// Valida email y DNI/NIE devolviendo mensajes de error por campo
 export const validateIdentityFields = ({ email, dni }) => {
   const fieldErrors = { email: '', dni: '' }
 
@@ -13,4 +14,5 @@ export const validateIdentityFields = ({ email, dni }) => {
   return fieldErrors
 }
 
+// Indica si existe al menos un error de validación en el formulario de identidad
 export const hasIdentityFieldErrors = (fieldErrors) => Boolean(fieldErrors.email || fieldErrors.dni)

@@ -4,6 +4,7 @@ import { useAuth } from '../useAuth'
 import AuthSecurityNotice from '../components/AuthSecurityNotice'
 import AuthShell from '../components/AuthShell'
 
+// Gestiona el inicio de sesión y traduce errores comunes a mensajes útiles
 export default function LoginPage() {
   const navigate = useNavigate()
   const location = useLocation()
@@ -13,6 +14,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
 
+  // Ejecuta login y clasifica errores de red/credenciales para mostrar feedback claro
   const handleSubmit = async (event) => {
     event.preventDefault()
     setError('')

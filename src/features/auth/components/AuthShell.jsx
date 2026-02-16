@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 
+// Envuelve login/registro en una plantilla común con tabs y enlace a soporte
 export default function AuthShell({ mode, children }) {
   const isLogin = mode === 'login'
 

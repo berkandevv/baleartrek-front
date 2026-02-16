@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { resolveImageUrl } from '../../../utils/urls'
 
+// Renderiza una tarjeta de excursión en el catálogo con datos resumidos
 export default function CatalogCard({ trek }) {
   const average = Number(trek?.score?.average)
   const island = trek?.municipality?.island?.name ?? 'Isla desconocida'

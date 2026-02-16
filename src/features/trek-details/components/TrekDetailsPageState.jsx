@@ -1,3 +1,4 @@
+// Muestra un estado consistente de carga/error/aviso en páginas de detalle de trek
 export default function TrekDetailsPageState({ message, tone = 'neutral' }) {
   const toneClassNames =
     tone === 'error'

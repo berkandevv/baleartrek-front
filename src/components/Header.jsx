@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link, useLocation, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../features/auth/useAuth'
 
+// Renderiza la cabecera principal con navegación, búsqueda y menú de usuario
 export default function Header() {
   const { pathname } = useLocation()
   const isCatalogPage = pathname === '/catalogo'
@@ -10,6 +11,7 @@ export default function Header() {
   const { isAuthenticated, logout, isLoading, user } = useAuth()
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false)
 
+  // Sincroniza el texto de búsqueda del catálogo con el query param `q`
   const handleSearchChange = (event) => {
     const value = event.target.value
     const next = new URLSearchParams(searchParams)

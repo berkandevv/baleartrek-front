@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import fondo from '../../../assets/fondo.png'
 
+// Renderiza el hero principal con imagen de fondo y CTA al catálogo
 export default function Hero() {
   return (
     <section className="relative min-h-[500px] flex items-center justify-center overflow-hidden">

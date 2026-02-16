@@ -1,3 +1,4 @@
+// Normaliza distintos formatos de fecha de entrada al patrón YYYY-MM-DD
 export const normalizeDateInput = (value) => {
   if (!value) return null
   if (value instanceof Date) {
@@ -13,6 +14,7 @@ export const normalizeDateInput = (value) => {
   return null
 }
 
+// Formatea una fecha en español corto para mostrarla en interfaz
 export const formatSpanishShortDate = (value) => {
   const safeDay = normalizeDateInput(value)
   if (!safeDay) return 'Fecha pendiente'
@@ -26,6 +28,7 @@ export const formatSpanishShortDate = (value) => {
   return formatted.replace('.', '')
 }
 
+// Convierte día y hora en un Date local, devolviendo null si la combinación es inválida
 export const parseLocalDateTime = (day, hour = '00:00:00') => {
   const safeDay = normalizeDateInput(day)
   if (!safeDay) return null
@@ -34,6 +37,7 @@ export const parseLocalDateTime = (day, hour = '00:00:00') => {
   return Number.isNaN(date.getTime()) ? null : date
 }
 
+// Devuelve el timestamp local en milisegundos para facilitar ordenaciones y comparaciones
 export const getLocalDateTimeValue = (day, hour = '00:00:00') => {
   const date = parseLocalDateTime(day, hour)
   return date ? date.getTime() : 0

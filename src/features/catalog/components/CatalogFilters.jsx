@@ -1,3 +1,4 @@
+// Renderiza los filtros de isla, zona y municipio para acotar el catálogo
 export default function CatalogFilters({
   islands,
   selectedIslands,

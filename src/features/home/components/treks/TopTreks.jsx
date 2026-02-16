@@ -1,5 +1,6 @@
 import TrekCard from './TrekCard'
 
+// Presenta el top de excursiones destacadas con estados de carga y error
 export default function TopTreks({ treks, isLoading, error }) {
   return (
     <section className="py-12 md:py-16 px-4 bg-background-light -mt-10 relative z-30">

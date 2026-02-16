@@ -1,11 +1,12 @@
 import { API_BASE_URL } from './api'
 
+// Resuelve la ruta de una imagen combinando el origen de API solo cuando corresponde
 export function resolveImageUrl(rawImage = '') {
   if (!rawImage) return ''
   if (rawImage.startsWith('http')) return rawImage
   const normalizedImagePath = rawImage.startsWith('/') ? rawImage : `/${rawImage}`
 
-  // Las rutas de assets no deben heredar el prefijo /api.
+  // Las rutas de assets no deben heredar el prefijo /api
   if (normalizedImagePath.startsWith('/images/') || normalizedImagePath.startsWith('/storage/')) {
     return normalizedImagePath
   }

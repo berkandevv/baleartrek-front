@@ -1,5 +1,6 @@
 const DEFAULT_MAX = 5
 
+// Pinta una valoración con estrellas llenas/vacías a partir de una nota numérica
 export default function Stars({
   rating = 0,
   id = 'stars',

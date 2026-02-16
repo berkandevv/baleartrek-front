@@ -1,5 +1,6 @@
 import { useRef } from 'react'
 
+// Proporciona handlers de arrastre horizontal para carruseles con puntero
 export function useCarouselDrag(carouselRef) {
   // Guarda estado temporal del gesto de arrastre
   const dragState = useRef({ isDragging: false, startX: 0, scrollLeft: 0 })

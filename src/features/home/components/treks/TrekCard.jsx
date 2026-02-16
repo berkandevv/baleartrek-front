@@ -2,8 +2,10 @@ import { Link } from 'react-router-dom'
 import { parseLocalDateTime } from '../../../../utils/date'
 import { resolveImageUrl } from '../../../../utils/urls'
 
+// Calcula la próxima fecha de encuentro futura para mostrarla en la tarjeta
 function getNextMeetingLabel(meetings) {
   const now = new Date()
+  // Convierte cada encuentro en fecha local para filtrar y ordenar solo los futuros
   const upcomingDates = (meetings?.map?.((meeting) => parseLocalDateTime(meeting?.day, meeting?.hour)) ?? [])
     .filter(Boolean)
     .filter((date) => date >= now)
@@ -18,6 +20,7 @@ function getNextMeetingLabel(meetings) {
   return { label: `${dateLabel} ${timeLabel}`, isConfirmed: true, dateLabel, timeLabel }
 }
 
+// Renderiza una tarjeta de excursión con valoración, ubicación y próximo encuentro
 export default function TrekCard({ trek }) {
   const average = Number(trek?.score?.average)
   const averageLabel = Number.isFinite(average) ? average.toFixed(1) : '0.0'

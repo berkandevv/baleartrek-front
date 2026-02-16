@@ -18,6 +18,7 @@ import { resolveImageUrl } from '../../../utils/urls'
 import { isPublishedStatus } from '../../trek-details/utils/commentsUtils'
 
 
+// Muestra próximos encuentros e historial con valoraciones del usuario autenticado
 export default function ProfileCommentsPage() {
   const { token } = useAuth()
   const { user, refreshUser, isUserLoading } = useUser()
@@ -25,6 +26,7 @@ export default function ProfileCommentsPage() {
   const [cancelingMeetingId, setCancelingMeetingId] = useState(null)
   const [sortKey, setSortKey] = useState('recent')
 
+  // Cancela la asistencia a un encuentro futuro y refresca los datos del perfil
   const handleCancelMeeting = async (meetingId) => {
     if (!token) return
     const confirmed = window.confirm('¿Seguro que quieres cancelar tu asistencia?')

@@ -8,15 +8,21 @@ import { fetchTrekByRegNumber, fetchTreks } from '../../../utils/treks'
 const ALL_MUNICIPALITIES = 'all'
 const ALL_ZONES = 'all'
 const PAGE_SIZE = 6
+// Interpreta el query param de página y garantiza un número válido mayor que 0
 const parsePageParam = (value) => {
   const parsed = Number.parseInt(value ?? '', 10)
   return Number.isFinite(parsed) && parsed > 0 ? parsed : 1
 }
+// Extrae el nombre de isla de forma segura desde la estructura del trek
 const getIslandName = (trek) => trek?.municipality?.island?.name ?? ''
+// Extrae el nombre de zona de forma segura desde la estructura del trek
 const getZoneName = (trek) => trek?.municipality?.zone?.name ?? ''
+// Extrae el nombre de municipio de forma segura desde la estructura del trek
 const getMunicipalityName = (trek) => trek?.municipality?.name ?? ''
+// Extrae el nombre de la excursión con fallback vacío para filtros y orden
 const getTrekName = (trek) => trek?.name ?? ''
 
+// Elimina duplicados preservando el orden original de aparición
 const uniqueStrings = (items) => {
   const unique = []
   for (const item of items) {
@@ -27,6 +33,7 @@ const uniqueStrings = (items) => {
   return unique
 }
 
+// Completa la zona de treks incompletos consultando el endpoint de detalle
 const enrichTreksWithZones = async (treks = []) => {
   const treksMissingZone = treks.filter((trek) => !getZoneName(trek) && trek?.regNumber)
   if (treksMissingZone.length === 0) return treks
@@ -60,6 +67,7 @@ const enrichTreksWithZones = async (treks = []) => {
   })
 }
 
+// Renderiza el catálogo con filtros, ordenación y paginación sincronizada con la URL
 export default function CatalogPage() {
   // Datos base y estados de la UI
   const [treks, setTreks] = useState([])
@@ -179,6 +187,7 @@ export default function CatalogPage() {
     }
   }, [isLoading, pageFromQuery, currentPage, searchParams, setSearchParams])
 
+  // Cambia la página activa actualizando el query param de forma segura
   const goToPage = (nextPage) => {
     const safePage = Math.max(1, Math.min(nextPage, totalPages))
     const nextParams = new URLSearchParams(searchParams)
@@ -192,6 +201,7 @@ export default function CatalogPage() {
     }
   }
 
+  // Activa/desactiva una isla y reinicia filtros dependientes para evitar combinaciones inválidas
   const handleToggleIsland = (island) => {
     // Al cambiar islas, se reinician zona y municipio para evitar filtros incompatibles
     setSelectedZone(ALL_ZONES)
@@ -203,6 +213,7 @@ export default function CatalogPage() {
     )
   }
 
+  // Selecciona zona y limpia municipio para mantener consistencia de filtros
   const handleZoneChange = (zone) => {
     setSelectedZone(zone)
     setSelectedMunicipality(ALL_MUNICIPALITIES)

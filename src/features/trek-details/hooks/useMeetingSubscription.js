@@ -2,11 +2,13 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { cancelMeetingSubscription, subscribeMeeting } from '../../auth/authApi'
 
+// Gestiona el alta/baja del usuario en un encuentro y expone estado de operación
 export function useMeetingSubscription({ isAuthenticated, token, onSuccess }) {
   const navigate = useNavigate()
   const [subscribeError, setSubscribeError] = useState('')
   const [activeMeetingId, setActiveMeetingId] = useState(null)
 
+  // Alterna inscripción del usuario validando autenticación, rol de guía y confirmación de cancelación
   const handleToggleSubscription = async (meetingId, isSubscribed, isGuide) => {
     if (!isAuthenticated || !token) {
       navigate('/login')

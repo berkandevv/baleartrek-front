@@ -3,6 +3,7 @@ import { buildApiUrl } from '../../utils/api'
 import { AuthContext } from './auth-context'
 import { fetchCurrentUser, loginRequest, registerRequest } from './authApi'
 const STORAGE_KEY = 'auth_token'
+// Detecta respuestas de autenticación inválida para personalizar el mensaje de login
 const isInvalidCredentialsResponse = (status) => status === 401 || status === 422
 
 // Lee el token persistido en sessionStorage (solo en navegador)

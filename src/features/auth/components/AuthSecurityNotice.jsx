@@ -1,3 +1,4 @@
+// Muestra un recordatorio de seguridad sobre sensibilidad a mayúsculas en credenciales
 export default function AuthSecurityNotice() {
   return (
     <div className="bg-blue-50 p-4 rounded-lg border border-blue-100 flex gap-3">

@@ -19,6 +19,7 @@ import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png'
 import markerIcon from 'leaflet/dist/images/marker-icon.png'
 import markerShadow from 'leaflet/dist/images/marker-shadow.png'
 
+// Renderiza la ficha completa del trek con encuentros, mapa y comentarios publicados
 export default function TrekDetailsPage() {
   const { regNumber } = useParams()
   const { token, isAuthenticated, user } = useAuth()
@@ -87,6 +88,7 @@ export default function TrekDetailsPage() {
     shadowSize: [41, 41],
   })
 
+  // Centra el mapa en un punto de interés y abre su popup asociado
   const focusPlaceOnMap = (place) => {
     if (!mapRef.current) return
     mapRef.current.setView([place.lat, place.lng], 12, { animate: true })
@@ -96,6 +98,7 @@ export default function TrekDetailsPage() {
     }
   }
 
+  // Guarda la instancia del mapa para reutilizarla en interacciones de UI
   const handleMapReady = (mapInstance) => {
     mapRef.current = mapInstance
   }

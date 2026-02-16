@@ -1,5 +1,6 @@
 import { NavLink } from 'react-router-dom'
 
+// Muestra el panel lateral del perfil con resumen del usuario y navegación interna
 export default function ProfileSidebar({ fullName, memberSince }) {
   return (
     <aside className="hidden lg:flex flex-col w-64 shrink-0 gap-8">

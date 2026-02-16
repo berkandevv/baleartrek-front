@@ -5,6 +5,7 @@ import { requestJson } from '../../../utils/httpClient'
 // Construye la URL para un regNumber concreto
 const buildTrekEndpoint = (regNumber) => buildApiUrl(`/api/treks/${encodeURIComponent(regNumber)}`)
 
+// Obtiene y mantiene en estado los datos del trek solicitado por número de registro
 export function useTrekDetailsData(regNumber) {
   // Estado local de datos, carga y error
   const [trek, setTrek] = useState(null)

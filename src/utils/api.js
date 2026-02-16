@@ -1,3 +1,4 @@
+// Limpia la URL base eliminando barras finales y aceptando rutas relativas del frontend
 const normalizeBaseUrl = (value = '') => {
   const trimmed = String(value).trim().replace(/\/+$/, '')
   if (!trimmed) return ''
@@ -5,6 +6,7 @@ const normalizeBaseUrl = (value = '') => {
   return trimmed.startsWith('/') ? trimmed : `/${trimmed}`
 }
 
+// Obtiene solo el pathname de la URL base para evitar duplicar prefijos al concatenar rutas
 const getBasePathname = (baseUrl) => {
   if (!baseUrl) return ''
   try {
@@ -17,6 +19,7 @@ const getBasePathname = (baseUrl) => {
 
 export const API_BASE_URL = normalizeBaseUrl(import.meta.env.VITE_API_BASE_URL ?? '')
 
+// Construye una URL de API válida soportando rutas absolutas y relativas
 export const buildApiUrl = (path = '') => {
   if (!path) return API_BASE_URL || ''
   if (path.startsWith('http://') || path.startsWith('https://')) return path

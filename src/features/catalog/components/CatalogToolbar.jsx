@@ -1,3 +1,4 @@
+// Muestra el total de resultados y el selector de ordenación del catálogo
 export default function CatalogToolbar({ total, sortBy, onSortChange }) {
   const routeLabel = total === 1 ? 'excursión' : 'excursiones'
   const availableLabel = total === 1 ? 'disponible' : 'disponibles'

@@ -3,6 +3,7 @@ import { formatSpanishShortDate, normalizeDateInput, parseLocalDateTime } from '
 // Obtiene la fecha y hora actual del navegador (zona local del usuario)
 export const getBrowserNow = () => new Date()
 
+// Combina día y hora del encuentro en una fecha local utilizable en cálculos
 const getMeetingDate = (meeting) => {
   return parseLocalDateTime(meeting?.day, meeting?.hour)
 }
@@ -27,10 +28,12 @@ export const formatMeetingDateParts = (meeting) => {
   return { day, monthYear, time }
 }
 
+// Formatea la fecha de apertura/cierre de inscripción para mostrarla en UI
 export const formatApplicationDate = (value) => {
   return formatSpanishShortDate(value)
 }
 
+// Evalúa si hoy está dentro del rango permitido de inscripción del encuentro
 export const isApplicationOpenToday = (meeting, now = getBrowserNow()) => {
   const start = normalizeDateInput(meeting?.appDateIni) ?? normalizeDateInput(meeting?.day)
   const end = normalizeDateInput(meeting?.appDateEnd) ?? start

@@ -7,6 +7,7 @@ import Stars from '../../../components/Stars'
 import { getBrowserNow } from '../utils/trekDetailsViewUtils'
 import { getMeetingViewModel } from '../utils/meetingViewModel'
 
+// Formatea una fecha larga legible para el bloque de resumen del encuentro
 const formatLongDate = (value) => {
   if (!value) return 'Fecha pendiente'
   const date = new Date(value)
@@ -18,6 +19,7 @@ const formatLongDate = (value) => {
   }).format(date)
 }
 
+// Renderiza la vista detallada de un encuentro con estado de inscripción y métricas
 export default function MeetingDetailsPage() {
   const { regNumber, meetingId } = useParams()
   const { token, isAuthenticated, user } = useAuth()

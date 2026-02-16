@@ -1,5 +1,6 @@
 import CatalogCard from './CatalogCard'
 
+// Gestiona la cuadrícula de resultados del catálogo incluyendo estados vacíos
 export default function CatalogGrid({ treks, isLoading, error }) {
   if (isLoading) {
     return (
