@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { buildApiUrl } from '../../utils/api'
-import { AuthContext } from './authContext'
+import { AuthContext } from './auth-context'
 import { fetchCurrentUser, loginRequest, registerRequest } from './authApi'
 const STORAGE_KEY = 'auth_token'
 const isInvalidCredentialsResponse = (status) => status === 401 || status === 422

@@ -12,7 +12,7 @@ import TrekDetailsPage from './features/trek-details/pages/TrekDetailsPage'
 import MeetingDetailsPage from './features/trek-details/pages/MeetingDetailsPage'
 import ProfilePage from './features/profile/pages/ProfilePage'
 import ProfileCommentsPage from './features/profile/pages/ProfileCommentsPage'
-import { AuthProvider } from './features/auth/AuthContext.jsx'
+import { AuthProvider } from './features/auth/auth-provider.jsx'
 import ProtectedRoute from './features/auth/ProtectedRoute'
 
 function AppContent() {
