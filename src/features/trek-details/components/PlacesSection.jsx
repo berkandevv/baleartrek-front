@@ -26,6 +26,8 @@ const FitMapToMarkers = ({ markers, onReady }) => {
   return null
 }
 
+const getPlaceTypeName = (place) => place?.place_type?.name ?? 'Tipo no especificado'
+
 export default function PlacesSection({
   mapCenter,
   mapMarkers,
@@ -70,7 +72,7 @@ export default function PlacesSection({
               >
                 <Popup autoPan={false}>
                   <div className="text-sm font-semibold">{place.name}</div>
-                  <div className="text-xs text-gray-500">{place.place_type.name}</div>
+                  <div className="text-xs text-gray-500">{getPlaceTypeName(place)}</div>
                 </Popup>
               </Marker>
             ))}
@@ -93,11 +95,11 @@ export default function PlacesSection({
               <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
                 <h4 className="text-xl font-black">{place.name}</h4>
                 <span className="px-3 py-1 bg-primary/10 text-primary text-[10px] font-black rounded-lg uppercase tracking-[0.2em]">
-                  {place.place_type.name}
+                  {getPlaceTypeName(place)}
                 </span>
               </div>
               <p className="text-base text-text-muted mb-6 leading-relaxed">
-                {place.place_type.name} destacado en la ruta, ideal para disfrutar del entorno y descansar.
+                {getPlaceTypeName(place)} destacado en la ruta, ideal para disfrutar del entorno y descansar.
               </p>
               <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-background-light rounded-lg text-xs font-mono text-primary font-bold">
                 <span className="material-symbols-outlined text-sm">location_on</span>

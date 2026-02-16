@@ -204,14 +204,14 @@ export default function ProfileCommentsPage() {
                   <div className="flex flex-col gap-6">
                     {sortedMeetings.map((meeting) => {
                       const comments = meeting?.comments ?? []
-                      const publishedComment =
-                        comments.find((comment) => isPublishedStatus(comment?.status)) ?? comments[0]
+                      const publishedComment = comments.find((comment) => isPublishedStatus(comment?.status))
+                      const selectedComment = publishedComment ?? comments[0] ?? null
                       const statusLabel = publishedComment ? 'Publicado' : 'Pendiente'
                       const statusTone = publishedComment ? 'text-primary' : 'text-text-sub'
                       const cardOpacity = publishedComment ? '' : 'opacity-80'
                       const ratingValue =
-                        publishedComment?.score ?? meeting?.score?.average ?? meeting?.score?.total ?? 0
-                      const coverImage = resolveImageUrl(publishedComment?.image?.url)
+                        selectedComment?.score ?? meeting?.score?.average ?? meeting?.score?.total ?? 0
+                      const coverImage = resolveImageUrl(selectedComment?.image?.url)
                       const rating = clampRating(ratingValue)
 
                       const meetingName =
@@ -258,7 +258,7 @@ export default function ProfileCommentsPage() {
                             </div>
                             <hr className="border-[#f0f4f4] mb-6" />
 
-                            {publishedComment ? (
+                            {selectedComment ? (
                               <div className="bg-background-light p-5 rounded-lg border border-[#f0f4f4]">
                                 <div className="flex justify-between items-start mb-4">
                                   <h3 className="text-sm font-bold text-text-main">
@@ -283,9 +283,9 @@ export default function ProfileCommentsPage() {
                                         {rating}/5
                                       </span>
                                     </div>
-                                    {publishedComment?.comment ? (
+                                    {selectedComment?.comment ? (
                                       <p className="text-text-sub text-sm italic leading-relaxed">
-                                        &quot;{publishedComment.comment}&quot;
+                                        &quot;{selectedComment.comment}&quot;
                                       </p>
                                     ) : null}
                                   </div>
