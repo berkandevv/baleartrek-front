@@ -4,7 +4,7 @@ import { useAuth } from '../useAuth'
 import AuthSecurityNotice from '../components/AuthSecurityNotice'
 import AuthShell from '../components/AuthShell'
 
-export default function LoadingPage() {
+export default function LoginPage() {
   const navigate = useNavigate()
   const location = useLocation()
   const successMessage = location.state?.successMessage ?? ''

@@ -156,10 +156,7 @@ export default function CatalogPage() {
     sortedTreks.sort((a, b) => getTrekName(a).localeCompare(getTrekName(b), 'es'))
   }
 
-  const fullPages = Math.floor(sortedTreks.length / PAGE_SIZE)
-  const hasRemainder = sortedTreks.length % PAGE_SIZE !== 0
-  const calculatedPages = hasRemainder ? fullPages + 1 : fullPages
-  const totalPages = calculatedPages > 0 ? calculatedPages : 1
+  const totalPages = Math.max(1, Math.ceil(sortedTreks.length / PAGE_SIZE))
   const currentPage = Math.min(pageFromQuery, totalPages)
   const pageStart = (currentPage - 1) * PAGE_SIZE
   const paginatedTreks = sortedTreks.slice(pageStart, pageStart + PAGE_SIZE)

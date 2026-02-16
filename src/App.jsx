@@ -6,7 +6,7 @@ import HomePage from './features/home/pages/HomePage'
 import CatalogPage from './features/catalog/pages/CatalogPage'
 import FAQPage from './features/content/pages/FAQPage'
 import ContactPage from './features/content/pages/ContactPage'
-import LoadingPage from './features/auth/pages/LoadingPage'
+import LoginPage from './features/auth/pages/LoginPage'
 import RegisterPage from './features/auth/pages/RegisterPage'
 import TrekDetailsPage from './features/trek-details/pages/TrekDetailsPage'
 import MeetingDetailsPage from './features/trek-details/pages/MeetingDetailsPage'
@@ -25,7 +25,7 @@ function AppContent() {
         <Route path="/catalogo" element={<CatalogPage />} />
         <Route path="/contacto" element={<ContactPage />} />
         <Route path="/faq" element={<FAQPage />} />
-        <Route path="/login" element={<LoadingPage />} />
+        <Route path="/login" element={<LoginPage />} />
         <Route path="/registro" element={<RegisterPage />} />
         <Route path="/treks/:regNumber" element={<TrekDetailsPage />} />
         <Route path="/treks/:regNumber/encuentros/:meetingId" element={<MeetingDetailsPage />} />
