@@ -44,7 +44,3 @@ export const isApplicationOpenToday = (meeting, now = getBrowserNow()) => {
   if ([todayDate, startDate, endDate].some((date) => Number.isNaN(date.getTime()))) return false
   return todayDate >= startDate && todayDate <= endDate
 }
-
-// Forma el nombre completo con nombre y apellidos
-export const formatFullName = (person) =>
-  `${person?.name ?? ''} ${person?.lastname ?? ''}`.trim()

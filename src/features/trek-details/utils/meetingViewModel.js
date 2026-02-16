@@ -1,6 +1,7 @@
 import { getAttendeeCount } from './attendanceUtils'
 import { getMeetingSubscriptionState } from './meetingSubscriptionState'
-import { formatApplicationDate, formatFullName, formatMeetingDateParts } from './trekDetailsViewUtils'
+import { formatApplicationDate, formatMeetingDateParts } from './trekDetailsViewUtils'
+import { formatFullName } from '../../../utils/formatters'
 
 // Elige el texto exacto del botón de acción según el estado del encuentro y del usuario
 export const getMeetingActionLabel = ({ isGuide, isPending, isClosed, isSubscribed }) => {

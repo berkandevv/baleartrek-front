@@ -4,9 +4,8 @@ import { cancelMeetingSubscription } from '../../auth/authApi'
 import { useUser } from '../../auth/useUser'
 import ProfileSidebar from '../components/ProfileSidebar'
 import Stars from '../../../components/Stars'
-import { formatMemberSince, getFullName } from '../utils/profileUtils'
+import { formatMemberSince } from '../utils/profileUtils'
 import {
-  clampRating,
   formatMeetingDate,
   formatMeetingHour,
   formatMeetingRange,
@@ -16,6 +15,7 @@ import {
 import { getBrowserNow } from '../../trek-details/utils/trekDetailsViewUtils'
 import { resolveImageUrl } from '../../../utils/urls'
 import { isPublishedStatus } from '../../trek-details/utils/commentsUtils'
+import { clampRating, formatFullName } from '../../../utils/formatters'
 
 
 // Muestra próximos encuentros e historial con valoraciones del usuario autenticado
@@ -45,7 +45,7 @@ export default function ProfileCommentsPage() {
   }
 
   const memberSince = formatMemberSince(user?.created_at)
-  const fullName = getFullName(user)
+  const fullName = formatFullName(user)
 
   const meetings = user?.meetings ?? []
   const nowValue = getBrowserNow().getTime()

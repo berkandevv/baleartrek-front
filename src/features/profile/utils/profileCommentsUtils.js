@@ -1,8 +1,5 @@
 import { formatSpanishShortDate, getLocalDateTimeValue, normalizeDateInput } from '../../../utils/date'
 
-// Numero maximo de estrellas para valorar
-const STAR_COUNT = 5
-
 // Formatea una fecha del encuentro al formato corto en español
 export const formatMeetingDate = (day) => formatSpanishShortDate(day)
 
@@ -22,10 +19,6 @@ export const formatMeetingHour = (hour) => {
   if (parts.length < 2) return hour
   return `${parts[0].padStart(2, '0')}:${parts[1]}`
 }
-
-// Asegura que la valoracion quede entre 0 y el maximo
-export const clampRating = (score) =>
-  Math.max(0, Math.min(STAR_COUNT, Math.floor(Number(score) || 0)))
 
 // Obtiene la fecha del encuentro para ordenar por recientes
 export const getMeetingDateValue = (meeting) => {

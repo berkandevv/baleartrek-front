@@ -6,9 +6,3 @@ export const formatMemberSince = (createdAt) => {
   const formatted = date.toLocaleDateString('es-ES', { year: 'numeric', month: 'long' })
   return formatted ? `${formatted.charAt(0).toUpperCase()}${formatted.slice(1)}` : formatted
 }
-
-// Construye el nombre completo uniendo nombre y apellidos disponibles
-export const getFullName = (user) => {
-  if (!user) return ''
-  return [user.name, user.lastname].filter(Boolean).join(' ')
-}

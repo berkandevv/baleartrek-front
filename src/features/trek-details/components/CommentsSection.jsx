@@ -1,6 +1,6 @@
-import { formatFullName } from '../utils/trekDetailsViewUtils'
 import { resolveImageUrl } from '../../../utils/urls'
 import Stars from '../../../components/Stars'
+import { clampRating, formatFullName } from '../../../utils/formatters'
 
 // Extrae y normaliza todas las URLs de imágenes asociadas a un comentario sin duplicados
 const extractCommentImageUrls = (comment) => {
@@ -71,7 +71,7 @@ export default function CommentsSection({
           {comments.length ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10">
               {shownComments.map((comment) => {
-                const rating = Math.max(0, Math.min(5, Math.floor(Number(comment?.score) || 0)))
+                const rating = clampRating(comment?.score)
                 const imageUrls = extractCommentImageUrls(comment)
                 return (
                   <div className="relative pl-8 border-l-4 border-primary/20" key={comment.id}>

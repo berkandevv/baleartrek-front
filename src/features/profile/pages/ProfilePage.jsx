@@ -4,9 +4,10 @@ import { deactivateCurrentUser, updateCurrentUser, updateCurrentUserPassword } f
 import { useUser } from '../../auth/useUser'
 import ProfileSidebar from '../components/ProfileSidebar'
 import { getMeetingDateValue } from '../utils/profileCommentsUtils'
-import { formatMemberSince, getFullName } from '../utils/profileUtils'
+import { formatMemberSince } from '../utils/profileUtils'
 import { normalizeDniNie, normalizeEmail } from '../../../utils/validation'
 import { hasIdentityFieldErrors, validateIdentityFields } from '../../../utils/identityValidation'
+import { formatFullName } from '../../../utils/formatters'
 
 // Estado inicial del formulario de perfil
 const emptyForm = {
@@ -41,7 +42,7 @@ export default function ProfilePage() {
   const [isPasswordSectionOpen, setIsPasswordSectionOpen] = useState(false)
 
   const memberSince = formatMemberSince(user?.created_at)
-  const fullName = getFullName(user)
+  const fullName = formatFullName(user)
   const completedMeetingsCount = user?.meetings?.length ?? 0
   const meetings = user?.meetings ?? []
   const nowValue = Date.now()
