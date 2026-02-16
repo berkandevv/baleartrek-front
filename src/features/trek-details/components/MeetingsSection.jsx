@@ -1,6 +1,5 @@
 import { Link } from 'react-router-dom'
-import { formatApplicationDate, formatFullName, formatMeetingDateParts } from '../utils/trekDetailsViewUtils'
-import { getMeetingSubscriptionState } from '../utils/meetingSubscriptionState'
+import { getMeetingViewModel } from '../utils/meetingViewModel'
 
 export default function MeetingsSection({
   sortedMeetings,
@@ -12,7 +11,6 @@ export default function MeetingsSection({
   handlePointerUp,
   now,
   currentUserId,
-  getAttendeeCount,
   activeMeetingId,
   handleToggleSubscription,
   regNumber,
@@ -79,93 +77,84 @@ export default function MeetingsSection({
             onPointerCancel={handlePointerUp}
           >
             {sortedMeetings.map((meeting) => {
-              const { day, monthYear, time } = formatMeetingDateParts(meeting)
-              const guideLabel = formatFullName(meeting?.guide) || 'Pendiente'
-              const { isGuide, isSubscribed, isClosed, isApplicationOpen } =
-                getMeetingSubscriptionState(meeting, currentUserId, now)
-              const isFeatured = isApplicationOpen
-              const isPending = activeMeetingId === meeting.id
-              const isDisabled = isPending || isGuide || isClosed || !isApplicationOpen
-              const openingDate = formatApplicationDate(meeting.appDateIni)
-              const closingDate = formatApplicationDate(meeting.appDateEnd)
+              const viewModel = getMeetingViewModel(meeting, {
+                currentUserId,
+                now,
+                activeMeetingId,
+              })
+
               return (
                 <div
-                  className={`flex-none ${isFeatured ? 'w-80' : 'w-72'} snap-center`}
+                  className={`flex-none ${viewModel.isFeatured ? 'w-80' : 'w-72'} snap-center`}
                   key={meeting.id}
                 >
                   <div
                     className={`bg-white ${
-                      isFeatured
+                      viewModel.isFeatured
                         ? 'p-7 rounded-[2rem] border-4 border-corporate-blue'
                         : 'p-6 rounded-[1.5rem] border border-gray-100'
                     } editorial-shadow h-full`}
                   >
-                    <div className={`${isFeatured ? 'text-corporate-blue' : 'text-primary'} mb-6 flex justify-between items-start`}>
+                    <div className={`${viewModel.isFeatured ? 'text-corporate-blue' : 'text-primary'} mb-6 flex justify-between items-start`}>
                       <div>
-                        <span className={`${isFeatured ? 'text-4xl' : 'text-3xl'} font-black leading-none`}>{day}</span>
-                        <span className={`block text-xs font-bold uppercase tracking-widest ${isFeatured ? 'mt-2' : 'mt-1'}`}>
-                          {monthYear}
+                        <span className={`${viewModel.isFeatured ? 'text-4xl' : 'text-3xl'} font-black leading-none`}>{viewModel.day}</span>
+                        <span className={`block text-xs font-bold uppercase tracking-widest ${viewModel.isFeatured ? 'mt-2' : 'mt-1'}`}>
+                          {viewModel.monthYear}
                         </span>
                       </div>
                       <span className="px-3 py-1 bg-primary/10 text-corporate-blue text-[10px] font-black rounded-full uppercase">
-                        {getAttendeeCount(meeting)} participantes
+                        {viewModel.attendeeCount} participantes
                       </span>
                     </div>
-                    <div className={`${isFeatured ? 'space-y-4 mb-8' : 'space-y-3 mb-6'}`}>
+                    <div className={`${viewModel.isFeatured ? 'space-y-4 mb-8' : 'space-y-3 mb-6'}`}>
                       <div className="flex items-center gap-3">
-                        <span className={`material-symbols-outlined ${isFeatured ? 'text-xl text-corporate-blue' : 'text-base text-text-muted'}`}>
+                        <span className={`material-symbols-outlined ${viewModel.isFeatured ? 'text-xl text-corporate-blue' : 'text-base text-text-muted'}`}>
                           schedule
                         </span>
-                        <span className={`${isFeatured ? 'text-base font-black tracking-tight' : 'text-xs font-bold'}`}>
-                          {time}
+                        <span className={`${viewModel.isFeatured ? 'text-base font-black tracking-tight' : 'text-xs font-bold'}`}>
+                          {viewModel.time}
                         </span>
                       </div>
                       <div className="flex items-center gap-3">
-                        <span className={`material-symbols-outlined ${isFeatured ? 'text-xl text-corporate-blue' : 'text-base text-text-muted'}`}>
+                        <span className={`material-symbols-outlined ${viewModel.isFeatured ? 'text-xl text-corporate-blue' : 'text-base text-text-muted'}`}>
                           person_pin
                         </span>
                         <span className="text-xs text-text-muted">
-                          Guía: <span className="font-black text-text-main uppercase">{guideLabel}</span>
+                          Guía: <span className="font-black text-text-main uppercase">{viewModel.guideLabel}</span>
                         </span>
                       </div>
                     </div>
                     <div className="flex flex-col gap-2 py-4 border-y-2 border-corporate-blue/10">
                       <div className="flex items-center gap-3 text-xs font-bold text-corporate-blue/80 uppercase">
                         <span className="material-symbols-outlined text-lg text-green-500">calendar_today</span>
-                        Apertura: {openingDate}
+                        Apertura: {viewModel.openingDate}
                       </div>
                       <div className="flex items-center gap-3 text-xs font-bold text-corporate-blue/80 uppercase">
                         <span className="material-symbols-outlined text-lg text-red-500">event_busy</span>
-                        Cierre: {closingDate}
+                        Cierre: {viewModel.closingDate}
                       </div>
                     </div>
                     <button
                       className={`w-full mt-4 ${
-                        isClosed
+                        viewModel.isClosed
                           ? 'py-3 bg-slate-200 text-slate-700 font-black rounded-xl text-xs'
-                          : isSubscribed
+                          : viewModel.isSubscribed
                             ? 'py-3 bg-rose-600 text-white font-black rounded-xl text-xs hover:bg-rose-700'
-                            : isFeatured
+                            : viewModel.isFeatured
                               ? 'py-4 bg-primary text-[#0f2a33] font-black rounded-xl text-sm hover:bg-[#0fb6d8]'
                               : 'py-3 bg-white/80 border-2 border-primary text-primary font-black rounded-xl text-xs hover:bg-primary/10'
                       } transition-all disabled:opacity-60 disabled:cursor-not-allowed`}
                       type="button"
-                      onClick={() => handleToggleSubscription(meeting.id, isSubscribed, isGuide)}
-                      disabled={isDisabled}
+                      onClick={() =>
+                        handleToggleSubscription(meeting.id, viewModel.isSubscribed, viewModel.isGuide)
+                      }
+                      disabled={viewModel.isDisabled}
                     >
-                      {isGuide
-                        ? 'ERES EL GUÍA'
-                        : isPending
-                          ? 'PROCESANDO...'
-                          : isClosed
-                            ? 'ENCUENTRO FINALIZADO'
-                            : isSubscribed
-                              ? 'CANCELAR ASISTENCIA'
-                              : 'UNIRSE AHORA'}
+                      {viewModel.actionLabel.toUpperCase()}
                     </button>
                     <Link
                       className={`mt-3 inline-flex w-full items-center justify-center rounded-xl py-3 text-xs font-black transition-all ${
-                        isClosed
+                        viewModel.isClosed
                           ? 'border-2 border-corporate-blue bg-corporate-blue text-white hover:bg-blue-700'
                           : 'border-2 border-primary text-primary hover:bg-primary/10'
                       }`}

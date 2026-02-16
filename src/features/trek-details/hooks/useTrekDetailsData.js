@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { buildApiUrl } from '../../../utils/api'
-import { parseJsonSafe } from '../../../utils/httpClient'
+import { requestJson } from '../../../utils/httpClient'
 
 // Construye la URL para un regNumber concreto
 const buildTrekEndpoint = (regNumber) => buildApiUrl(`/api/treks/${encodeURIComponent(regNumber)}`)
@@ -16,15 +16,11 @@ export function useTrekDetailsData(regNumber) {
     setIsLoading(true)
     try {
       setError('')
-      const response = await fetch(buildTrekEndpoint(regNumber))
-      const payload = await parseJsonSafe(response)
-      if (!response.ok) {
-        throw new Error(
-          response.status === 404
-            ? 'No se encontró el trek solicitado.'
-            : 'No se pudo cargar este trek. Intenta de nuevo más tarde.',
-        )
-      }
+      const payload = await requestJson(
+        buildTrekEndpoint(regNumber),
+        undefined,
+        'No se pudo cargar este trek. Intenta de nuevo más tarde.',
+      )
       const trekData = payload?.data
       if (trekData?.status === 'y') {
         setTrek(trekData)
@@ -34,7 +30,11 @@ export function useTrekDetailsData(regNumber) {
       }
     } catch (fetchError) {
       console.error('Error al cargar el trek:', fetchError)
-      setError(fetchError?.message || 'No se pudo cargar este trek. Intenta de nuevo más tarde.')
+      setError(
+        fetchError?.status === 404
+          ? 'No se encontró el trek solicitado.'
+          : (fetchError?.message || 'No se pudo cargar este trek. Intenta de nuevo más tarde.'),
+      )
     } finally {
       setIsLoading(false)
     }

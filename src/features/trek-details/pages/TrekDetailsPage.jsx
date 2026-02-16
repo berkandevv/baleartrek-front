@@ -7,12 +7,13 @@ import { resolveImageUrl } from '../../../utils/urls'
 import MeetingsSection from '../components/MeetingsSection'
 import PlacesSection from '../components/PlacesSection'
 import CommentsSection from '../components/CommentsSection'
+import TrekDetailsPageState from '../components/TrekDetailsPageState'
 import { useTrekDetailsData } from '../hooks/useTrekDetailsData'
 import { useMeetingSubscription } from '../hooks/useMeetingSubscription'
 import { useCarouselDrag } from '../hooks/useCarouselDrag'
 import { buildMapMarkers, getMapCenter } from '../utils/mapUtils'
 import { getPublishedComments } from '../utils/commentsUtils'
-import { getAttendeeCount, getTotalAttendees } from '../utils/attendanceUtils'
+import { getTotalAttendees } from '../utils/attendanceUtils'
 import { sortMeetingsByDateDesc } from '../utils/meetingsUtils'
 import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png'
 import markerIcon from 'leaflet/dist/images/marker-icon.png'
@@ -48,35 +49,15 @@ export default function TrekDetailsPage() {
   const shownComments = comments.slice(0, visibleComments)
 
   if (isLoading) {
-    return (
-      <main className="flex-grow w-full max-w-[1280px] mx-auto px-4 sm:px-10 py-10">
-        <div className="bg-white rounded-xl border border-[#dbe4e6] p-8 text-center">
-          <p className="text-sm text-text-muted">Cargando detalles del trek...</p>
-        </div>
-      </main>
-    )
+    return <TrekDetailsPageState message="Cargando detalles del trek..." />
   }
 
   if (error) {
-    return (
-      <main className="flex-grow w-full max-w-[1280px] mx-auto px-4 sm:px-10 py-10">
-        <div className="bg-rose-50 rounded-xl border border-rose-200 p-8 text-center">
-          <p className="text-sm text-rose-700">{error || 'No se encontró el trek solicitado.'}</p>
-        </div>
-      </main>
-    )
+    return <TrekDetailsPageState tone="error" message={error || 'No se encontró el trek solicitado.'} />
   }
 
   if (!trek) {
-    return (
-      <main className="flex-grow w-full max-w-[1280px] mx-auto px-4 sm:px-10 py-10">
-        <div className="bg-amber-50 rounded-xl border border-amber-200 p-8 text-center">
-          <p className="text-sm text-amber-800">
-            No se encontró el trek solicitado.
-          </p>
-        </div>
-      </main>
-    )
+    return <TrekDetailsPageState tone="warning" message="No se encontró el trek solicitado." />
   }
 
   const averageScore = Number(trek?.score?.average)
@@ -227,7 +208,6 @@ export default function TrekDetailsPage() {
           handlePointerUp={handlePointerUp}
           now={now}
           currentUserId={currentUserId}
-          getAttendeeCount={getAttendeeCount}
           activeMeetingId={activeMeetingId}
           handleToggleSubscription={handleToggleSubscription}
           regNumber={regNumber}

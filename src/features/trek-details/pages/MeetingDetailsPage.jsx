@@ -2,10 +2,10 @@ import { Link, useParams } from 'react-router-dom'
 import { useAuth } from '../../auth/useAuth'
 import { useMeetingSubscription } from '../hooks/useMeetingSubscription'
 import { useTrekDetailsData } from '../hooks/useTrekDetailsData'
+import TrekDetailsPageState from '../components/TrekDetailsPageState'
 import Stars from '../../../components/Stars'
-import { getAttendeeCount } from '../utils/attendanceUtils'
-import { formatApplicationDate, formatFullName, formatMeetingDateParts } from '../utils/trekDetailsViewUtils'
-import { getMeetingSubscriptionState } from '../utils/meetingSubscriptionState'
+import { getBrowserNow } from '../utils/trekDetailsViewUtils'
+import { getMeetingViewModel } from '../utils/meetingViewModel'
 
 const formatLongDate = (value) => {
   if (!value) return 'Fecha pendiente'
@@ -29,55 +29,35 @@ export default function MeetingDetailsPage() {
   })
 
   if (isLoading) {
-    return (
-      <main className="flex-grow w-full max-w-[1280px] mx-auto px-4 sm:px-10 py-10">
-        <div className="bg-white rounded-xl border border-[#dbe4e6] p-8 text-center">
-          <p className="text-sm text-text-muted">Cargando detalles del encuentro...</p>
-        </div>
-      </main>
-    )
+    return <TrekDetailsPageState message="Cargando detalles del encuentro..." />
   }
 
-  if (error || !trek) {
-    return (
-      <main className="flex-grow w-full max-w-[1280px] mx-auto px-4 sm:px-10 py-10">
-        <div className="bg-rose-50 rounded-xl border border-rose-200 p-8 text-center">
-          <p className="text-sm text-rose-700">{error || 'No se encontró el trek solicitado.'}</p>
-        </div>
-      </main>
-    )
+  if (error) {
+    return <TrekDetailsPageState tone="error" message={error || 'No se encontró el trek solicitado.'} />
+  }
+
+  if (!trek) {
+    return <TrekDetailsPageState tone="warning" message="No se encontró el trek solicitado." />
   }
 
   const meeting = (trek?.meetings ?? []).find((item) => String(item?.id) === String(meetingId))
   if (!meeting) {
-    return (
-      <main className="flex-grow w-full max-w-[1280px] mx-auto px-4 sm:px-10 py-10">
-        <div className="bg-amber-50 rounded-xl border border-amber-200 p-8 text-center">
-          <p className="text-sm text-amber-800">No se encontró el encuentro solicitado.</p>
-        </div>
-      </main>
-    )
+    return <TrekDetailsPageState tone="warning" message="No se encontró el encuentro solicitado." />
   }
 
   const municipalityName = trek?.municipality?.name ?? 'Municipio pendiente'
   const islandName = trek?.municipality?.island?.name ?? 'Isla pendiente'
   const trekName = trek?.name ?? 'Ruta sin nombre'
-  const { day, monthYear, time } = formatMeetingDateParts(meeting)
-  const guideLabel = formatFullName(meeting?.guide) || 'Pendiente'
+  const now = getBrowserNow()
   const currentUserId = user?.id ?? user?.user_id
-  const { isGuide, isSubscribed, isClosed, isApplicationOpen } = getMeetingSubscriptionState(
-    meeting,
+  const viewModel = getMeetingViewModel(meeting, {
     currentUserId,
-    new Date(),
-  )
-  const isPending = activeMeetingId === meeting.id
-  const isDisabled = isGuide || isPending || isClosed || !isApplicationOpen
-  const attendeeCount = getAttendeeCount(meeting)
+    now,
+    activeMeetingId,
+  })
   const commentsCount = (meeting?.comments ?? []).length
   const averageScore = Number(meeting?.score?.average)
   const averageScoreLabel = Number.isFinite(averageScore) ? averageScore.toFixed(1) : '0.0'
-  const openingDate = formatApplicationDate(meeting?.appDateIni)
-  const closingDate = formatApplicationDate(meeting?.appDateEnd)
 
   return (
     <main className="flex-1 w-full py-10 md:py-12">
@@ -126,13 +106,13 @@ export default function MeetingDetailsPage() {
                 </div>
                 <div className="md:col-span-2 flex items-center gap-8 bg-background-light p-6 rounded-3xl">
                   <div className="flex-none text-center border-r border-gray-200 pr-8">
-                    <span className="block text-4xl font-black text-corporate-blue leading-none">{day}</span>
-                    <span className="block text-xs font-black uppercase tracking-widest mt-1">{monthYear}</span>
+                    <span className="block text-4xl font-black text-corporate-blue leading-none">{viewModel.day}</span>
+                    <span className="block text-xs font-black uppercase tracking-widest mt-1">{viewModel.monthYear}</span>
                   </div>
                   <div>
                     <div className="flex items-center gap-2 mb-1">
                       <span className="material-symbols-outlined text-corporate-blue">schedule</span>
-                      <span className="text-2xl font-black tracking-tighter">{time}</span>
+                      <span className="text-2xl font-black tracking-tighter">{viewModel.time}</span>
                     </div>
                     <p className="text-xs font-bold text-[#618389]">{formatLongDate(meeting?.day)}</p>
                   </div>
@@ -155,7 +135,7 @@ export default function MeetingDetailsPage() {
                   <span className="block text-[10px] font-black text-[#618389] uppercase tracking-[0.2em] mb-1">
                     Guía Principal
                   </span>
-                  <h3 className="text-xl font-black text-corporate-blue uppercase">{guideLabel}</h3>
+                  <h3 className="text-xl font-black text-corporate-blue uppercase">{viewModel.guideLabel}</h3>
                   <p className="text-sm text-[#618389] mt-1 italic">
                     No hay guías adicionales asignados para esta salida.
                   </p>
@@ -173,13 +153,13 @@ export default function MeetingDetailsPage() {
                 </div>
                 <span
                   className={`px-5 py-2 text-xs font-black rounded-full uppercase tracking-widest flex items-center gap-2 ${
-                    isApplicationOpen
+                    viewModel.isApplicationOpen
                       ? 'bg-green-100 text-green-700'
                       : 'bg-red-100 text-red-700'
                   }`}
                 >
-                  <span className={`size-2 rounded-full ${isApplicationOpen ? 'bg-green-500' : 'bg-red-500'}`} />
-                  {isApplicationOpen ? 'Inscripción Abierta' : 'Inscripción Cerrada'}
+                  <span className={`size-2 rounded-full ${viewModel.isApplicationOpen ? 'bg-green-500' : 'bg-red-500'}`} />
+                  {viewModel.isApplicationOpen ? 'Inscripción Abierta' : 'Inscripción Cerrada'}
                 </span>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
@@ -188,7 +168,7 @@ export default function MeetingDetailsPage() {
                     Inicio del plazo
                   </span>
                   <div className="flex items-baseline gap-2">
-                    <span className="text-2xl font-black text-green-600">{openingDate}</span>
+                    <span className="text-2xl font-black text-green-600">{viewModel.openingDate}</span>
                   </div>
                 </div>
                 <div className="relative pl-6 border-l-2 border-gray-100">
@@ -196,7 +176,7 @@ export default function MeetingDetailsPage() {
                     Fin del plazo
                   </span>
                   <div className="flex items-baseline gap-2">
-                    <span className="text-2xl font-black text-red-500">{closingDate}</span>
+                    <span className="text-2xl font-black text-red-500">{viewModel.closingDate}</span>
                   </div>
                 </div>
               </div>
@@ -211,7 +191,7 @@ export default function MeetingDetailsPage() {
               </div>
               <div className="grid grid-cols-3 gap-6">
                 <div className="bg-background-light p-6 rounded-2xl text-center">
-                  <span className="block text-3xl font-black mb-1">{attendeeCount}</span>
+                  <span className="block text-3xl font-black mb-1">{viewModel.attendeeCount}</span>
                   <span className="block text-[10px] font-black text-[#618389] uppercase tracking-widest leading-tight">
                     Asistentes Confirmados
                   </span>
@@ -245,26 +225,20 @@ export default function MeetingDetailsPage() {
               <div className="bg-white p-8 rounded-[2.5rem] border border-[#f0f4f4]">
                 <button
                   className={`w-full py-5 font-black rounded-2xl text-lg transition-all flex items-center justify-center gap-3 ${
-                    isClosed
+                    viewModel.isClosed
                       ? 'bg-slate-200 text-slate-700'
-                      : isSubscribed
+                      : viewModel.isSubscribed
                         ? 'bg-rose-600 text-white hover:bg-rose-700'
                         : 'bg-corporate-blue text-white hover:bg-blue-700'
                   } disabled:opacity-60 disabled:cursor-not-allowed`}
                   type="button"
-                  onClick={() => handleToggleSubscription(meeting.id, isSubscribed, isGuide)}
-                  disabled={isDisabled}
+                  onClick={() =>
+                    handleToggleSubscription(meeting.id, viewModel.isSubscribed, viewModel.isGuide)
+                  }
+                  disabled={viewModel.isDisabled}
                 >
                   <span className="material-symbols-outlined font-bold">how_to_reg</span>
-                  {isGuide
-                    ? 'Eres el guía'
-                    : isPending
-                      ? 'Procesando...'
-                      : isClosed
-                        ? 'Encuentro finalizado'
-                        : isSubscribed
-                          ? 'Cancelar asistencia'
-                          : 'Inscribirse ahora'}
+                  {viewModel.actionLabel}
                 </button>
                 <Link
                   className="mt-6 block px-4 text-center text-[11px] font-medium leading-relaxed text-[#618389] underline decoration-[#bcdde4] underline-offset-2 transition hover:text-corporate-blue"
