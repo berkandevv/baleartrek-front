@@ -13,9 +13,9 @@ import {
   sortMeetings,
 } from '../utils/profileCommentsUtils'
 import { getBrowserNow } from '../../trek-details/utils/trekDetailsViewUtils'
-import { resolveImageUrl } from '../../shared/utils/urls'
 import { isPublishedStatus } from '../../trek-details/utils/commentsUtils'
 import { clampRating, formatFullName } from '../../shared/utils/formatters'
+import { extractCommentImageUrls } from '../../shared/utils/commentImages'
 
 
 // Muestra próximos encuentros e historial con valoraciones del usuario autenticado
@@ -213,7 +213,7 @@ export default function ProfileCommentsPage() {
                       const cardOpacity = publishedComment ? '' : 'opacity-80'
                       const ratingValue =
                         selectedComment?.score ?? meeting?.score?.average ?? meeting?.score?.total ?? 0
-                      const coverImage = resolveImageUrl(selectedComment?.image?.url)
+                      const coverImage = extractCommentImageUrls(selectedComment)[0] ?? ''
                       const rating = clampRating(ratingValue)
 
                       const meetingName =

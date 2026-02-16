@@ -15,6 +15,7 @@ import { buildMapMarkers, getMapCenter } from '../utils/mapUtils'
 import { getPublishedComments } from '../utils/commentsUtils'
 import { getTotalAttendees } from '../utils/attendanceUtils'
 import { sortMeetingsByDateDesc } from '../utils/meetingsUtils'
+import Stars from '../../../components/Stars'
 import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png'
 import markerIcon from 'leaflet/dist/images/marker-icon.png'
 import markerShadow from 'leaflet/dist/images/marker-shadow.png'
@@ -123,13 +124,14 @@ export default function TrekDetailsPage() {
                 {locationLabel}
               </span>
               <div className="flex items-center gap-2.5 px-3.5 py-1.5 bg-white/10 backdrop-blur-md rounded-full">
-                <div className="flex text-orange-400">
-                  <span className="material-symbols-outlined star-rating text-xl">star</span>
-                  <span className="material-symbols-outlined star-rating text-xl">star</span>
-                  <span className="material-symbols-outlined star-rating text-xl">star</span>
-                  <span className="material-symbols-outlined star-rating text-xl">star</span>
-                  <span className="material-symbols-outlined star-rating text-xl">star</span>
-                </div>
+                <Stars
+                  id={`trek-score-${trek?.id ?? regNumber ?? 'unknown'}`}
+                  rating={Number.isFinite(averageScore) ? Math.round(averageScore) : 0}
+                  max={5}
+                  className="text-xl leading-none"
+                  filledClassName="text-orange-400"
+                  emptyClassName="text-white/30"
+                />
                 <span className="text-base font-black text-white">
                   {averageScoreLabel}/5
                   <span className="ml-2 text-xs font-semibold text-white/70">({scoreCount})</span>

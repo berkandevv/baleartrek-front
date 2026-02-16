@@ -1,24 +1,6 @@
-import { resolveImageUrl } from '../../shared/utils/urls'
+import { extractCommentImageUrls } from '../../shared/utils/commentImages'
 import Stars from '../../../components/Stars'
 import { clampRating, formatFullName } from '../../shared/utils/formatters'
-
-// Extrae y normaliza todas las URLs de imágenes asociadas a un comentario sin duplicados
-const extractCommentImageUrls = (comment) => {
-  const fromArray = Array.isArray(comment?.images) ? comment.images : []
-  const fromSingle = comment?.image ? [comment.image] : []
-  const rawItems = [...fromArray, ...fromSingle]
-
-  const urls = rawItems
-    .map((item) => {
-      if (typeof item === 'string') return item
-      return item?.url ?? item?.imageUrl ?? item?.path ?? item?.src ?? ''
-    })
-    .concat([comment?.imageUrl ?? ''])
-    .map((url) => resolveImageUrl(url))
-    .filter(Boolean)
-
-  return [...new Set(urls)]
-}
 
 // Genera una fecha legible del comentario buscando en varios campos posibles del backend
 const formatCommentDate = (comment) => {

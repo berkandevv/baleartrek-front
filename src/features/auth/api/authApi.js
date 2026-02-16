@@ -1,5 +1,5 @@
 import { buildApiUrl } from '../../shared/utils/api'
-import { buildHttpError, parseJsonSafe, requestJson } from '../../shared/utils/httpClient'
+import { requestJson } from '../../shared/utils/httpClient'
 
 // Construye cabeceras estándar para peticiones autenticadas
 const buildAuthHeaders = (token, hasBody = false) => ({
@@ -7,6 +7,21 @@ const buildAuthHeaders = (token, hasBody = false) => ({
   ...(hasBody ? { 'Content-Type': 'application/json' } : {}),
   ...(token ? { Authorization: `Bearer ${token}` } : {}),
 })
+
+// Ejecuta un POST JSON estándar para endpoints públicos de autenticación
+const postPublicJson = (path, body, fallbackMessage) =>
+  requestJson(
+    buildApiUrl(path),
+    {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    },
+    fallbackMessage,
+  )
 
 // Obtiene el usuario autenticado actual
 export async function fetchCurrentUser(token) {
@@ -86,31 +101,10 @@ export async function cancelMeetingSubscription(token, meetingId) {
 
 // Intenta login y devuelve payload incluyendo errores para manejo contextual
 export async function loginRequest(credentials) {
-  const response = await fetch(buildApiUrl('/api/login'), {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(credentials),
-  })
-  const payload = await parseJsonSafe(response)
-  if (!response.ok) {
-    throw buildHttpError(response, payload, 'No se pudo iniciar sesión')
-  }
-  return payload
+  return postPublicJson('/api/login', credentials, 'No se pudo iniciar sesión')
 }
 
 // Intenta registro y devuelve payload incluyendo errores para manejo contextual
 export async function registerRequest(payload) {
-  const response = await fetch(buildApiUrl('/api/register'), {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    },
-    body: JSON.stringify(payload),
-  })
-  const data = await parseJsonSafe(response)
-  if (!response.ok) {
-    throw buildHttpError(response, data, 'Error en el registro')
-  }
-  return data
+  return postPublicJson('/api/register', payload, 'Error en el registro')
 }
