@@ -1,30 +1,21 @@
 import { buildApiUrl } from './api'
+import { requestJson } from './httpClient'
 
 const TREKS_ENDPOINT = buildApiUrl('/api/treks')
 const buildTrekByRegNumberEndpoint = (regNumber) =>
   buildApiUrl(`/api/treks/${encodeURIComponent(regNumber)}`)
 
-const toJson = async (response) => response.json().catch(() => ({}))
-
 export async function fetchTreks() {
-  const response = await fetch(TREKS_ENDPOINT)
-  const payload = await toJson(response)
-
-  if (!response.ok) {
-    throw new Error(payload?.message || 'No se pudieron cargar las excursiones')
-  }
-
+  const payload = await requestJson(TREKS_ENDPOINT, undefined, 'No se pudieron cargar las excursiones')
   return payload?.data ?? []
 }
 
 export async function fetchTrekByRegNumber(regNumber) {
-  const response = await fetch(buildTrekByRegNumberEndpoint(regNumber))
-  const payload = await toJson(response)
-
-  if (!response.ok) {
-    throw new Error(payload?.message || `No se pudo cargar la excursión ${regNumber}`)
-  }
-
+  const payload = await requestJson(
+    buildTrekByRegNumberEndpoint(regNumber),
+    undefined,
+    `No se pudo cargar la excursión ${regNumber}`,
+  )
   return payload?.data ?? null
 }
 

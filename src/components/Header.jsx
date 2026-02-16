@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link, useLocation, useSearchParams } from 'react-router-dom'
-import { useAuth } from '../auth/useAuth'
+import { useAuth } from '../features/auth/useAuth'
 
 export default function Header() {
   const { pathname } = useLocation()
