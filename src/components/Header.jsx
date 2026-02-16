@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link, useLocation, useSearchParams } from 'react-router-dom'
-import { useAuth } from '../features/auth/useAuth'
+import { useAuth } from '../features/auth/hooks/useAuth'
 
 // Renderiza la cabecera principal con navegación, búsqueda y menú de usuario
 export default function Header() {

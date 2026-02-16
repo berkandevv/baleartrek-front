@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { cancelMeetingSubscription, subscribeMeeting } from '../../auth/authApi'
+import { cancelMeetingSubscription, subscribeMeeting } from '../../auth/api/authApi'
 
 // Gestiona el alta/baja del usuario en un encuentro y expone estado de operación
 export function useMeetingSubscription({ isAuthenticated, token, onSuccess }) {

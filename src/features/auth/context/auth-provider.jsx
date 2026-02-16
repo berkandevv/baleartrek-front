@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
-import { buildApiUrl } from '../../utils/api'
+import { buildApiUrl } from '../../shared/utils/api'
 import { AuthContext } from './auth-context'
-import { fetchCurrentUser, loginRequest, registerRequest } from './authApi'
+import { fetchCurrentUser, loginRequest, registerRequest } from '../api/authApi'
 const STORAGE_KEY = 'auth_token'
 // Detecta respuestas de autenticación inválida para personalizar el mensaje de login
 const isInvalidCredentialsResponse = (status) => status === 401 || status === 422

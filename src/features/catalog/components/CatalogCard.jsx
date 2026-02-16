@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { resolveImageUrl } from '../../../utils/urls'
+import { resolveImageUrl } from '../../shared/utils/urls'
 
 // Renderiza una tarjeta de excursión en el catálogo con datos resumidos
 export default function CatalogCard({ trek }) {

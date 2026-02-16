@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
-import { buildApiUrl } from '../../../utils/api'
-import { requestJson } from '../../../utils/httpClient'
+import { buildApiUrl } from '../../shared/utils/api'
+import { requestJson } from '../../shared/utils/httpClient'
 
 // Construye la URL para un regNumber concreto
 const buildTrekEndpoint = (regNumber) => buildApiUrl(`/api/treks/${encodeURIComponent(regNumber)}`)

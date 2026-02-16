@@ -1,6 +1,6 @@
-import { resolveImageUrl } from '../../../utils/urls'
+import { resolveImageUrl } from '../../shared/utils/urls'
 import Stars from '../../../components/Stars'
-import { clampRating, formatFullName } from '../../../utils/formatters'
+import { clampRating, formatFullName } from '../../shared/utils/formatters'
 
 // Extrae y normaliza todas las URLs de imágenes asociadas a un comentario sin duplicados
 const extractCommentImageUrls = (comment) => {

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import Hero from '../components/Hero'
 import TopTreks from '../components/treks/TopTreks'
-import { fetchTreks, getTopTreksByScore } from '../../../utils/treks'
+import { fetchTreks, getTopTreksByScore } from '../../treks/utils/treksApi'
 
 // Carga y muestra en portada las excursiones mejor valoradas por la comunidad
 export default function HomePage() {

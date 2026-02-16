@@ -1,4 +1,4 @@
-import { getLocalDateTimeValue } from '../../../utils/date'
+import { getLocalDateTimeValue } from '../../shared/utils/date'
 
 // Convierte un valor de fecha en timestamp seguro, devolviendo 0 si es inválido
 const toTimestamp = (value) => {

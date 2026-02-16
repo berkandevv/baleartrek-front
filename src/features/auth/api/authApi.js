@@ -1,5 +1,5 @@
-import { buildApiUrl } from '../../utils/api'
-import { buildHttpError, parseJsonSafe, requestJson } from '../../utils/httpClient'
+import { buildApiUrl } from '../../shared/utils/api'
+import { buildHttpError, parseJsonSafe, requestJson } from '../../shared/utils/httpClient'
 
 // Construye cabeceras estándar para peticiones autenticadas
 const buildAuthHeaders = (token, hasBody = false) => ({

@@ -1,5 +1,5 @@
 import { Navigate } from 'react-router-dom'
-import { useAuth } from './useAuth'
+import { useAuth } from '../hooks/useAuth'
 
 // Componente que protege rutas privadas según el estado de autenticación
 export default function ProtectedRoute({ children }) {

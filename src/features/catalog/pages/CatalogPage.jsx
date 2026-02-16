@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom'
 import CatalogFilters from '../components/CatalogFilters'
 import CatalogToolbar from '../components/CatalogToolbar'
 import CatalogGrid from '../components/CatalogGrid'
-import { fetchTrekByRegNumber, fetchTreks } from '../../../utils/treks'
+import { fetchTrekByRegNumber, fetchTreks } from '../../treks/utils/treksApi'
 // Valor centinela para representar "sin filtro de municipio"
 const ALL_MUNICIPALITIES = 'all'
 const ALL_ZONES = 'all'

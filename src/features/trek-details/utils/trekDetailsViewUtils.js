@@ -1,4 +1,4 @@
-import { formatSpanishShortDate, normalizeDateInput, parseLocalDateTime } from '../../../utils/date'
+import { formatSpanishShortDate, normalizeDateInput, parseLocalDateTime } from '../../shared/utils/date'
 
 // Obtiene la fecha y hora actual del navegador (zona local del usuario)
 export const getBrowserNow = () => new Date()

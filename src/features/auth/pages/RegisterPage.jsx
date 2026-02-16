@@ -1,10 +1,10 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { useAuth } from '../useAuth'
+import { useAuth } from '../hooks/useAuth'
 import AuthSecurityNotice from '../components/AuthSecurityNotice'
 import AuthShell from '../components/AuthShell'
-import { normalizeDniNie, normalizeEmail } from '../../../utils/validation'
-import { hasIdentityFieldErrors, validateIdentityFields } from '../../../utils/identityValidation'
+import { normalizeDniNie, normalizeEmail } from '../utils/validation'
+import { hasIdentityFieldErrors, validateIdentityFields } from '../utils/identityValidation'
 
 // Gestiona el alta de usuario validando identidad antes de enviar el registro
 export default function RegisterPage() {

@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
-import { parseLocalDateTime } from '../../../../utils/date'
-import { resolveImageUrl } from '../../../../utils/urls'
+import { parseLocalDateTime } from '../../../shared/utils/date'
+import { resolveImageUrl } from '../../../shared/utils/urls'
 
 // Calcula la próxima fecha de encuentro futura para mostrarla en la tarjeta
 function getNextMeetingLabel(meetings) {

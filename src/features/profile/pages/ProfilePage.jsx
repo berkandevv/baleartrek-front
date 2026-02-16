@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react'
-import { useAuth } from '../../auth/useAuth'
-import { deactivateCurrentUser, updateCurrentUser, updateCurrentUserPassword } from '../../auth/authApi'
-import { useUser } from '../../auth/useUser'
+import { useAuth } from '../../auth/hooks/useAuth'
+import { deactivateCurrentUser, updateCurrentUser, updateCurrentUserPassword } from '../../auth/api/authApi'
+import { useUser } from '../../auth/hooks/useUser'
 import ProfileSidebar from '../components/ProfileSidebar'
 import { getMeetingDateValue } from '../utils/profileCommentsUtils'
 import { formatMemberSince } from '../utils/profileUtils'
-import { normalizeDniNie, normalizeEmail } from '../../../utils/validation'
-import { hasIdentityFieldErrors, validateIdentityFields } from '../../../utils/identityValidation'
-import { formatFullName } from '../../../utils/formatters'
+import { normalizeDniNie, normalizeEmail } from '../../auth/utils/validation'
+import { hasIdentityFieldErrors, validateIdentityFields } from '../../auth/utils/identityValidation'
+import { formatFullName } from '../../shared/utils/formatters'
 
 // Estado inicial del formulario de perfil
 const emptyForm = {

@@ -1,5 +1,5 @@
-import { buildApiUrl } from './api'
-import { requestJson } from './httpClient'
+import { buildApiUrl } from '../../shared/utils/api'
+import { requestJson } from '../../shared/utils/httpClient'
 
 const TREKS_ENDPOINT = buildApiUrl('/api/treks')
 // Genera el endpoint de detalle codificando el número de registro de la excursión

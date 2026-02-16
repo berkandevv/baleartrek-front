@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import { useAuth } from '../../auth/useAuth'
-import { cancelMeetingSubscription } from '../../auth/authApi'
-import { useUser } from '../../auth/useUser'
+import { useAuth } from '../../auth/hooks/useAuth'
+import { cancelMeetingSubscription } from '../../auth/api/authApi'
+import { useUser } from '../../auth/hooks/useUser'
 import ProfileSidebar from '../components/ProfileSidebar'
 import Stars from '../../../components/Stars'
 import { formatMemberSince } from '../utils/profileUtils'
@@ -13,9 +13,9 @@ import {
   sortMeetings,
 } from '../utils/profileCommentsUtils'
 import { getBrowserNow } from '../../trek-details/utils/trekDetailsViewUtils'
-import { resolveImageUrl } from '../../../utils/urls'
+import { resolveImageUrl } from '../../shared/utils/urls'
 import { isPublishedStatus } from '../../trek-details/utils/commentsUtils'
-import { clampRating, formatFullName } from '../../../utils/formatters'
+import { clampRating, formatFullName } from '../../shared/utils/formatters'
 
 
 // Muestra próximos encuentros e historial con valoraciones del usuario autenticado

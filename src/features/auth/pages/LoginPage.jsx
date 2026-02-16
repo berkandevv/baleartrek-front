@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { useAuth } from '../useAuth'
+import { useAuth } from '../hooks/useAuth'
 import AuthSecurityNotice from '../components/AuthSecurityNotice'
 import AuthShell from '../components/AuthShell'
 

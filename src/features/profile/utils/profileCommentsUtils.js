@@ -1,4 +1,4 @@
-import { formatSpanishShortDate, getLocalDateTimeValue, normalizeDateInput } from '../../../utils/date'
+import { formatSpanishShortDate, getLocalDateTimeValue, normalizeDateInput } from '../../shared/utils/date'
 
 // Formatea una fecha del encuentro al formato corto en español
 export const formatMeetingDate = (day) => formatSpanishShortDate(day)

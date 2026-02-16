@@ -12,8 +12,8 @@ import TrekDetailsPage from './features/trek-details/pages/TrekDetailsPage'
 import MeetingDetailsPage from './features/trek-details/pages/MeetingDetailsPage'
 import ProfilePage from './features/profile/pages/ProfilePage'
 import ProfileCommentsPage from './features/profile/pages/ProfileCommentsPage'
-import { AuthProvider } from './features/auth/auth-provider.jsx'
-import ProtectedRoute from './features/auth/ProtectedRoute'
+import { AuthProvider } from './features/auth/context/auth-provider.jsx'
+import ProtectedRoute from './features/auth/routes/ProtectedRoute'
 
 // Define el árbol principal de rutas públicas y protegidas de la aplicación
 function AppContent() {

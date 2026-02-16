@@ -1,4 +1,4 @@
-import { getLocalDateTimeValue } from '../../../utils/date'
+import { getLocalDateTimeValue } from '../../shared/utils/date'
 
 // Ordena encuentros de más reciente a más antiguo
 export const sortMeetingsByDateDesc = (meetings = []) =>
