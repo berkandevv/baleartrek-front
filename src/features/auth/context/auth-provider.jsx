@@ -152,9 +152,11 @@ export function AuthProvider({ children }) {
   }
 
   // Valor que se expone a los consumidores del contexto
+  const isAuthenticated = Boolean(token) && (Boolean(user) || isUserLoading)
+
   const value = {
     token,
-    isAuthenticated: Boolean(token),
+    isAuthenticated,
     user,
     isUserLoading,
     isLoading,
