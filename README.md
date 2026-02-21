@@ -103,7 +103,7 @@ Frontend de BalearTrek: aplicación web para explorar excursiones en Baleares, c
   - DNI/NIE.
   - Teléfono.
   - Contraseña y confirmación.
-- Persistencia de token en `sessionStorage`.
+- Token de sesión gestionado solo en memoria (no persistido en almacenamiento web).
 - Carga automática de usuario autenticado (`/api/user`).
 - Logout contra API (`/api/logout`) y limpieza de sesión.
 - Protección de rutas privadas mediante `ProtectedRoute`.

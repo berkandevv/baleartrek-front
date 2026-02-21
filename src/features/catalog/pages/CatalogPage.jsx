@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom'
 import CatalogFilters from '../components/CatalogFilters'
 import CatalogToolbar from '../components/CatalogToolbar'
 import CatalogGrid from '../components/CatalogGrid'
-import { fetchTrekByRegNumber, fetchTreks } from '../../treks/utils/treksApi'
+import { fetchTreks } from '../../treks/utils/treksApi'
 // Valor centinela para representar "sin filtro de municipio"
 const ALL_MUNICIPALITIES = 'all'
 const ALL_ZONES = 'all'
@@ -33,40 +33,6 @@ const uniqueStrings = (items) => {
   return unique
 }
 
-// Completa la zona de treks incompletos consultando el endpoint de detalle
-const enrichTreksWithZones = async (treks = []) => {
-  const treksMissingZone = treks.filter((trek) => !getZoneName(trek) && trek?.regNumber)
-  if (treksMissingZone.length === 0) return treks
-
-  const detailResults = await Promise.all(
-    treksMissingZone.map(async (trek) => {
-      try {
-        const detail = await fetchTrekByRegNumber(trek.regNumber)
-        return [trek.regNumber, detail]
-      } catch (error) {
-        console.warn(`No se pudo enriquecer zona para ${trek.regNumber}:`, error)
-        return [trek.regNumber, null]
-      }
-    }),
-  )
-  const detailsByRegNumber = new Map(detailResults)
-
-  return treks.map((trek) => {
-    if (getZoneName(trek)) return trek
-    const detail = detailsByRegNumber.get(trek?.regNumber)
-    const zone = detail?.municipality?.zone
-    if (!zone?.name) return trek
-
-    return {
-      ...trek,
-      municipality: {
-        ...(trek?.municipality ?? {}),
-        zone,
-      },
-    }
-  })
-}
-
 // Renderiza el catálogo con filtros, ordenación y paginación sincronizada con la URL
 export default function CatalogPage() {
   // Datos base y estados de la UI
@@ -90,11 +56,10 @@ export default function CatalogPage() {
       try {
         setError('')
         const apiTreks = await fetchTreks()
-        const normalizedTreks = await enrichTreksWithZones(apiTreks)
-        const apiIslandNames = normalizedTreks.map(getIslandName).filter(Boolean)
+        const apiIslandNames = apiTreks.map(getIslandName).filter(Boolean)
         const apiIslands = uniqueStrings(apiIslandNames)
 
-        setTreks(normalizedTreks)
+        setTreks(apiTreks)
         setSelectedIslands(apiIslands)
       } catch (error) {
         console.error('Error al cargar excursiones:', error)

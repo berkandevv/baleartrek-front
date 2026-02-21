@@ -2,40 +2,18 @@ import { useCallback, useEffect, useState } from 'react'
 import { buildApiUrl } from '../../shared/utils/api'
 import { AuthContext } from './auth-context'
 import { fetchCurrentUser, loginRequest, registerRequest } from '../api/authApi'
-const STORAGE_KEY = 'auth_token'
 // Detecta respuestas de autenticación inválida para personalizar el mensaje de login
 const isInvalidCredentialsResponse = (status) => status === 401 || status === 422
 
-// Lee el token persistido en sessionStorage (solo en navegador)
-const getToken = () => {
-  if (typeof window === 'undefined') return null
-  return window.sessionStorage.getItem(STORAGE_KEY)
-}
-
-// Guarda el token de sesión cuando existe un valor válido
-const setToken = (token) => {
-  if (typeof window === 'undefined') return
-  if (!token) return
-  window.sessionStorage.setItem(STORAGE_KEY, token)
-}
-
-// Elimina el token de sesión almacenado localmente
-const clearToken = () => {
-  if (typeof window === 'undefined') return
-  window.sessionStorage.removeItem(STORAGE_KEY)
-}
-
 // Proveedor que gestiona token y estado de carga
 export function AuthProvider({ children }) {
-  const [token, setTokenState] = useState(() => getToken())
+  const [token, setTokenState] = useState(null)
   const [isLoading, setIsLoading] = useState(false)
   const [isUserLoading, setIsUserLoading] = useState(false)
   const [user, setUser] = useState(null)
 
-  // Sincroniza token en memoria y sessionStorage
+  // Mantiene el token exclusivamente en memoria para reducir superficie de XSS
   const setSessionToken = useCallback((nextToken) => {
-    if (nextToken) setToken(nextToken)
-    else clearToken()
     setTokenState(nextToken ?? null)
   }, [])
 
@@ -159,7 +137,6 @@ export function AuthProvider({ children }) {
   const logout = async () => {
     setIsLoading(true)
     try {
-      const token = getToken()
       await fetch(buildApiUrl('/api/logout'), {
         method: 'POST',
         headers: token ? { Authorization: `Bearer ${token}` } : undefined,

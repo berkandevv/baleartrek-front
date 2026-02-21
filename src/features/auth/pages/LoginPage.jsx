@@ -26,21 +26,24 @@ export default function LoginPage() {
         setError('Cuenta eliminada')
         return
       }
+      if (err?.status === 401 || err?.status === 422) {
+        setError('Correo o contraseña incorrectos.')
+        return
+      }
+      if (err?.status >= 500) {
+        setError('El servidor no está disponible ahora mismo. Inténtalo más tarde.')
+        return
+      }
       const message = String(err?.message || '')
       const isNetworkError =
         message === 'Failed to fetch' ||
         message.includes('NetworkError') ||
         (err?.name === 'TypeError' && !err?.status)
       if (isNetworkError) {
-        const isOffline = typeof navigator !== 'undefined' && navigator.onLine === false
-        setError(
-          isOffline
-            ? 'No se pudo conectar con el servidor. Revisa tu conexión e inténtalo de nuevo.'
-            : 'Correo o contraseña incorrectos.',
-        )
+        setError('No se pudo conectar con el servidor. Revisa tu conexión e inténtalo de nuevo.')
         return
       }
-      setError(message || 'Error de credenciales')
+      setError(message || 'No se pudo iniciar sesión. Inténtalo de nuevo.')
     }
   }
 

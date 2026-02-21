@@ -22,7 +22,7 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-50 w-full bg-white/90 backdrop-blur-md border-b border-gray-100">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           <Link className="flex items-center gap-2" to="/">
             <div className="size-8 rounded-lg bg-gradient-to-br from-primary to-blue-500 flex items-center justify-center text-white">
@@ -32,7 +32,7 @@ export default function Header() {
           </Link>
 
           {isCatalogPage ? (
-            <div className="hidden md:flex flex-1 max-w-lg mx-8">
+            <div className="flex flex-1 max-w-lg mx-8">
               <label className="flex flex-col w-full h-10">
                 <div className="flex w-full flex-1 items-stretch rounded-lg h-full overflow-hidden border border-[#dbe4e6] focus-within:border-primary">
                   <div className="text-text-sub flex bg-[#f0f4f4] items-center justify-center pl-4 pr-2">
@@ -49,8 +49,8 @@ export default function Header() {
             </div>
           ) : null}
 
-          <div className="hidden md:flex items-center gap-6">
-            <nav className="hidden md:flex gap-6 lg:gap-8">
+          <div className="flex items-center gap-6">
+            <nav className="flex gap-6">
               <Link className={`text-sm ${pathname === '/' ? 'font-semibold text-primary' : 'font-medium text-text-main/80 hover:text-primary transition-colors'}`} to="/">
                 Inicio
               </Link>
