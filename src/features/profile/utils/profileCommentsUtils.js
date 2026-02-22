@@ -44,6 +44,7 @@ export const sortMeetings = (meetings, sortKey) => {
   const items = [...meetings]
   if (sortKey === 'best') {
     items.sort((a, b) => {
+      // Prioriza: encuentros con valoración, luego nota descendente y finalmente fecha más reciente
       const hasRatingA = hasMeetingRating(a)
       const hasRatingB = hasMeetingRating(b)
       if (hasRatingA !== hasRatingB) return hasRatingB ? 1 : -1

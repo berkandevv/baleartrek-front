@@ -53,6 +53,7 @@ export default function ProfileCommentsPage() {
   const upcomingMeetings = []
   const pastMeetings = []
 
+  // Divide encuentros en futuros/pasados según su fecha real para renderizar cada bloque por separado
   meetings.forEach((meeting) => {
     const dateValue = getMeetingDateValue(meeting)
     if (!dateValue || dateValue >= nowValue) {
@@ -62,6 +63,7 @@ export default function ProfileCommentsPage() {
     }
   })
 
+  // Empuja al final los encuentros sin fecha válida para no romper el orden cronológico de los próximos
   const sortedUpcomingMeetings = [...upcomingMeetings].sort((a, b) => {
     const dateA = getMeetingDateValue(a) || Number.MAX_SAFE_INTEGER
     const dateB = getMeetingDateValue(b) || Number.MAX_SAFE_INTEGER

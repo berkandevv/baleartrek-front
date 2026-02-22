@@ -116,6 +116,7 @@ export default function CommentsSection({
               <button
                 className="px-8 py-3 bg-white/80 border-2 border-primary rounded-xl font-black text-primary uppercase tracking-[0.2em] text-xs hover:bg-primary/10 transition-all shadow-xl"
                 onClick={() =>
+                  // Incrementa en bloques de 4 y, al llegar al final, reinicia al primer bloque visible
                   setVisibleComments((prev) =>
                     prev >= comments.length ? 4 : Math.min(prev + 4, comments.length),
                   )
