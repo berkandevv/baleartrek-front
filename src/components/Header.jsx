@@ -33,12 +33,13 @@ export default function Header() {
 
           {isCatalogPage ? (
             <div className="flex flex-1 max-w-lg mx-8">
-              <label className="flex flex-col w-full h-10">
+              <label className="flex flex-col w-full h-10" htmlFor="catalog-search">
                 <div className="flex w-full flex-1 items-stretch rounded-lg h-full overflow-hidden border border-[#dbe4e6] focus-within:border-primary">
                   <div className="text-text-sub flex bg-[#f0f4f4] items-center justify-center pl-4 pr-2">
                     <span className="material-symbols-outlined text-[20px]">search</span>
                   </div>
                   <input
+                    id="catalog-search"
                     value={query}
                     onChange={handleSearchChange}
                     className="flex w-full min-w-0 flex-1 resize-none bg-[#f0f4f4] text-text-main focus:outline-0 border-none h-full placeholder:text-text-sub px-2 text-sm"

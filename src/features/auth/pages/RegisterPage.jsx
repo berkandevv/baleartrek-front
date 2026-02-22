@@ -62,8 +62,11 @@ export default function RegisterPage() {
       <form className="space-y-5" onSubmit={handleSubmit}>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="flex flex-col gap-1.5">
-            <label className="text-sm font-bold text-text-main">Nombre</label>
+            <label className="text-sm font-bold text-text-main" htmlFor="register-name">
+              Nombre
+            </label>
             <input
+              id="register-name"
               className="w-full rounded-lg border-[#dbe4e6] focus:border-primary focus:ring-primary text-sm"
               placeholder="Ej. Joan"
               type="text"
@@ -73,8 +76,11 @@ export default function RegisterPage() {
             />
           </div>
           <div className="flex flex-col gap-1.5">
-            <label className="text-sm font-bold text-text-main">Apellidos</label>
+            <label className="text-sm font-bold text-text-main" htmlFor="register-lastname">
+              Apellidos
+            </label>
             <input
+              id="register-lastname"
               className="w-full rounded-lg border-[#dbe4e6] focus:border-primary focus:ring-primary text-sm"
               placeholder="Ej. Rosselló"
               type="text"
@@ -84,8 +90,11 @@ export default function RegisterPage() {
           </div>
         </div>
         <div className="flex flex-col gap-1.5">
-          <label className="text-sm font-bold text-text-main">Correo Electrónico</label>
+          <label className="text-sm font-bold text-text-main" htmlFor="register-email">
+            Correo Electrónico
+          </label>
           <input
+            id="register-email"
             className="w-full rounded-lg border-[#dbe4e6] focus:border-primary focus:ring-primary text-sm"
             placeholder="nombre@ejemplo.com"
             type="email"
@@ -98,8 +107,11 @@ export default function RegisterPage() {
           ) : null}
         </div>
         <div className="flex flex-col gap-1.5">
-          <label className="text-sm font-bold text-text-main">DNI/NIE</label>
+          <label className="text-sm font-bold text-text-main" htmlFor="register-dni">
+            DNI/NIE
+          </label>
           <input
+            id="register-dni"
             className="w-full rounded-lg border-[#dbe4e6] focus:border-primary focus:ring-primary text-sm"
             placeholder="12345678X"
             type="text"
@@ -112,8 +124,11 @@ export default function RegisterPage() {
           ) : null}
         </div>
         <div className="flex flex-col gap-1.5">
-          <label className="text-sm font-bold text-text-main">Teléfono</label>
+          <label className="text-sm font-bold text-text-main" htmlFor="register-phone">
+            Teléfono
+          </label>
           <input
+            id="register-phone"
             className="w-full rounded-lg border-[#dbe4e6] focus:border-primary focus:ring-primary text-sm"
             placeholder="+34 600 000 000"
             type="tel"
@@ -123,8 +138,11 @@ export default function RegisterPage() {
           />
         </div>
         <div className="flex flex-col gap-1.5">
-          <label className="text-sm font-bold text-text-main">Contraseña</label>
+          <label className="text-sm font-bold text-text-main" htmlFor="register-password">
+            Contraseña
+          </label>
           <input
+            id="register-password"
             className="w-full rounded-lg border-[#dbe4e6] focus:border-primary focus:ring-primary text-sm"
             placeholder="••••••••"
             type="password"
@@ -134,8 +152,11 @@ export default function RegisterPage() {
           />
         </div>
         <div className="flex flex-col gap-1.5">
-          <label className="text-sm font-bold text-text-main">Confirmar contraseña</label>
+          <label className="text-sm font-bold text-text-main" htmlFor="register-password-confirmation">
+            Confirmar contraseña
+          </label>
           <input
+            id="register-password-confirmation"
             className="w-full rounded-lg border-[#dbe4e6] focus:border-primary focus:ring-primary text-sm"
             placeholder="••••••••"
             type="password"

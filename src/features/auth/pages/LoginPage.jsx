@@ -57,8 +57,11 @@ export default function LoginPage() {
       </div>
       <form className="space-y-5" onSubmit={handleSubmit}>
         <div className="flex flex-col gap-1.5">
-          <label className="text-sm font-bold text-text-main">Correo Electrónico</label>
+          <label className="text-sm font-bold text-text-main" htmlFor="login-email">
+            Correo Electrónico
+          </label>
           <input
+            id="login-email"
             className="w-full rounded-lg border-[#dbe4e6] focus:border-primary focus:ring-primary text-sm"
             placeholder="nombre@ejemplo.com"
             type="email"
@@ -68,8 +71,11 @@ export default function LoginPage() {
           />
         </div>
         <div className="flex flex-col gap-1.5">
-          <label className="text-sm font-bold text-text-main">Contraseña</label>
+          <label className="text-sm font-bold text-text-main" htmlFor="login-password">
+            Contraseña
+          </label>
           <input
+            id="login-password"
             className="w-full rounded-lg border-[#dbe4e6] focus:border-primary focus:ring-primary text-sm"
             placeholder="••••••••"
             type="password"

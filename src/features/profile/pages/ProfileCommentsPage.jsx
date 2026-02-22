@@ -17,6 +17,8 @@ import { isPublishedStatus } from '../../trek-details/utils/commentsUtils'
 import { clampRating, formatFullName } from '../../shared/utils/formatters'
 import { extractCommentImageUrls } from '../../shared/utils/commentImages'
 
+const getCommentUserId = (comment) =>
+  comment?.user_id ?? comment?.userId ?? comment?.user?.id ?? comment?.user?.user_id
 
 // Muestra próximos encuentros e historial con valoraciones del usuario autenticado
 export default function ProfileCommentsPage() {
@@ -46,6 +48,7 @@ export default function ProfileCommentsPage() {
 
   const memberSince = formatMemberSince(user?.created_at)
   const fullName = formatFullName(user)
+  const currentUserId = user?.id ?? user?.user_id
 
   const meetings = user?.meetings ?? []
   const nowValue = getBrowserNow().getTime()
@@ -208,11 +211,18 @@ export default function ProfileCommentsPage() {
                   <div className="flex flex-col gap-6">
                     {sortedMeetings.map((meeting) => {
                       const comments = meeting?.comments ?? []
-                      const publishedComment = comments.find((comment) => isPublishedStatus(comment?.status))
-                      const selectedComment = publishedComment ?? comments[0] ?? null
+                      const ownComments = comments.filter(
+                        (comment) =>
+                          Boolean(currentUserId) &&
+                          String(getCommentUserId(comment)) === String(currentUserId),
+                      )
+                      const publishedComment = ownComments.find((comment) =>
+                        isPublishedStatus(comment?.status),
+                      )
+                      const selectedComment = publishedComment ?? ownComments[0] ?? null
                       const statusLabel = publishedComment ? 'Publicado' : 'Pendiente'
                       const statusTone = publishedComment ? 'text-primary' : 'text-text-sub'
-                      const cardOpacity = publishedComment ? '' : 'opacity-80'
+                      const cardOpacity = publishedComment || !selectedComment ? '' : 'opacity-80'
                       const ratingValue =
                         selectedComment?.score ?? meeting?.score?.average ?? meeting?.score?.total ?? 0
                       const coverImage = extractCommentImageUrls(selectedComment)[0] ?? ''
