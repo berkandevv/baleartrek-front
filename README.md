@@ -4,6 +4,23 @@ Frontend de BalearTrek: aplicación web para explorar excursiones en Baleares, c
 
 ## Estado actual del proyecto
 
+### Checklist funcional implementado (15 puntos)
+1. Navegación para visitantes mediante barra superior con acceso a Inicio, Excursiones, Contacto y FAQ.
+2. Home con conjunto dinámico de excursiones destacadas (Top 5), calculado por criterio de nota media (`score.average`) de mayor a menor.
+3. Catálogo de excursiones con filtrado (isla, zona, municipio y búsqueda), ordenación y paginación.
+4. Ficha de excursión con detalle principal de ruta, ubicación, encuentros y métricas de valoración.
+5. Visualización de lugares destacables asociados a cada excursión con tipo, coordenadas GPS y vista en mapa.
+6. Visualización de encuentros en la excursión con fecha, estado de inscripción, guía y participantes.
+7. Ficha de encuentro con información clave: fecha, guía, periodo de inscripción y puntuación media.
+8. Comentarios validados de excursión ordenados del más reciente al más antiguo, con puntuación e imágenes asociadas.
+9. Registro de usuario y login con autogestión de cuenta (nombre, apellidos, DNI/NIE, teléfono, email y contraseña).
+10. Formulario de contacto para visitantes con envío estructurado de nombre, correo y mensaje.
+11. Sección de ayuda/FAQ con reglas de inscripción, escala de puntuación 0-5 y normas de comentarios.
+12. Inscripción y cancelación en encuentros para usuarios autenticados, con control de estado de inscripción y de asistencia.
+13. Gestión de datos privados del usuario: edición de perfil, cambio de contraseña y desactivación de cuenta.
+14. Visualización del estado de valoraciones/comentarios del usuario dentro de su área privada.
+15. Historial del usuario autenticado con próximos encuentros, encuentros completados y valoraciones.
+
 ### Navegación y estructura general
 - Header global con navegación a Inicio, Excursiones (catálogo), Contacto y FAQ.
 - Menú de cuenta para usuarios autenticados con acceso a perfil y cierre de sesión.
