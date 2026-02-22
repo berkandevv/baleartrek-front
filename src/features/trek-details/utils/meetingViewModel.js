@@ -22,7 +22,13 @@ export const getMeetingActionLabel = ({
 // Unifica en un solo objeto todos los datos que necesita la UI del encuentro
 export const getMeetingViewModel = (
   meeting,
-  { currentUserId, now, activeMeetingId, attendeeCountResolver = getAttendeeCount },
+  {
+    currentUserId,
+    now,
+    activeMeetingId,
+    attendeeCountResolver = getAttendeeCount,
+    subscribedMeetingIds,
+  },
 ) => {
   const { day, monthYear, time } = formatMeetingDateParts(meeting)
   const guideLabel = formatFullName(meeting?.guide) || 'Pendiente'
@@ -30,6 +36,7 @@ export const getMeetingViewModel = (
     meeting,
     currentUserId,
     now,
+    { subscribedMeetingIds },
   )
   const isPending = activeMeetingId === meeting?.id
   const isDisabled = isPending || isGuide || isClosed || !isApplicationOpen

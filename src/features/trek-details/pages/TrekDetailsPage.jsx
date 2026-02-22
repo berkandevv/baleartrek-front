@@ -110,6 +110,15 @@ export default function TrekDetailsPage() {
   }
 
   const currentUserId = user?.id ?? user?.user_id
+  const subscribedMeetingIds = new Set(
+    (user?.meetings ?? [])
+      .reduce((ids, meeting) => {
+        ids.push(meeting?.id, meeting?.meeting_id)
+        return ids
+      }, [])
+      .filter((id) => id != null)
+      .map((id) => String(id)),
+  )
   const totalAttendees = getTotalAttendees(meetings)
 
   return (
@@ -219,6 +228,7 @@ export default function TrekDetailsPage() {
           now={now}
           currentUserId={currentUserId}
           activeMeetingId={activeMeetingId}
+          subscribedMeetingIds={subscribedMeetingIds}
           handleToggleSubscription={handleToggleSubscription}
           regNumber={regNumber}
         />

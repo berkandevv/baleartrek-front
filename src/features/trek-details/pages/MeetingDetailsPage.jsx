@@ -7,6 +7,7 @@ import TrekDetailsPageState from '../components/TrekDetailsPageState'
 import Stars from '../../../components/Stars'
 import { getBrowserNow } from '../utils/trekDetailsViewUtils'
 import { getMeetingViewModel } from '../utils/meetingViewModel'
+import { formatFullName } from '../../shared/utils/formatters'
 
 // Formatea una fecha larga legible para el bloque de resumen del encuentro
 const formatLongDate = (value) => {
@@ -57,11 +58,24 @@ export default function MeetingDetailsPage() {
   const trekName = trek?.name ?? 'Ruta sin nombre'
   const now = getBrowserNow()
   const currentUserId = user?.id ?? user?.user_id
+  const subscribedMeetingIds = new Set(
+    (user?.meetings ?? [])
+      .reduce((ids, item) => {
+        ids.push(item?.id, item?.meeting_id)
+        return ids
+      }, [])
+      .filter((id) => id != null)
+      .map((id) => String(id)),
+  )
   const viewModel = getMeetingViewModel(meeting, {
     currentUserId,
     now,
     activeMeetingId,
+    subscribedMeetingIds,
   })
+  const extraGuideLabels = meeting?.extraGuides
+    ?.map?.((guide) => formatFullName(guide))
+    ?.filter(Boolean) ?? []
   const commentsCount = (meeting?.comments ?? []).length
   const averageScore = Number(meeting?.score?.average)
   const averageScoreLabel = Number.isFinite(averageScore) ? averageScore.toFixed(1) : '0.0'
@@ -143,9 +157,28 @@ export default function MeetingDetailsPage() {
                     Guía Principal
                   </span>
                   <h3 className="text-xl font-black text-corporate-blue uppercase">{viewModel.guideLabel}</h3>
-                  <p className="text-sm text-[#618389] mt-1 italic">
-                    No hay guías adicionales asignados para esta salida.
-                  </p>
+                  {extraGuideLabels.length > 0 ? (
+                    <div className="mt-2">
+                      <span className="block text-[10px] font-black text-[#618389] uppercase tracking-[0.2em] mb-1">
+                        Guías Adicionales
+                      </span>
+                      <ul className="space-y-1">
+                        {extraGuideLabels.map((guideName, index) => (
+                          <li
+                            key={`${guideName}-${index}`}
+                            className="flex items-center gap-2 text-sm font-black uppercase tracking-wide text-corporate-blue"
+                          >
+                            <span className="size-1.5 rounded-full bg-corporate-blue/60" />
+                            {guideName}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ) : (
+                    <p className="text-sm text-[#618389] mt-1 italic">
+                      No hay guías adicionales asignados para esta salida.
+                    </p>
+                  )}
                 </div>
               </div>
             </section>

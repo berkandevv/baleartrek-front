@@ -74,9 +74,9 @@ export function AuthProvider({ children }) {
         const responseStatus = requestError?.status
         const authError = new Error(
           responseStatus === 422
-            ? 'Usuario eliminado'
-            : responseStatus === 401
             ? 'Correo o contraseña incorrectos'
+            : responseStatus === 403
+            ? 'Usuario eliminado'
             : (requestError?.payload?.message || 'No se pudo iniciar sesión'),
         )
         authError.status = responseStatus

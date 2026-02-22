@@ -13,6 +13,7 @@ export default function MeetingsSection({
   now,
   currentUserId,
   activeMeetingId,
+  subscribedMeetingIds,
   handleToggleSubscription,
   regNumber,
 }) {
@@ -82,6 +83,7 @@ export default function MeetingsSection({
                 currentUserId,
                 now,
                 activeMeetingId,
+                subscribedMeetingIds,
               })
 
               return (

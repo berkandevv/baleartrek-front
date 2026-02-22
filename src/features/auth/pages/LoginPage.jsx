@@ -22,11 +22,11 @@ export default function LoginPage() {
       await login({ email, password })
       navigate('/')
     } catch (err) {
-      if (err?.status === 422 || err?.message === 'Usuario eliminado') {
+      if (err?.status === 403 || err?.message === 'Usuario eliminado') {
         setError('Usuario eliminado')
         return
       }
-      if (err?.status === 401) {
+      if (err?.status === 422 || err?.status === 401) {
         setError('Correo o contraseña incorrectos.')
         return
       }
