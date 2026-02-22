@@ -17,8 +17,68 @@ import { isPublishedStatus } from '../../trek-details/utils/commentsUtils'
 import { clampRating, formatFullName } from '../../shared/utils/formatters'
 import { extractCommentImageUrls } from '../../shared/utils/commentImages'
 
+// Compatibilidad con distintos nombres de campo que puede devolver la API para el autor del comentario
 const getCommentUserId = (comment) =>
-  comment?.user_id ?? comment?.userId ?? comment?.user?.id ?? comment?.user?.user_id
+  comment?.user_id ??
+  comment?.userId ??
+  comment?.author_id ??
+  comment?.authorId ??
+  comment?.created_by ??
+  comment?.createdBy ??
+  comment?.attendee_id ??
+  comment?.attendeeId ??
+  comment?.member_id ??
+  comment?.memberId ??
+  comment?.pivot?.user_id ??
+  comment?.user?.id ??
+  comment?.user?.user_id
+
+// Algunos endpoints marcan explícitamente "este comentario es mío" sin enviar user_id
+const isOwnCommentFlag = (comment) =>
+  Boolean(
+    comment?.is_mine ??
+      comment?.isMine ??
+      comment?.own_comment ??
+      comment?.ownComment ??
+      comment?.mine,
+  )
+
+// Resuelve "mi valoración" de un encuentro con varios fallbacks para evitar falsos "sin valoración"
+const getMeetingOwnComment = (meeting, currentUserId) => {
+  const comments = Array.isArray(meeting?.comments) ? meeting.comments : []
+  const ownComments = comments.filter((comment) => {
+    if (isOwnCommentFlag(comment)) return true
+    if (!currentUserId) return false
+    return String(getCommentUserId(comment)) === String(currentUserId)
+  })
+
+  if (ownComments.length > 0) {
+    const publishedComment = ownComments.find((comment) => isPublishedStatus(comment?.status))
+    return publishedComment ?? ownComments[0]
+  }
+
+  // Fallback: en algunos payloads el comentario propio viene colgado del meeting
+  const meetingLevelOwnComment =
+    meeting?.my_comment ??
+    meeting?.myComment ??
+    meeting?.user_comment ??
+    meeting?.userComment ??
+    meeting?.comment ??
+    meeting?.rating_comment ??
+    meeting?.ratingComment
+
+  if (meetingLevelOwnComment && typeof meetingLevelOwnComment === 'object') {
+    return meetingLevelOwnComment
+  }
+
+  // Último recurso: si solo existe un comentario y no trae owner id, lo tomamos como propio
+  const commentsWithoutOwnerId = comments.filter((comment) => !getCommentUserId(comment))
+  if (comments.length === 1 && commentsWithoutOwnerId.length === 1) {
+    return comments[0]
+  }
+
+  return null
+}
 
 // Muestra próximos encuentros e historial con valoraciones del usuario autenticado
 export default function ProfileCommentsPage() {
@@ -210,19 +270,11 @@ export default function ProfileCommentsPage() {
                 ) : (
                   <div className="flex flex-col gap-6">
                     {sortedMeetings.map((meeting) => {
-                      const comments = meeting?.comments ?? []
-                      const ownComments = comments.filter(
-                        (comment) =>
-                          Boolean(currentUserId) &&
-                          String(getCommentUserId(comment)) === String(currentUserId),
-                      )
-                      const publishedComment = ownComments.find((comment) =>
-                        isPublishedStatus(comment?.status),
-                      )
-                      const selectedComment = publishedComment ?? ownComments[0] ?? null
-                      const statusLabel = publishedComment ? 'Publicado' : 'Pendiente'
-                      const statusTone = publishedComment ? 'text-primary' : 'text-text-sub'
-                      const cardOpacity = publishedComment || !selectedComment ? '' : 'opacity-80'
+                      const selectedComment = getMeetingOwnComment(meeting, currentUserId)
+                      const isPublished = isPublishedStatus(selectedComment?.status)
+                      const statusLabel = isPublished ? 'Publicado' : 'Pendiente'
+                      const statusTone = isPublished ? 'text-primary' : 'text-text-sub'
+                      const cardOpacity = isPublished || !selectedComment ? '' : 'opacity-80'
                       const ratingValue =
                         selectedComment?.score ?? meeting?.score?.average ?? meeting?.score?.total ?? 0
                       const coverImage = extractCommentImageUrls(selectedComment)[0] ?? ''

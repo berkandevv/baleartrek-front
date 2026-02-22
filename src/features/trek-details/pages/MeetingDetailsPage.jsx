@@ -1,5 +1,6 @@
 import { Link, useParams } from 'react-router-dom'
 import { useAuth } from '../../auth/hooks/useAuth'
+import { useUser } from '../../auth/hooks/useUser'
 import { useMeetingSubscription } from '../hooks/useMeetingSubscription'
 import { useTrekDetailsData } from '../hooks/useTrekDetailsData'
 import TrekDetailsPageState from '../components/TrekDetailsPageState'
@@ -23,11 +24,15 @@ const formatLongDate = (value) => {
 export default function MeetingDetailsPage() {
   const { regNumber, meetingId } = useParams()
   const { token, isAuthenticated, user } = useAuth()
+  const { refreshUser } = useUser()
   const { trek, isLoading, error, fetchTrek } = useTrekDetailsData(regNumber)
   const { subscribeError, activeMeetingId, handleToggleSubscription } = useMeetingSubscription({
     isAuthenticated,
     token,
-    onSuccess: fetchTrek,
+    onSuccess: async () => {
+      await fetchTrek()
+      await refreshUser()
+    },
   })
 
   if (isLoading) {

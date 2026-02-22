@@ -2,6 +2,7 @@ import { useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { Icon } from 'leaflet'
 import { useAuth } from '../../auth/hooks/useAuth'
+import { useUser } from '../../auth/hooks/useUser'
 import { getBrowserNow } from '../utils/trekDetailsViewUtils'
 import { resolveImageUrl } from '../../shared/utils/urls'
 import MeetingsSection from '../components/MeetingsSection'
@@ -24,6 +25,7 @@ import markerShadow from 'leaflet/dist/images/marker-shadow.png'
 export default function TrekDetailsPage() {
   const { regNumber } = useParams()
   const { token, isAuthenticated, user } = useAuth()
+  const { refreshUser } = useUser()
   const { trek, isLoading, error, fetchTrek } = useTrekDetailsData(regNumber)
   const [visibleComments, setVisibleComments] = useState(4)
   const carouselRef = useRef(null)
@@ -38,7 +40,10 @@ export default function TrekDetailsPage() {
   const { subscribeError, activeMeetingId, handleToggleSubscription } = useMeetingSubscription({
     isAuthenticated,
     token,
-    onSuccess: fetchTrek,
+    onSuccess: async () => {
+      await fetchTrek()
+      await refreshUser()
+    },
   })
 
   const meetings = trek?.meetings ?? []

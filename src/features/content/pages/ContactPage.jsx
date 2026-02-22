@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom'
+
 const CONTACT_EMAIL = import.meta.env.VITE_CONTACT_EMAIL || 'berkanraimov@gmail.com'
 
 // Muestra el formulario de contacto y prepara un correo con los datos introducidos
@@ -94,7 +96,11 @@ export default function ContactPage() {
                 type="checkbox"
               />
               <label className="text-xs text-[#618389] leading-tight" htmlFor="terms">
-                He leído y acepto la política de privacidad de BalearTrek.
+                He leído y acepto la{' '}
+                <Link className="font-semibold text-primary hover:underline" to="/faq">
+                  política de privacidad
+                </Link>{' '}
+                de BalearTrek.
               </label>
             </div>
 
