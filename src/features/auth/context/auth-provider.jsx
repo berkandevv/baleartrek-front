@@ -2,8 +2,6 @@ import { useCallback, useEffect, useState } from 'react'
 import { buildApiUrl } from '../../shared/utils/api'
 import { AuthContext } from './auth-context'
 import { fetchCurrentUser, loginRequest, registerRequest } from '../api/authApi'
-// Detecta respuestas de autenticación inválida para personalizar el mensaje de login
-const isInvalidCredentialsResponse = (status) => status === 401 || status === 422
 
 // Proveedor que gestiona token y estado de carga
 export function AuthProvider({ children }) {
@@ -75,7 +73,9 @@ export function AuthProvider({ children }) {
       } catch (requestError) {
         const responseStatus = requestError?.status
         const authError = new Error(
-          isInvalidCredentialsResponse(responseStatus)
+          responseStatus === 422
+            ? 'Usuario eliminado'
+            : responseStatus === 401
             ? 'Correo o contraseña incorrectos'
             : (requestError?.payload?.message || 'No se pudo iniciar sesión'),
         )
