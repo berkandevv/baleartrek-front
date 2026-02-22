@@ -3,16 +3,28 @@ import { buildApiUrl } from '../../shared/utils/api'
 import { AuthContext } from './auth-context'
 import { fetchCurrentUser, loginRequest, registerRequest } from '../api/authApi'
 
+const SESSION_TOKEN_KEY = 'balear_auth_token'
+
 // Proveedor que gestiona token y estado de carga
 export function AuthProvider({ children }) {
-  const [token, setTokenState] = useState(null)
+  const [token, setTokenState] = useState(() => {
+    if (typeof window === 'undefined') return null
+    return window.sessionStorage.getItem(SESSION_TOKEN_KEY)
+  })
   const [isLoading, setIsLoading] = useState(false)
   const [isUserLoading, setIsUserLoading] = useState(false)
   const [user, setUser] = useState(null)
 
-  // Mantiene el token exclusivamente en memoria para reducir superficie de XSS
+  // Mantiene el token por pestaña para conservar sesión en recargas y cerrarla al cerrar la pestaña
   const setSessionToken = useCallback((nextToken) => {
-    setTokenState(nextToken ?? null)
+    const normalizedToken = nextToken ?? null
+    setTokenState(normalizedToken)
+    if (typeof window === 'undefined') return
+    if (normalizedToken) {
+      window.sessionStorage.setItem(SESSION_TOKEN_KEY, normalizedToken)
+    } else {
+      window.sessionStorage.removeItem(SESSION_TOKEN_KEY)
+    }
   }, [])
 
   const refreshUser = useCallback(async (tokenToUse = token) => {

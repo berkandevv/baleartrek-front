@@ -1,4 +1,4 @@
-import { getAttendeeCount } from './attendanceUtils'
+import { getAttendeeCount, getAttendeeId } from './attendanceUtils'
 import { getMeetingSubscriptionState } from './meetingSubscriptionState'
 import { formatApplicationDate, formatMeetingDateParts } from './trekDetailsViewUtils'
 import { formatFullName } from '../../shared/utils/formatters'
@@ -17,6 +17,25 @@ export const getMeetingActionLabel = ({
   if (!isApplicationOpen) return 'Inscripción cerrada'
   if (isSubscribed) return 'Cancelar asistencia'
   return 'Inscribirse ahora'
+}
+
+const resolveAttendeeCount = ({
+  meeting,
+  currentUserId,
+  isGuide,
+  isSubscribed,
+  attendeeCountResolver,
+}) => {
+  const baseCount = attendeeCountResolver(meeting)
+  if (!currentUserId || isGuide) return baseCount
+
+  const isUserInAttendees = (meeting?.attendees ?? []).some(
+    (attendee) => String(getAttendeeId(attendee)) === String(currentUserId),
+  )
+
+  if (isSubscribed && !isUserInAttendees) return baseCount + 1
+  if (!isSubscribed && isUserInAttendees) return Math.max(0, baseCount - 1)
+  return baseCount
 }
 
 // Unifica en un solo objeto todos los datos que necesita la UI del encuentro
@@ -48,7 +67,13 @@ export const getMeetingViewModel = (
     guideLabel,
     openingDate: formatApplicationDate(meeting?.appDateIni),
     closingDate: formatApplicationDate(meeting?.appDateEnd),
-    attendeeCount: attendeeCountResolver(meeting),
+    attendeeCount: resolveAttendeeCount({
+      meeting,
+      currentUserId,
+      isGuide,
+      isSubscribed,
+      attendeeCountResolver,
+    }),
     isGuide,
     isSubscribed,
     isClosed,
