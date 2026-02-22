@@ -4,10 +4,17 @@ import { formatApplicationDate, formatMeetingDateParts } from './trekDetailsView
 import { formatFullName } from '../../shared/utils/formatters'
 
 // Elige el texto exacto del botón de acción según el estado del encuentro y del usuario
-export const getMeetingActionLabel = ({ isGuide, isPending, isClosed, isSubscribed }) => {
+export const getMeetingActionLabel = ({
+  isGuide,
+  isPending,
+  isClosed,
+  isApplicationOpen,
+  isSubscribed,
+}) => {
   if (isGuide) return 'Eres el guía'
   if (isPending) return 'Procesando...'
   if (isClosed) return 'Encuentro finalizado'
+  if (!isApplicationOpen) return 'Inscripción cerrada'
   if (isSubscribed) return 'Cancelar asistencia'
   return 'Inscribirse ahora'
 }
@@ -42,6 +49,6 @@ export const getMeetingViewModel = (
     isPending,
     isDisabled,
     isFeatured: isApplicationOpen,
-    actionLabel: getMeetingActionLabel({ isGuide, isPending, isClosed, isSubscribed }),
+    actionLabel: getMeetingActionLabel({ isGuide, isPending, isClosed, isApplicationOpen, isSubscribed }),
   }
 }

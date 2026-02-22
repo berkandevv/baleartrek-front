@@ -28,16 +28,37 @@ export const getMeetingDateValue = (meeting) => {
 }
 
 // Obtiene la puntuacion del encuentro para ordenar por mejores valorados
+const toFiniteNumber = (value) => {
+  const parsed = Number(value)
+  return Number.isFinite(parsed) ? parsed : null
+}
+
+const isPublishedStatus = (status) => String(status ?? '').toLowerCase() === 'y'
+
+const getPreferredCommentScore = (meeting) => {
+  const comments = Array.isArray(meeting?.comments) ? meeting.comments : []
+
+  const publishedScore = comments
+    .filter((comment) => isPublishedStatus(comment?.status))
+    .map((comment) => toFiniteNumber(comment?.score))
+    .find((score) => score !== null)
+
+  if (publishedScore !== undefined) return publishedScore
+
+  return comments
+    .map((comment) => toFiniteNumber(comment?.score))
+    .find((score) => score !== null)
+}
+
 export const getMeetingRatingValue = (meeting) => {
-  const commentScore = meeting?.comments?.[0]?.score
-  const averageScore = meeting?.score?.average
-  const totalScore = meeting?.score?.total
-  const value = commentScore ?? averageScore ?? totalScore ?? 0
-  return Number(value) || 0
+  const commentScore = getPreferredCommentScore(meeting)
+  const averageScore = toFiniteNumber(meeting?.score?.average)
+  const totalScore = toFiniteNumber(meeting?.score?.total)
+  return commentScore ?? averageScore ?? totalScore ?? 0
 }
 
 // Indica si el encuentro tiene al menos un comentario con valoración
-export const hasMeetingRating = (meeting) => (meeting?.comments ?? []).length > 0
+export const hasMeetingRating = (meeting) => getMeetingRatingValue(meeting) > 0
 
 // Ordena los encuentros por fecha o por puntuacion
 export const sortMeetings = (meetings, sortKey) => {
