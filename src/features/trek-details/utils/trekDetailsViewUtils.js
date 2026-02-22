@@ -12,8 +12,7 @@ const getMeetingDate = (meeting) => {
 export const isMeetingActive = (meeting, now = getBrowserNow()) => {
   const meetingStart = getMeetingDate(meeting)
   if (!meetingStart) return false
-  const meetingEnd = new Date(meetingStart.getTime() + 2 * 60 * 60 * 1000)
-  return now <= meetingEnd
+  return now <= meetingStart
 }
 
 // Genera partes de fecha y hora para mostrar en la tarjeta

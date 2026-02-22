@@ -43,12 +43,15 @@ export default function ProfilePage() {
 
   const memberSince = formatMemberSince(user?.created_at)
   const fullName = formatFullName(user)
-  const completedMeetingsCount = user?.meetings?.length ?? 0
   const meetings = user?.meetings ?? []
   const nowValue = Date.now()
+  const completedMeetingsCount = meetings.filter((meeting) => {
+    const dateValue = getMeetingDateValue(meeting)
+    return Boolean(dateValue) && dateValue < nowValue
+  }).length
   const upcomingMeetingsCount = meetings.filter((meeting) => {
     const dateValue = getMeetingDateValue(meeting)
-    return !dateValue || dateValue >= nowValue
+    return Boolean(dateValue) && dateValue >= nowValue
   }).length
   const commentedMeetingsCount = meetings.filter((meeting) => (meeting?.comments ?? []).length > 0)
     .length
